@@ -2,14 +2,41 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\SerializedName;
+
+/**
+ * @SerializedName("jobOffer")
+ */
 class JobOffer
 {
+    /**
+     * @SerializedName("id")
+     */
     private ?int $id = null;
 
+    /**
+     * @SerializedName("title")
+     */
     private ?string $title = null;
+
+    /**
+     * @var string|null $description
+     */
     private ?string $description = null;
+
+    /**
+     * @var string|null $city
+     */
     private ?string $city = null;
+
+    /**
+     * @var int|null $salaryMin
+     */
     private ?int $salaryMin = null;
+
+    /**
+     * @var int|null $salaryMax
+     */
     private ?int $salaryMax = null;
 
 
