@@ -16,7 +16,7 @@ class JobOfferRepository
         $this->connection->beginTransaction();
 
         try {
-            $query = "
+            $query = '
                 INSERT INTO APICHADO.joboffer 
                     (`title`,
                      `description`,
@@ -28,7 +28,7 @@ class JobOfferRepository
                      :description,
                      :city,
                      :salaryMin,
-                     :salaryMax)";
+                     :salaryMax)';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':title', $jobOffer->getTitle());
             $statement->bindValue(':description', $jobOffer->getDescription());
@@ -45,9 +45,17 @@ class JobOfferRepository
 
     }
 
-//    public function read(int $id): JobOffer
-//    {
-//    }
+    public function read(int $id): JobOffer
+    {
+        $this->connection->beginTransaction();
+        $query = 'SELECT * FROM APICHADO.joboffer WHERE id = :id';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        $jobOffer = $statement->fetchObject(JobOffer::class);
+        $this->connection->commit();
+        return $jobOffer;
+    }
 //
 //    public function update(int $id): void
 //    {
