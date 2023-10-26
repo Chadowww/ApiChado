@@ -12,3 +12,6 @@
 ###< Macbook files ###
 .DS_Store
 .idea/
+
+###< database config ###
+/config/db.php
