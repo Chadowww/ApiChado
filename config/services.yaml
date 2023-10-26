@@ -6,11 +6,20 @@
 parameters:
 
 services:
-    # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    Symfony\Component\Serializer\SerializerInterface: '@serializer'
+    Symfony\Component\Serializer\Encoder\JsonEncoder: ~
+    Symfony\Component\Serializer\Normalizer\ObjectNormalizer: ~
+    serializer.encoder.json:
+            class: Symfony\Component\Serializer\Encoder\JsonEncoder
+            tags: [serializer.encoder]
+
+    serializer.normalizer.object:
+            class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+            tags: [serializer.normalizer]
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
