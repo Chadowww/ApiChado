@@ -9,12 +9,12 @@ jobOfferCreate:
     controller: App\Controller\JobOfferController::create
     methods: GET
 
-#
-#jobOfferRead:
-#    path: /job-offer/{id}
-#    controller: App\Controller\JobOfferController::read
-#    methods: GET
-#
+
+jobOfferRead:
+    path: /job-offer/{id}
+    controller: App\Controller\JobOfferController::read
+    methods: GET
+
 #jobOfferUpdate:
 #    path: /job-offer/{id}/update
 #    controller: App\Controller\JobOfferController::update
