@@ -7,11 +7,11 @@ controllers:
 jobOfferCreate:
     path: /job-offer/create
     controller: App\Controller\JobOfferController::create
-    methods: GET
+    methods: POST
 
 
 jobOfferRead:
-    path: /job-offer/{id}
+    path: /job-offer/{id}/show
     controller: App\Controller\JobOfferController::read
     methods: GET
 
@@ -20,12 +20,7 @@ jobOfferUpdate:
     controller: App\Controller\JobOfferController::update
     methods: PUT
 
-#jobOfferDelete:
-#    path: /job-offer/{id}/delete
-#    controller: App\Controller\JobOfferController::delete
-#    methods: DELETE
-#
-#jobOfferList:
-#    path: /job-offer
-#    controller: App\Controller\JobOfferController::index
-#    methods: GET
+jobOfferDelete:
+    path: /job-offer/{id}/delete
+    controller: App\Controller\JobOfferController::delete
+    methods: DELETE
