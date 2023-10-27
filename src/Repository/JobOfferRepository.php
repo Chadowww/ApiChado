@@ -87,10 +87,22 @@ class JobOfferRepository
         }
     }
 
-//    public function delete(JobOffer $jobOffer)
-//    {
-//    }
-//
+    public function delete(JobOffer $jobOffer): bool
+    {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'DELETE FROM APICHADO.joboffer WHERE id = :id';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':id', $jobOffer->getId());
+            $statement->execute();
+            $this->connection->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
+
 //    public function list(): array
 //    {
 //    }
