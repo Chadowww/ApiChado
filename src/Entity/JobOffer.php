@@ -13,47 +13,56 @@ class JobOffer
     /**
      * @SerializedName("id")
      */
-    #[Assert\Positive]
-    #[Assert\Type("integer")]
-    #[Assert\Unique]
     private ?int $id = null;
 
     /**
      * @SerializedName("title")
      */
-    #[Assert\NotBlank]
-    #[Assert\Type("string")]
+    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\Type("string", message: "Title must be a string")]
     #[Assert\Length(min: 3, max: 255)]
     private ?string $title = null;
 
     /**
      * @var string|null $description
      */
-    #[Assert\NotBlank]
-    #[Assert\Type("string")]
-    #[Assert\Length(min: 3, max: 2500)]
+    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\Type("string", message: "Description must be a string")]
+    #[Assert\Length(
+        min: 3,
+        max: 2500,
+        minMessage: "Description must be at least {{ limit }} characters long",
+        maxMessage: "Description must be at least {{ limit }} characters long"
+    )]
     private ?string $description = null;
 
     /**
      * @var string|null $city
      */
-    #[Assert\NotBlank]
-    #[Assert\Type("string")]
-    #[Assert\Length(min: 3, max: 255)]
+    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\Type("string", message: "City must be a string")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "City must be at least {{ limit }} characters long",
+        maxMessage: "City must be at least {{ limit }} characters long"
+    )]
     private ?string $city = null;
 
     /**
      * @var int|null $salaryMin
      */
+    #[Assert\NotBlank(message: "Salary min is required")]
     #[Assert\Positive]
-    #[Assert\Type("integer")]
+    #[Assert\Type("integer", message: "Salary min must be a number")]
     private ?int $salaryMin = null;
 
     /**
      * @var int|null $salaryMax
      */
+    #[Assert\NotBlank(message: "Salary min is required")]
     #[Assert\Positive]
-    #[Assert\Type("integer")]
+    #[Assert\Type("integer", message: "Salary max must be a number")]
     private ?int $salaryMax = null;
 
 
