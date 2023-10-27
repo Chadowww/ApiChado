@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Entity\JobOffer;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ErrorService
