@@ -14,7 +14,6 @@ class JobOffer
      * @SerializedName("id")
      */
     #[Assert\Positive]
-    #[Assert\NotBlank]
     #[Assert\Type("integer")]
     #[Assert\Unique]
     private ?int $id = null;
