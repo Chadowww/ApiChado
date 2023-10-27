@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @SerializedName("jobOffer")
@@ -12,31 +13,48 @@ class JobOffer
     /**
      * @SerializedName("id")
      */
+    #[Assert\Positive]
+    #[Assert\NotBlank]
+    #[Assert\Type("integer")]
+    #[Assert\Unique]
     private ?int $id = null;
 
     /**
      * @SerializedName("title")
      */
+    #[Assert\NotBlank]
+    #[Assert\Type("string")]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $title = null;
 
     /**
      * @var string|null $description
      */
+    #[Assert\NotBlank]
+    #[Assert\Type("string")]
+    #[Assert\Length(min: 3, max: 2500)]
     private ?string $description = null;
 
     /**
      * @var string|null $city
      */
+    #[Assert\NotBlank]
+    #[Assert\Type("string")]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $city = null;
 
     /**
      * @var int|null $salaryMin
      */
+    #[Assert\Positive]
+    #[Assert\Type("integer")]
     private ?int $salaryMin = null;
 
     /**
      * @var int|null $salaryMax
      */
+    #[Assert\Positive]
+    #[Assert\Type("integer")]
     private ?int $salaryMax = null;
 
 
