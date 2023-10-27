@@ -64,10 +64,12 @@ class JobOfferController extends AbstractController
         return new JsonResponse('Error', 500);
     }
 
-//    public function delete(int $id)
-//    {
-//        $jobOffer = $this->jobOfferRepository->read($id);
-//        $this->jobOfferRepository->delete($jobOffer);
-//
-//    }
+    public function delete(int $id)
+    {
+        $jobOffer = $this->jobOfferRepository->read($id);
+        if ($this->jobOfferRepository->delete($jobOffer)) {
+            return new JsonResponse('Deleted', 200);
+        }
+        return new JsonResponse('Error', 500);
+    }
 }
