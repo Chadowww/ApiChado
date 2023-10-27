@@ -56,11 +56,37 @@ class JobOfferRepository
         $this->connection->commit();
         return $jobOffer;
     }
-//
-//    public function update(int $id): void
-//    {
-//    }
-//
+
+    public function update(JobOffer $jobOffer): bool
+    {
+        try {
+            $this->connection->beginTransaction();
+            $query = '
+            UPDATE APICHADO.joboffer 
+            SET 
+                `title` = :title,
+                `description` = :description,
+                `city` = :city,
+                `salaryMin` = :salaryMin,
+                `salaryMax` = :salaryMax
+            WHERE id = :id
+        ';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':title', $jobOffer->getTitle());
+            $statement->bindValue(':description', $jobOffer->getDescription());
+            $statement->bindValue(':city', $jobOffer->getCity());
+            $statement->bindValue(':salaryMin', $jobOffer->getSalaryMin());
+            $statement->bindValue(':salaryMax', $jobOffer->getSalaryMax());
+            $statement->bindValue(':id', $jobOffer->getId());
+            $statement->execute();
+            $this->connection->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
+
 //    public function delete(JobOffer $jobOffer)
 //    {
 //    }
