@@ -3,3 +3,28 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+jobOfferCreate:
+    path: /job-offer/create
+    controller: App\Controller\JobOfferController::create
+    methods: POST
+
+jobOfferRead:
+    path: /job-offer/{id}/show
+    controller: App\Controller\JobOfferController::read
+    methods: GET
+
+jobOfferUpdate:
+    path: /job-offer/{id}/update
+    controller: App\Controller\JobOfferController::update
+    methods: PUT
+
+jobOfferDelete:
+    path: /job-offer/{id}/delete
+    controller: App\Controller\JobOfferController::delete
+    methods: DELETE
+
+jobOfferList:
+    path: /job-offer/list
+    controller: App\Controller\JobOfferController::list
+    methods: GET
