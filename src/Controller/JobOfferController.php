@@ -20,12 +20,6 @@ class JobOfferController extends AbstractController
         $this->serializer = $serializer;
     }
 
-//    public function index()
-//    {
-//        $jobOffers = $this->jobOfferRepository->list();
-//        return $this->json($jobOffers);
-//    }
-
     public function create(Request $request): JsonResponse
     {
         $jobOffer = new JobOffer();
@@ -71,5 +65,16 @@ class JobOfferController extends AbstractController
             return new JsonResponse('Deleted', 200);
         }
         return new JsonResponse('Error', 500);
+    }
+
+        public function list()
+    {
+        $jobOffers = $this->jobOfferRepository->list();
+        if ($jobOffers) {
+            $jobOffersJson = $this->serializer->serialize($jobOffers, 'json');
+            return new JsonResponse($jobOffersJson, 200, [], true);
+        }
+        return new JsonResponse('Error', 500);
+
     }
 }
