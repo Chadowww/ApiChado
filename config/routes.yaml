@@ -15,11 +15,11 @@ jobOfferRead:
     controller: App\Controller\JobOfferController::read
     methods: GET
 
-#jobOfferUpdate:
-#    path: /job-offer/{id}/update
-#    controller: App\Controller\JobOfferController::update
-#    methods: PUT
-#
+jobOfferUpdate:
+    path: /job-offer/{id}/update
+    controller: App\Controller\JobOfferController::update
+    methods: PUT
+
 #jobOfferDelete:
 #    path: /job-offer/{id}/delete
 #    controller: App\Controller\JobOfferController::delete
