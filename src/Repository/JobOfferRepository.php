@@ -103,7 +103,19 @@ class JobOfferRepository
         }
     }
 
-//    public function list(): array
-//    {
-//    }
+    public function list(): array
+    {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'SELECT * FROM APICHADO.joboffer';
+            $statement = $this->connection->prepare($query);
+            $statement->execute();
+            $jobOffers = $statement->fetchAll(\PDO::FETCH_CLASS, JobOffer::class);
+            $this->connection->commit();
+            return $jobOffers;
+        } catch (\PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
 }
