@@ -28,3 +28,28 @@ jobOfferList:
     path: /job-offer/list
     controller: App\Controller\JobOfferController::list
     methods: GET
+
+ContractCreate:
+    path: /contract/create
+    controller: App\Controller\ContractController::create
+    methods: POST
+
+ContractRead:
+    path: /contract/{id}/show
+    controller: App\Controller\ContractController::read
+    methods: GET
+
+ContractUpdate:
+    path: /contract/{id}/update
+    controller: App\Controller\ContractController::update
+    methods: PUT
+
+ContractDelete:
+    path: /contract/{id}/delete
+    controller: App\Controller\ContractController::delete
+    methods: DELETE
+
+ContractList:
+    path: /contract/list
+    controller: App\Controller\ContractController::list
+    methods: GET
