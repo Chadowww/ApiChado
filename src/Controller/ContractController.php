@@ -38,8 +38,14 @@ class ContractController extends AbstractController
         return new JsonResponse($this->errorService->getErrorsContract($contract), 400);
     }
 
-    public function read(): JsonResponse
+    public function read(int $id): JsonResponse
     {
+        $contract = $this->contractRepository->read($id);
+        if(!$contract) {
+            return new JsonResponse('id not found', 404);
+        }
+        $contractJson = $this->serializer->serialize($contract, 'json');
+        return new JsonResponse($contractJson, 200, [], true);
     }
 
     public function update(): JsonResponse
