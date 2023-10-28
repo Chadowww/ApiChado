@@ -73,5 +73,7 @@ class ContractRepository
 
     public function list(): array
     {
+        $query = 'SELECT * FROM contract';
+        return $this->connection->query($query)->fetchAll(\PDO::FETCH_CLASS, Contract::class);
     }
 }
