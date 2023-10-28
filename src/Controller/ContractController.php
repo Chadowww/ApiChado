@@ -74,5 +74,8 @@ class ContractController extends AbstractController
 
     public function list(): JsonResponse
     {
+        $contract = $this->contractRepository->list();
+        $contractJson = $this->serializer->serialize($contract, 'json');
+        return new JsonResponse($contractJson, 200, [], true);
     }
 }
