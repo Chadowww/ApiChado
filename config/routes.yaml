@@ -10,21 +10,46 @@ jobOfferCreate:
     methods: POST
 
 jobOfferRead:
-    path: /job-offer/{id}/show
+    path: /job-offer/read/{id}
     controller: App\Controller\JobOfferController::read
     methods: GET
 
 jobOfferUpdate:
-    path: /job-offer/{id}/update
+    path: /job-offer/update/{id}
     controller: App\Controller\JobOfferController::update
     methods: PUT
 
 jobOfferDelete:
-    path: /job-offer/{id}/delete
+    path: /job-offer/delete/{id}
     controller: App\Controller\JobOfferController::delete
     methods: DELETE
 
 jobOfferList:
     path: /job-offer/list
     controller: App\Controller\JobOfferController::list
+    methods: GET
+
+ContractCreate:
+    path: /contract/create
+    controller: App\Controller\ContractController::create
+    methods: POST
+
+ContractRead:
+    path: /contract/read/{id}
+    controller: App\Controller\ContractController::read
+    methods: GET
+
+ContractUpdate:
+    path: /contract/update/{id}
+    controller: App\Controller\ContractController::update
+    methods: PUT
+
+ContractDelete:
+    path: /contract/delete/{id}
+    controller: App\Controller\ContractController::delete
+    methods: DELETE
+
+ContractList:
+    path: /contract/list
+    controller: App\Controller\ContractController::list
     methods: GET
