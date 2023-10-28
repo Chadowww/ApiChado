@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContractController extends AbstractController
 {
-    public function index(): JsonResponse
+    public function list(): JsonResponse
     {
     }
 
