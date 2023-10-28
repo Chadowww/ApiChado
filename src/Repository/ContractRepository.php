@@ -7,7 +7,7 @@ use App\Services\ConnectionDbService;
 
 class ContractRepository
 {
-    private ConnectionDbService $connectionDbService;
+    private \PDO $connection;
 
     public function __construct(ConnectionDbService $connectionDbService)
     {
@@ -24,13 +24,18 @@ class ContractRepository
             $this->connection->commit();
             return true;
         } catch (\Exception $e) {
-            $this->connectionDbService->getconnection()->rollBack();
+            $this->connection->rollBack();
             return false;
         }
     }
 
-    public function read(): array
+    public function read(int $id): array
     {
+        $query = 'SELECT * FROM contract WHERE id = :id';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        return $statement->fetch();
     }
 
     public function update():bool
