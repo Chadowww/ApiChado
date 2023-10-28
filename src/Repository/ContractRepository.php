@@ -29,17 +29,30 @@ class ContractRepository
         }
     }
 
-    public function read(int $id): array
+    public function read(int $id): Contract
     {
         $query = 'SELECT * FROM contract WHERE id = :id';
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':id', $id);
         $statement->execute();
-        return $statement->fetch();
+        return $statement->fetchObject(Contract::class);
     }
 
-    public function update():bool
+    public function update(Contract $contract):bool
     {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'UPDATE contract SET type = :type WHERE id = :id';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':type', $contract->getType());
+            $statement->bindValue(':id', $contract->getId());
+            $statement->execute();
+            $this->connection->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            return false;
+        }
     }
 
     public function delete():bool
