@@ -48,8 +48,18 @@ class ContractController extends AbstractController
         return new JsonResponse($contractJson, 200, [], true);
     }
 
-    public function update(): JsonResponse
+    public function update(int $id, Request $request): JsonResponse
     {
+        $contract = $this->contractRepository->read($id);
+        if(!$contract) {
+            return new JsonResponse('id not found', 404);
+        }
+        $contract->setType($request->get('type'));
+        if ($this->errorService->getErrorsContract($contract) === []) {
+            $this->contractRepository->update($contract);
+            return new JsonResponse('Updated', 200);
+        }
+        return new JsonResponse($this->errorService->getErrorsContract($contract), 400);
     }
 
     public function delete(): JsonResponse
