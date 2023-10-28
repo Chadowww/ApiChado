@@ -37,12 +37,12 @@ class JobOfferController extends AbstractController
         $jobOffer->setSalaryMin($request->get('salaryMin'));
         $jobOffer->setSalaryMax($request->get('salaryMax'));
 
-        if ($this->errorService->getErrors($jobOffer) === []) {
+        if ($this->errorService->getErrorsJobOffer($jobOffer) === []) {
             $this->jobOfferRepository->create($jobOffer);
             return new JsonResponse('Created', 201);
         }
 
-        return new JsonResponse($this->errorService->getErrors($jobOffer), 400);
+        return new JsonResponse($this->errorService->getErrorsJobOffer($jobOffer), 400);
     }
 
     public function read(int $id): JsonResponse
@@ -66,12 +66,12 @@ class JobOfferController extends AbstractController
         $jobOffer->setSalaryMin($request->get('salaryMin'));
         $jobOffer->setSalaryMax($request->get('salaryMax'));
 
-        if ($this->errorService->getErrors($jobOffer) === []) {
+        if ($this->errorService->getErrorsJobOffer($jobOffer) === []) {
             $this->jobOfferRepository->create($jobOffer);
             return new JsonResponse('Updated', 201);
         }
 
-        return new JsonResponse($this->errorService->getErrors($jobOffer), 400);
+        return new JsonResponse($this->errorService->getErrorsJobOffer($jobOffer), 400);
     }
 
     public function delete(int $id): JsonResponse

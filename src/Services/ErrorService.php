@@ -14,7 +14,7 @@ class ErrorService
         $this->validator = $validator;
     }
 
-    public function getErrors(JobOffer $jobOffer): array
+    public function getErrorsJobOffer(JobOffer $jobOffer): array
     {
        $jobOfferErrors = $this->validator->validate($jobOffer);
 
