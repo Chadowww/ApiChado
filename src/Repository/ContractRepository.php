@@ -55,8 +55,20 @@ class ContractRepository
         }
     }
 
-    public function delete():bool
+    public function delete(Contract $contract):bool
     {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'DELETE FROM contract WHERE id = :id';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':id', $contract->getId());
+            $statement->execute();
+            $this->connection->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            return false;
+        }
     }
 
     public function list(): array
