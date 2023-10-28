@@ -10,17 +10,17 @@ jobOfferCreate:
     methods: POST
 
 jobOfferRead:
-    path: /job-offer/{id}/show
+    path: /job-offer/read/{id}
     controller: App\Controller\JobOfferController::read
     methods: GET
 
 jobOfferUpdate:
-    path: /job-offer/{id}/update
+    path: /job-offer/update/{id}
     controller: App\Controller\JobOfferController::update
     methods: PUT
 
 jobOfferDelete:
-    path: /job-offer/{id}/delete
+    path: /job-offer/delete/{id}
     controller: App\Controller\JobOfferController::delete
     methods: DELETE
 
@@ -35,17 +35,17 @@ ContractCreate:
     methods: POST
 
 ContractRead:
-    path: /contract/{id}/show
+    path: /contract/read/{id}
     controller: App\Controller\ContractController::read
     methods: GET
 
 ContractUpdate:
-    path: /contract/{id}/update
+    path: /contract/update/{id}
     controller: App\Controller\ContractController::update
     methods: PUT
 
 ContractDelete:
-    path: /contract/{id}/delete
+    path: /contract/delete/{id}
     controller: App\Controller\ContractController::delete
     methods: DELETE
 
