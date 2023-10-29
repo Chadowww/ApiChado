@@ -9,7 +9,7 @@ class JobOfferRepository
 {
     public function __construct(ConnectionDbService $connection)
     {
-        $this->connection = $connection->getConnection();
+        $this->connection = $connection->connection();
     }
     public function create(JobOffer $jobOffer): bool
     {

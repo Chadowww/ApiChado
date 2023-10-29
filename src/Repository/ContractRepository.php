@@ -11,7 +11,7 @@ class ContractRepository
 
     public function __construct(ConnectionDbService $connectionDbService)
     {
-        $this->connection = $connectionDbService->getconnection();
+        $this->connection = $connectionDbService->connection();
     }
     public function create(Contract $contract): bool
     {
