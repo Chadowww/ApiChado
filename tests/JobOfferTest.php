@@ -24,7 +24,13 @@ class JobOfferTest extends TestCase
      */
     public function setUpDatabase(): void
     {
-        $this->dbConnection->connection()->exec('
+        $this->dbConnection->connection(
+            $_ENV['APP_DB_HOST'],
+            $_ENV['APP_DB_NAME_TEST'],
+            $_ENV['APP_DB_USER'],
+            $_ENV['APP_DB_PASSWORD'],
+        )
+            ->exec('
             CREATE TABLE IF NOT EXISTS `job_offer` (
                 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
                 `title` VARCHAR(255) NOT NULL,
@@ -42,7 +48,12 @@ class JobOfferTest extends TestCase
      */
     public function tearDownDatabase()
     {
-        $this->dbConnection->connection()->exec('
+        $this->dbConnection->connection(
+            $_ENV['APP_DB_HOST'],
+            $_ENV['APP_DB_NAME_TEST'],
+            $_ENV['APP_DB_USER'],
+            $_ENV['APP_DB_PASSWORD'],
+        )->exec('
             DROP TABLE IF EXISTS `job_offer`;
         ');
     }
