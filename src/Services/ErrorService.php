@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Contract;
 use App\Entity\JobOffer;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ErrorService
@@ -15,6 +16,29 @@ class ErrorService
         $this->validator = $validator;
     }
 
+    public function getErrorsJobOfferRequest(Request $request): array
+    {
+        $errors = [];
+        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+
+        foreach ($data as $key => $value) {
+            if (($key === 'title' || $key === 'description' || $key === 'city') && empty($value)) {
+                $errors['errors'][] = [
+                    'field' => $key,
+                    'message' => 'This value should not be blank.'
+                ];
+            }
+
+            if (($key === 'salaryMin' || $key === 'salaryMax') && !is_numeric($value)) {
+                $errors['errors'][] = [
+                    'field' => $key,
+                    'message' => 'This value should be numeric.'
+                ];
+            }
+        }
+
+        return $errors;
+    }
     public function getErrorsJobOffer(JobOffer $jobOffer): array
     {
        $jobOfferErrors = $this->validator->validate($jobOffer);
