@@ -2,65 +2,36 @@
 
 namespace App\Tests;
 
-use App\Services\ConnectionDbService;
-use App\Services\ConnectionDbTestService;
+use App\Controller\JobOfferController;
+use App\Repository\JobOfferRepository;
+use App\Services\ErrorService;
+use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\Exception\{
+    ClientExceptionInterface,
+    RedirectionExceptionInterface,
+    ServerExceptionInterface,
+    TransportExceptionInterface
+};
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JobOfferTest extends TestCase
 {
-    private ConnectionDbService $dbConnection;
-    private \Symfony\Contracts\HttpClient\HttpClientInterface $client;
+    private HttpClientInterface $client;
+    private SerializerInterface $serializer;
+    private ErrorService $errorService;
 
     public function __construct()
     {
         parent::__construct();
-        $this->dbConnection = new ConnectionDbService();
         $this->client = HttpClient::create();
-    }
-    /**
-     * @before
-     */
-    public function setUpDatabase(): void
-    {
-        $this->dbConnection->connection(
-            $_ENV['APP_DB_HOST'],
-            $_ENV['APP_DB_NAME_TEST'],
-            $_ENV['APP_DB_USER'],
-            $_ENV['APP_DB_PASSWORD'],
-        )
-            ->exec('
-            CREATE TABLE IF NOT EXISTS `job_offer` (
-                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                `title` VARCHAR(255) NOT NULL,
-                `description` TEXT NOT NULL,
-                `city` VARCHAR(255) NOT NULL,
-                `salary_min` INT NOT NULL,
-                `salary_max` INT NOT NULL,
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        ');
-    }
+        $this->serializer = $this->createMock(SerializerInterface::class);
+        $this->errorService = new ErrorService($this->createMock(ValidatorInterface::class));
 
-    /**
-     * @after
-     */
-    public function tearDownDatabase()
-    {
-        $this->dbConnection->connection(
-            $_ENV['APP_DB_HOST'],
-            $_ENV['APP_DB_NAME_TEST'],
-            $_ENV['APP_DB_USER'],
-            $_ENV['APP_DB_PASSWORD'],
-        )->exec('
-            DROP TABLE IF EXISTS `job_offer`;
-        ');
-    }
-
-    public function setUp(): void
-    {
-        parent::setUp();
     }
 
     /**
@@ -84,10 +55,78 @@ class JobOfferTest extends TestCase
     /**
      * @throws TransportExceptionInterface
      */
+    public function testJobOfferCreateError400(): void
+    {
+        $response = $this->client->request('POST', 'https://127.0.0.1:8000/job-offer/create', [
+            'body' => [
+                'title' => 'test21',
+                'description' => 'test',
+                'city' => 'test',
+                'salaryMin' => 'test',
+                'salaryMax' => 40000,
+            ],
+        ]);
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testJobOfferCreateError500(): void
+    {
+        $jobOfferRepository = $this->createMock(JobOfferRepository::class);
+
+        $jobOfferRepository->method('create')
+            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+
+        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+
+        $request = new Request();
+        $request->query->add([
+            'title' => 'test21',
+            'description' => 'test',
+            'city' => 'test',
+            'salaryMin' => 4000,
+            'salaryMax' => 40000,
+        ]);
+
+        $controller->create($request);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function testJobOfferRead(): void
     {
-        $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/read/11');
+        $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/read/7');
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testJobOfferReadError404(): void
+    {
+        $falseId = 238;
+        $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/read/' . $falseId);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testJobOfferReadError500(): void
+    {
+        $jobOfferRepository = $this->createMock(JobOfferRepository::class);
+
+        $jobOfferRepository->method('read')
+            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+
+        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+
+        $controller->read(1);
     }
 
     /**
@@ -95,8 +134,43 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferUpdate(): void
     {
-        $response = $this->client->request('PUT', 'https://127.0.0.1:8000/job-offer/update/11?title=NouveauTest&description=Nouvelle Description&city=Nouvelle ville Libourne&salaryMin=40000&salaryMax=45000');
+        $response = $this->client->request('PUT', 'https://127.0.0.1:8000/job-offer/update/9?title=NouveauTest&description=Nouvelle Description&city=NouvellevilleLibourne&salaryMin=40000&salaryMax=45000');
         $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testJobOfferUpdateError400(): void
+    {
+        $response = $this->client->request('PUT', 'https://127.0.0.1:8000/job-offer/update/11?title=NouveauTest&description=Nouvelle Description&city=Nouvelle ville Libourne&salaryMin=test&salaryMax=45000');
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testJobOfferUpdateError500(): void
+    {
+        $jobOfferRepository = $this->createMock(JobOfferRepository::class);
+
+        $jobOfferRepository->method('update')
+            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+
+        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+
+        $request = new Request();
+        $request->query->add([
+            'title' => 'test21',
+            'description' => 'test',
+            'city' => 'test',
+            'salaryMin' => 40000,
+            'salaryMax' => 45000,
+        ]);
+
+        $controller->update(5, $request);
+
     }
 
     /**
@@ -104,13 +178,80 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferDelete(): void
     {
-        $response = $this->client->request('DELETE', 'https://127.0.0.1:8000/job-offer/delete/11');
+        $response = $this->client->request('DELETE', 'https://127.0.0.1:8000/job-offer/delete/8');
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testJobOfferList()
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testJobOfferDeleteError404(): void
+    {
+        $falseId = 238;
+        $response = $this->client->request('DELETE', 'https://127.0.0.1:8000/job-offer/delete/' . $falseId);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testJobOfferDeleteError500(): void
+    {
+        $jobOfferRepository = $this->createMock(JobOfferRepository::class);
+
+        $jobOfferRepository->method('delete')
+            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+
+        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+
+        $controller->delete(1);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws \JsonException
+     */
+    public function testJobOfferList(): void
     {
         $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/list');
+
         $this->assertEquals(200, $response->getStatusCode());
+
+        $content = $response->getContent();
+        $this->assertJson($content);
+
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($data);
+
+        foreach ($data as $offer) {
+            $this->assertArrayHasKey('id', $offer);
+            $this->assertArrayHasKey('title', $offer);
+            $this->assertArrayHasKey('description', $offer);
+            $this->assertArrayHasKey('city', $offer);
+            $this->assertArrayHasKey('salaryMin', $offer);
+            $this->assertArrayHasKey('salaryMax', $offer);
+        }
     }
+
+    public function testJobOfferListError500(): void
+    {
+        $jobOfferRepository = $this->createMock(JobOfferRepository::class);
+
+        $jobOfferRepository->method('list')
+            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+
+        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+
+        $controller->list();
+    }
+
+
 }
