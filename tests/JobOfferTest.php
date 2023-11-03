@@ -5,9 +5,11 @@ namespace App\Tests;
 use App\Controller\JobOfferController;
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
+use HttpException;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -74,13 +76,9 @@ class JobOfferTest extends TestCase
         $jobOfferRepository = $this->createMock(JobOfferRepository::class);
 
         $jobOfferRepository->method('create')
-            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+            ->willThrowException(new PDOException('Erreur de connexion a la base de donnees', 500));
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
-
-        $this->expectException(PDOException::class);
-        $this->expectExceptionCode(500);
-        $this->expectExceptionMessage('Erreur de connexion à la base de données');
 
         $request = new Request();
         $request->query->add([
@@ -91,7 +89,11 @@ class JobOfferTest extends TestCase
             'salaryMax' => 40000,
         ]);
 
-        $controller->create($request);
+        $response = $controller->create($request);
+
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $this->assertEquals('"Erreur de connexion a la base de donnees"', $response->getContent());
     }
 
     /**
@@ -110,6 +112,7 @@ class JobOfferTest extends TestCase
     {
         $falseId = 238;
         $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/read/' . $falseId);
+
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -122,11 +125,10 @@ class JobOfferTest extends TestCase
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
-        $this->expectException(PDOException::class);
-        $this->expectExceptionCode(500);
-        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+        $response = $controller->read(1);
 
-        $controller->read(1);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertJson($response->getContent());
     }
 
     /**
@@ -156,10 +158,6 @@ class JobOfferTest extends TestCase
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
-        $this->expectException(PDOException::class);
-        $this->expectExceptionCode(500);
-        $this->expectExceptionMessage('Erreur de connexion à la base de données');
-
         $request = new Request();
         $request->query->add([
             'title' => 'test21',
@@ -169,8 +167,10 @@ class JobOfferTest extends TestCase
             'salaryMax' => 45000,
         ]);
 
-        $controller->update(5, $request);
+        $response = $controller->update(3, $request);
 
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertJson($response->getContent());
     }
 
     /**
@@ -246,11 +246,9 @@ class JobOfferTest extends TestCase
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
-        $this->expectException(PDOException::class);
-        $this->expectExceptionCode(500);
-        $this->expectExceptionMessage('Erreur de connexion à la base de données');
+        $response = $controller->list();
 
-        $controller->list();
+        $this->assertEquals(500, $response->getStatusCode());
     }
 
 
