@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class JobOfferController extends AbstractController
 {
@@ -33,7 +32,6 @@ class JobOfferController extends AbstractController
         if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
             return new JsonResponse($this->errorService->getErrorsJobOfferRequest($request), 400);
         }
-
         $jobOffer = new JobOffer();
         $jobOffer->setTitle($request->get('title'));
         $jobOffer->setDescription($request->get('description'));
@@ -62,7 +60,7 @@ class JobOfferController extends AbstractController
         }
 
         if(!$jobOffer) {
-            return new JsonResponse('id not found', 404);
+            return new JsonResponse('id ' . $id . ' not found', 404);
         }
 
         $jobOfferJson = $this->serializer->serialize($jobOffer, 'json');
@@ -75,14 +73,15 @@ class JobOfferController extends AbstractController
         if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
             return new JsonResponse($this->errorService->getErrorsJobOfferRequest($request), 400);
         }
-
         $jobOffer = $this->jobOfferRepository->read($id);
 
-        $jobOffer->setTitle($request->get('title'));
-        $jobOffer->setDescription($request->get('description'));
-        $jobOffer->setCity($request->get('city'));
-        $jobOffer->setSalaryMin($request->get('salaryMin'));
-        $jobOffer->setSalaryMax($request->get('salaryMax'));
+       if($jobOffer){
+           $jobOffer->setTitle($request->get('title'));
+           $jobOffer->setDescription($request->get('description'));
+           $jobOffer->setCity($request->get('city'));
+           $jobOffer->setSalaryMin($request->get('salaryMin'));
+           $jobOffer->setSalaryMax($request->get('salaryMax'));
+       }
 
         if ($this->errorService->getErrorsJobOffer($jobOffer) === []) {
             try {
