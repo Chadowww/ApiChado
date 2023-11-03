@@ -45,7 +45,7 @@ class JobOfferRepository
 
     }
 
-    public function read(int $id): JobOffer
+    public function read(int $id): JobOffer | bool
     {
         $this->connection->beginTransaction();
         $query = 'SELECT * FROM APICHADO.joboffer WHERE id = :id';
