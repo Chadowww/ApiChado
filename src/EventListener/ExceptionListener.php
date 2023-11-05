@@ -18,16 +18,16 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         $exception = $event->getThrowable();
+        $message = json_decode($exception->getMessage(), false, 512, JSON_THROW_ON_ERROR);
 
-        $response = match (get_class($exception)) {
-            InvalidRequestException::class, DatabaseException::class, ResourceNotFoundException::class => new JsonResponse([
-                'error' => json_decode($exception->getMessage(), false, 512, JSON_THROW_ON_ERROR)
-            ], $exception->getCode()),
-            default => new JsonResponse([
-                'error' => 'Something went wrong'
-            ], 500),
-        };
-        $event->setResponse($response);
-
+        switch (true) {
+            case $exception instanceof InvalidRequestException:
+            case $exception instanceof ResourceNotFoundException:
+            case $exception instanceof DatabaseException:
+                $event->setResponse(new JsonResponse($message, $exception->getCode()));
+                break;
+            default:
+                $event->setResponse(new JsonResponse('Internal server error', 500));
+        }
     }
 }
