@@ -66,83 +66,87 @@ class JobOfferController extends AbstractController
         try {
             $jobOffer = $this->jobOfferRepository->read($id);
             if (!$jobOffer) {
-                throw new resourceNotFoundException('the job offer with id ' . $id . ' was not found', 404);
+                throw new resourceNotFoundException(json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
             }
         } catch (PDOException $e) {
-            throw new databaseException($e->getMessage(), $e->getCode());
+            throw new databaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
         }
 
         $jobOfferJson = $this->serializer->serialize($jobOffer, 'json');
         return new JsonResponse($jobOfferJson, 200, [], true);
     }
 
-
-
-
-
-
-
-
-    public function update(int $id, Request$request): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     * @throws ResourceNotFoundException
+     */
+    public function update(int $id, Request $request): JsonResponse
     {
-
         if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
-            return new JsonResponse($this->errorService->getErrorsJobOfferRequest($request), 400);
+            throw new InvalidRequestException(json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
+                400);
         }
+
         $jobOffer = $this->jobOfferRepository->read($id);
 
-       if($jobOffer){
-           $jobOffer->setTitle($request->get('title'));
-           $jobOffer->setDescription($request->get('description'));
-           $jobOffer->setCity($request->get('city'));
-           $jobOffer->setSalaryMin($request->get('salaryMin'));
-           $jobOffer->setSalaryMax($request->get('salaryMax'));
-       }
-
-        if ($this->errorService->getErrorsJobOffer($jobOffer) === []) {
-            try {
-                $this->jobOfferRepository->update($jobOffer);
-                return new JsonResponse('Updated', 201);
-            } catch (PDOException $e) {
-                return new JsonResponse($e->getMessage(), 500);
-            }
+        if ($jobOffer === false) {
+            throw new ResourceNotFoundException(json_encode('The job offer with id ' . $id . ' was not found.', JSON_THROW_ON_ERROR), 404);
         }
 
-        return new JsonResponse($this->errorService->getErrorsJobOffer($jobOffer), 400);
+        try {
+            $jobOffer->setTitle($request->get('title'));
+            $jobOffer->setDescription($request->get('description'));
+            $jobOffer->setCity($request->get('city'));
+            $jobOffer->setSalaryMin($request->get('salaryMin'));
+            $jobOffer->setSalaryMax($request->get('salaryMax'));
+            $this->jobOfferRepository->update($jobOffer);
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(), $e->getCode());
+        }
+
+        return new JsonResponse('Updated', 200);
     }
 
-
-
-
-
-
-
-
+    /**
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function delete(int $id): JsonResponse
     {
         $jobOffer = $this->jobOfferRepository->read($id);
 
-        if (!$jobOffer){
-            return new JsonResponse('id not found', 404);
+        if ($jobOffer === false){
+            throw new resourceNotFoundException(json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
         }
-        if ($this->jobOfferRepository->delete($jobOffer)) {
-            return new JsonResponse('Deleted', 200);
+
+        try {
+            $this->jobOfferRepository->delete($jobOffer);
+        } catch (PDOException $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
         }
-        return new JsonResponse('Error', 500);
+
+        return new JsonResponse('Job offer ' . $id . ' was deleted.');
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function list(): JsonResponse
     {
         try {
             $jobOffers = $this->jobOfferRepository->list();
         } catch (PDOException $e) {
-            return new JsonResponse($e->getMessage(), 500);
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
 
-        if ($jobOffers) {
-            $jobOffersJson = $this->serializer->serialize($jobOffers, 'json');
-            return new JsonResponse($jobOffersJson, 200, [], true);
-        }
-        return new JsonResponse('No job offers found', 404);
+       if($jobOffers === false){
+           throw new ResourceNotFoundException(json_encode('no job offer found', JSON_THROW_ON_ERROR), 404);
+       }
+
+       return new JsonResponse($jobOffers, 200);
     }
 }
