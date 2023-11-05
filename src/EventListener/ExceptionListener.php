@@ -15,10 +15,10 @@ class ExceptionListener
      * @throws \JsonException
      */
     #[AsEventListener]
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        $message = json_decode($exception->getMessage(), false, 512, JSON_THROW_ON_ERROR);
+        $message = json_decode($exception->getMessage(), false) ?? $exception->getMessage();
 
         switch (true) {
             case $exception instanceof InvalidRequestException:
@@ -27,7 +27,7 @@ class ExceptionListener
                 $event->setResponse(new JsonResponse($message, $exception->getCode()));
                 break;
             default:
-                $event->setResponse(new JsonResponse('Internal server error', 500));
+                $event->setResponse(new JsonResponse($message, 500));
         }
     }
 }
