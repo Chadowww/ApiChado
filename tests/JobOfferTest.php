@@ -3,22 +3,18 @@
 namespace App\Tests;
 
 use App\Controller\JobOfferController;
+use App\Exceptions\DatabaseException;
+use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
-use HttpException;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\HttpClient\Exception\{
-    ClientExceptionInterface,
-    RedirectionExceptionInterface,
-    ServerExceptionInterface,
-    TransportExceptionInterface
-};
+use Symfony\Contracts\HttpClient\Exception\{ClientExceptionInterface, RedirectionExceptionInterface, ServerExceptionInterface, TransportExceptionInterface};
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JobOfferTest extends TestCase
@@ -71,29 +67,34 @@ class JobOfferTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testJobOfferCreateError500(): void
     {
         $jobOfferRepository = $this->createMock(JobOfferRepository::class);
 
         $jobOfferRepository->method('create')
-            ->willThrowException(new PDOException('Erreur de connexion a la base de donnees', 500));
+            ->willThrowException(new DatabaseException('Erreur de connexion a la base de donnees', 500));
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
         $request = new Request();
-        $request->query->add([
+        $request->setMethod('POST');
+        $request->request->add([
             'title' => 'test21',
             'description' => 'test',
             'city' => 'test',
-            'salaryMin' => 4000,
-            'salaryMax' => 40000,
+            'salaryMin' => 40000,
+            'salaryMax' => 45000,
         ]);
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion a la base de donnees');
 
-        $response = $controller->create($request);
-
-        $this->assertEquals(500, $response->getStatusCode());
-
-        $this->assertEquals('"Erreur de connexion a la base de donnees"', $response->getContent());
+        $controller->create($request);
     }
 
     /**
@@ -112,23 +113,25 @@ class JobOfferTest extends TestCase
     {
         $falseId = 238;
         $response = $this->client->request('GET', 'https://127.0.0.1:8000/job-offer/read/' . $falseId);
-
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     */
     public function testJobOfferReadError500(): void
     {
         $jobOfferRepository = $this->createMock(JobOfferRepository::class);
 
         $jobOfferRepository->method('read')
-            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+            ->willThrowException(new PDOException('Erreur de connexion a la base de donnees', 500));
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
-        $response = $controller->read(1);
-
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertJson($response->getContent());
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Erreur de connexion a la base de donnees');
+        $controller->read(1);
     }
 
     /**
@@ -136,8 +139,21 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferUpdate(): void
     {
-        $response = $this->client->request('PUT', 'https://127.0.0.1:8000/job-offer/update/9?title=NouveauTest&description=Nouvelle Description&city=NouvellevilleLibourne&salaryMin=40000&salaryMax=45000');
-        $this->assertEquals(201, $response->getStatusCode());
+        $mock = $this->createMock(JobOfferRepository::class);
+        $mockController = new JobOfferController($mock, $this->serializer, $this->errorService);
+
+        $request = new Request();
+        $request->setMethod('PUT');
+        $request->query->add([
+            'title' => 'NouveauTest',
+            'description' => 'Nouvelle Description',
+            'city' => 'Nouvelle ville Libourne',
+            'salaryMin' => 40000,
+            'salaryMax' => 45000,
+        ]);
+
+        $response = $mockController->update(2, $request);
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
     /**
@@ -154,11 +170,12 @@ class JobOfferTest extends TestCase
         $jobOfferRepository = $this->createMock(JobOfferRepository::class);
 
         $jobOfferRepository->method('update')
-            ->willThrowException(new PDOException('Erreur de connexion à la base de données', 500));
+            ->willThrowException(new DatabaseException('Erreur de connexion à la base de données', 500));
 
         $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
 
         $request = new Request();
+        $request->setMethod('PUT');
         $request->query->add([
             'title' => 'test21',
             'description' => 'test',
