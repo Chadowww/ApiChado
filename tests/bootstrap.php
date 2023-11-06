@@ -7,7 +7,11 @@ require dirname(__DIR__).'/vendor/autoload.php';
 if (file_exists(dirname(__DIR__).'/config/bootstrap.php')) {
     require dirname(__DIR__).'/config/bootstrap.php';
 } elseif (method_exists(Dotenv::class, 'bootEnv')) {
+<<<<<<< HEAD
     (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+=======
+    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env.test.local');
+>>>>>>> dc03298b384e0ed652a5680a81e343dc227ef3e9
 }
 
 if ($_SERVER['APP_DEBUG']) {
