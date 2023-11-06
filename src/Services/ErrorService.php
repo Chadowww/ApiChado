@@ -27,6 +27,7 @@ class ErrorService
                 'message' => 'Request must contain title, description, city, salaryMin and salaryMax fields',
             ];
         }
+
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'title':
@@ -59,7 +60,7 @@ class ErrorService
                     }
                     break;
                 case 'salaryMin':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMin', (int)$value)->count() > 0) {
+                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMin', $value)->count() > 0 || !is_numeric($value)){
                         $errors[] = [
                             'field' => 'salaryMin',
                             'message' => $this->validator->validatePropertyValue(JobOffer::class, 'salaryMin', $value)->get(0)->getMessage(),
@@ -68,7 +69,8 @@ class ErrorService
                     }
                     break;
                 case 'salaryMax':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMax', (int)$value)->count() > 0) {
+                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMax', $value)->count() > 0 ||
+                        !is_numeric($value)){
                         $errors[] = [
                             'field' => 'salaryMax',
                             'message' => $this->validator->validatePropertyValue(JobOffer::class, 'salaryMax', $value)->get(0)->getMessage(),
@@ -78,7 +80,6 @@ class ErrorService
                     break;
             }
         }
-
         return $errors;
     }
 
