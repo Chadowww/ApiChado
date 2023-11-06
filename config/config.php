@@ -5,9 +5,12 @@ define('DB_USER', getenv('DB_USER') ? getenv('DB_USER') : APP_DB_USER);
 define('DB_PASSWORD', getenv('DB_PASSWORD') ? getenv('DB_PASSWORD') : APP_DB_PASSWORD);
 define('DB_HOST', getenv('DB_HOST') ? getenv('DB_HOST') : APP_DB_HOST);
 define('DB_NAME', getenv('DB_NAME') ? getenv('DB_NAME') : APP_DB_NAME);
+define('DB_NAME_TEST', getenv('DB_NAME_TEST') ? getenv('DB_NAME_TEST') : APP_DB_NAME_TEST);
 
 //View
 define('APP_VIEW_PATH', __DIR__ . '/../src/View/');
 
 // database dump file path for automatic import
 define('DB_DUMP_PATH', __DIR__ . '/../database.sql');
+define('DB_DUMP_PATH_TEST', __DIR__ . '/../databaseTest.sql');
+

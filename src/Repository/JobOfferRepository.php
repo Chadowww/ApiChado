@@ -4,12 +4,15 @@ namespace App\Repository;
 
 use App\Entity\JobOffer;
 use App\Services\ConnectionDbService;
+use PDO;
 
 class JobOfferRepository
 {
+    private PDO $connection;
+
     public function __construct(ConnectionDbService $connection)
     {
-        $this->connection = $connection->getConnection();
+        $this->connection = $connection->connection();
     }
     public function create(JobOffer $jobOffer): bool
     {
@@ -45,7 +48,7 @@ class JobOfferRepository
 
     }
 
-    public function read(int $id): JobOffer
+    public function read(int $id): JobOffer | bool
     {
         $this->connection->beginTransaction();
         $query = 'SELECT * FROM APICHADO.joboffer WHERE id = :id';
@@ -54,6 +57,11 @@ class JobOfferRepository
         $statement->execute();
         $jobOffer = $statement->fetchObject(JobOffer::class);
         $this->connection->commit();
+
+        if($jobOffer === false){
+            return false;
+        }
+
         return $jobOffer;
     }
 
@@ -108,9 +116,8 @@ class JobOfferRepository
         try {
             $this->connection->beginTransaction();
             $query = 'SELECT * FROM APICHADO.joboffer';
-            $statement = $this->connection->prepare($query);
-            $statement->execute();
-            $jobOffers = $statement->fetchAll(\PDO::FETCH_CLASS, JobOffer::class);
+            $statement = $this->connection->query($query);
+            $jobOffers = $statement->fetchAll(PDO::FETCH_CLASS, JobOffer::class);
             $this->connection->commit();
             return $jobOffers;
         } catch (\PDOException $e) {

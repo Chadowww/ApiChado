@@ -53,7 +53,7 @@ class JobOffer
      * @var int|null $salaryMin
      */
     #[Assert\NotBlank(message: "Salary min is required")]
-    #[Assert\Positive]
+    #[Assert\Positive(message: "Salary min must be a positive number")]
     #[Assert\Type("integer", message: "Salary min must be a number")]
     private ?int $salaryMin = null;
 
@@ -61,7 +61,7 @@ class JobOffer
      * @var int|null $salaryMax
      */
     #[Assert\NotBlank(message: "Salary min is required")]
-    #[Assert\Positive]
+    #[Assert\Positive(message: "Salary max must be a positive number")]
     #[Assert\Type("integer", message: "Salary max must be a number")]
     private ?int $salaryMax = null;
 

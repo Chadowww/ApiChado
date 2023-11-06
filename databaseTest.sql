@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS APICHADO;
+DROP DATABASE IF EXISTS APICHADOTEST;
 
-CREATE DATABASE APICHADO;
-USE APICHADO;
+CREATE DATABASE APICHADOTEST;
+USE APICHADOTEST;
 
 CREATE TABLE user
 (
@@ -62,9 +62,9 @@ CREATE TABLE `joboffer`
     `contract_id` INT                            NULL,
     `company_id`  INT                            NULL,
     `category_id` INT                            NULL,
-    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE SET NULL
+    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`id`),
+    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
 
 );
 
@@ -75,7 +75,7 @@ CREATE TABLE `application`
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
     CONSTRAINT `fk_application_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`),
-    CONSTRAINT `fk_application_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_application_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`)
 );
 
 CREATE TABLE `technology`
@@ -92,7 +92,7 @@ CREATE TABLE `favlist`
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
     CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`),
-    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`)
 );
 
 CREATE TABLE `resume`(
