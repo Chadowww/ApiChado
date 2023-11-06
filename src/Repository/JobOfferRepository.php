@@ -116,8 +116,7 @@ class JobOfferRepository
         try {
             $this->connection->beginTransaction();
             $query = 'SELECT * FROM APICHADO.joboffer';
-            $statement = $this->connection->prepare($query);
-            $statement->execute();
+            $statement = $this->connection->query($query);
             $jobOffers = $statement->fetchAll(PDO::FETCH_CLASS, JobOffer::class);
             $this->connection->commit();
             return $jobOffers;
