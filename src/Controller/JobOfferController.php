@@ -8,6 +8,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
+use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,7 +35,7 @@ class JobOfferController extends AbstractController
     /**
      * @throws DatabaseException
      * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function create(Request $request): JsonResponse
     {
@@ -58,8 +59,9 @@ class JobOfferController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
      * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @throws JsonException
      */
     public function read(int $id): JsonResponse
     {
@@ -72,15 +74,14 @@ class JobOfferController extends AbstractController
             throw new databaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
         }
 
-        $jobOfferJson = $this->serializer->serialize($jobOffer, 'json');
-        return new JsonResponse($jobOfferJson, 200, [], true);
+        return new JsonResponse($this->serializer->serialize($jobOffer, 'json'), 200, [], true);
     }
 
     /**
      * @throws DatabaseException
      * @throws InvalidRequestException
-     * @throws \JsonException
      * @throws ResourceNotFoundException
+     * @throws JsonException
      */
     public function update(int $id, Request $request): JsonResponse
     {
@@ -106,13 +107,13 @@ class JobOfferController extends AbstractController
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-        return new JsonResponse('Updated', 200);
+        return new JsonResponse('Updated', 204);
     }
 
     /**
-     * @throws ResourceNotFoundException
      * @throws DatabaseException
-     * @throws \JsonException
+     * @throws ResourceNotFoundException
+     * @throws JsonException
      */
     public function delete(int $id): JsonResponse
     {
@@ -128,12 +129,13 @@ class JobOfferController extends AbstractController
             throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
         }
 
-        return new JsonResponse('Job offer ' . $id . ' was deleted.');
+        return new JsonResponse('Job offer ' . $id . ' was deleted.', 200);
     }
 
     /**
+     * @throws ResourceNotFoundException
      * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function list(): JsonResponse
     {
