@@ -114,7 +114,14 @@ class JobOfferController extends AbstractController
      *     description="Job offer found",
      *     @OA\JsonContent(
      *     type="string",
-     *     example="Job offer found"
+     *     example="{
+     *     ""id"": 1,
+     *     ""title"": ""PHP developer"",
+     *     ""description"": ""PHP developer with 5 years of experience"",
+     *     ""city"": ""Paris"",
+     *     ""salaryMin"": 30000,
+     *     ""salaryMax"": 40000
+     *     }"
      *   )
      * )
      * @OA\Response(
