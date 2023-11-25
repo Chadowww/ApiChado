@@ -311,4 +311,18 @@ class JobOfferTest extends TestCase
 
         $this->assertEquals(500, $response->getStatusCode());
     }
+
+    /**
+     * @throws DatabaseException
+     * @throws JsonException
+     */
+    public function testJobOfferListError404(): void
+    {
+        $this->mockRepository->method('list')->willReturn([]);
+
+        $this->expectException(ResourceNotFoundException::class);
+        $response = $this->mockController->list();
+
+        $this->assertEquals(404, $response->getStatusCode());
+    }
 }

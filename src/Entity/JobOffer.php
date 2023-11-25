@@ -5,9 +5,6 @@ namespace App\Entity;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @SerializedName("jobOffer")
- */
 class JobOffer
 {
     /**

@@ -8,6 +8,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-pdo": "*",
+        "nelmio/api-doc-bundle": "^4.12",
+        "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/dotenv": "6.3.*",
         "symfony/flex": "^2",
@@ -16,9 +18,12 @@
         "symfony/property-access": "6.3.*",
         "symfony/runtime": "6.3.*",
         "symfony/serializer": "6.3.*",
+        "symfony/twig-bundle": "6.3.*",
         "symfony/validator": "6.3.*",
         "symfony/yaml": "6.3.*",
-        "ext-http": "*"
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0",
+        "zircote/swagger-php": "^4.7"
     },
     "config": {
         "allow-plugins": {
@@ -69,9 +74,12 @@
         }
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest"
+        ,
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
+        "symfony/maker-bundle": "^1.51",
         "symfony/phpunit-bridge": "^6.3"
     }
 }

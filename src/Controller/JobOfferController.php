@@ -3,17 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\JobOffer;
-use App\Exceptions\DatabaseException;
-use App\Exceptions\InvalidRequestException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
 use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
+use OpenApi\Annotations as OA;
 
 class JobOfferController extends AbstractController
 {
@@ -36,6 +34,55 @@ class JobOfferController extends AbstractController
      * @throws DatabaseException
      * @throws InvalidRequestException
      * @throws JsonException
+     * @OA\Response(
+     *     response=201,
+     *     description="Job offer created",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Created"
+     *    )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     *   )
+     * )
+     * @OA\RequestBody(
+     *     request="JobOffer",
+     *     description="Job offer to create",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="title",
+     *     type="string",
+     *     example="PHP developer"
+     *    ),
+     *     @OA\Property(
+     *     property="description",
+     *     type="string",
+     *     example="PHP developer with 5 years of experience"
+     *   ),
+     *     @OA\Property(
+     *     property="city",
+     *     type="string",
+     *     example="Paris"
+     *  ),
+     *     @OA\Property(
+     *     property="salaryMin",
+     *     type="integer",
+     *     example="30000"
+     * ),
+     *     @OA\Property(
+     *     property="salaryMax",
+     *     type="integer",
+     *     example="40000"
+     * )
+     * )
+     * )
      */
     public function create(Request $request): JsonResponse
     {
@@ -62,6 +109,32 @@ class JobOfferController extends AbstractController
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @throws JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Job offer found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offer found"
+     *   )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Job offer not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offer not found"
+     *  )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the job offer",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
      */
     public function read(int $id): JsonResponse
     {
@@ -82,6 +155,73 @@ class JobOfferController extends AbstractController
      * @throws InvalidRequestException
      * @throws ResourceNotFoundException
      * @throws JsonException
+     * @OA\Response(
+     *     response=204,
+     *     description="Job offer updated",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Updated"
+     *  )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Job offer not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offer not found"
+     * )
+     * )
+     * @OA\RequestBody(
+     *     request="JobOffer",
+     *     description="Job offer to update",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="title",
+     *     type="string",
+     *     example="PHP developer"
+     * ),
+     *     @OA\Property(
+     *     property="description",
+     *     type="string",
+     *     example="PHP developer with 5 years of experience"
+     * ),
+     *     @OA\Property(
+     *     property="city",
+     *     type="string",
+     *     example="Paris"
+     * ),
+     *     @OA\Property(
+     *     property="salaryMin",
+     *     type="integer",
+     *     example="30000"
+     * ),
+     *     @OA\Property(
+     *     property="salaryMax",
+     *     type="integer",
+     *     example="40000"
+     * )
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the job offer",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
      */
     public function update(int $id, Request $request): JsonResponse
     {
@@ -114,6 +254,32 @@ class JobOfferController extends AbstractController
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @throws JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Job offer deleted",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offer deleted"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Job offer not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offer not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the job offer",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
      */
     public function delete(int $id): JsonResponse
     {
@@ -136,6 +302,22 @@ class JobOfferController extends AbstractController
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @throws JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Job offers found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offers found"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Job offers not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Job offers not found"
+     * )
+     * )
      */
     public function list(): JsonResponse
     {
@@ -144,11 +326,10 @@ class JobOfferController extends AbstractController
         } catch (PDOException $e) {
             throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
-
-       if($jobOffers === false){
+       if( empty($jobOffers)){
            throw new ResourceNotFoundException(json_encode('no job offer found', JSON_THROW_ON_ERROR), 404);
        }
 
-       return new JsonResponse($jobOffers, 200);
+       return new JsonResponse($this->serializer->serialize($jobOffers, 'json'), 200, [], true);
     }
 }
