@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Contract;
 use App\Services\ConnectionDbService;
+use PDOException;
 
 class ContractRepository
 {
@@ -13,36 +14,45 @@ class ContractRepository
     {
         $this->connection = $connectionDbService->connection();
     }
+
     public function create(Contract $contract): bool
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'INSERT INTO contract (type) VALUES (:type)';
+            $query = 'INSERT INTO APICHADO.contract (type) VALUES (:type)';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':type', $contract->getType());
             $statement->execute();
             $this->connection->commit();
             return true;
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             $this->connection->rollBack();
-            return false;
+            throw $e;
         }
     }
 
-    public function read(int $id): Contract
+    public function read(int $id): Contract | bool
     {
-        $query = 'SELECT * FROM contract WHERE id = :id';
+        $this->connection->beginTransaction();
+        $query = 'SELECT * FROM APICHADO.contract WHERE id = :id';
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':id', $id);
         $statement->execute();
-        return $statement->fetchObject(Contract::class);
+        $contract = $statement->fetchObject(Contract::class);
+        $this->connection->commit();
+
+        if ($contract === false) {
+           return false;
+        }
+
+        return $contract;
     }
 
-    public function update(Contract $contract):bool
+    public function update(Contract $contract): bool
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'UPDATE contract SET type = :type WHERE id = :id';
+            $query = 'UPDATE APICHADO.contract SET type = :type WHERE id = :id';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':type', $contract->getType());
             $statement->bindValue(':id', $contract->getId());
