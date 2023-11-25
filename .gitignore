@@ -25,3 +25,6 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###> qodana/php-stubs ###
+qodana.yaml
