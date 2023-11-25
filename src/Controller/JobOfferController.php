@@ -6,6 +6,7 @@ use App\Entity\JobOffer;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
+use JobOfferService;
 use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,16 +19,19 @@ class JobOfferController extends AbstractController
     private JobOfferRepository $jobOfferRepository;
     private SerializerInterface $serializer;
     private ErrorService $errorService;
+    private JobOfferService $jobOfferService;
 
     public function __construct(
         JobOfferRepository $jobOfferRepository,
         SerializerInterface $serializer,
         ErrorService $errorService,
+        JobOfferService $jobOfferService
     )
     {
         $this->jobOfferRepository = $jobOfferRepository;
         $this->serializer = $serializer;
         $this->errorService = $errorService;
+        $this->jobOfferService = $jobOfferService;
     }
 
     /**
@@ -90,12 +94,7 @@ class JobOfferController extends AbstractController
             throw new InvalidRequestException(json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR), 400);
         }
 
-        $jobOffer = new JobOffer();
-        $jobOffer->setTitle($request->get('title'));
-        $jobOffer->setDescription($request->get('description'));
-        $jobOffer->setCity($request->get('city'));
-        $jobOffer->setSalaryMin($request->get('salaryMin'));
-        $jobOffer->setSalaryMax($request->get('salaryMax'));
+        $jobOffer = $this->jobOfferService->buildJobOffer($request);
 
         try {
             $this->jobOfferRepository->create($jobOffer);
@@ -244,11 +243,7 @@ class JobOfferController extends AbstractController
         }
 
         try {
-            $jobOffer->setTitle($request->get('title'));
-            $jobOffer->setDescription($request->get('description'));
-            $jobOffer->setCity($request->get('city'));
-            $jobOffer->setSalaryMin($request->get('salaryMin'));
-            $jobOffer->setSalaryMax($request->get('salaryMax'));
+            $jobOffer = $this->jobOfferService->updateJobOffer($jobOffer, $request);
             $this->jobOfferRepository->update($jobOffer);
         } catch (PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());
