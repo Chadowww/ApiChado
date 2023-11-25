@@ -83,22 +83,25 @@ class ErrorService
         return $errors;
     }
 
-    Public function getErrorsContract(Contract $contract): array
+    Public function getErrorsContractRequest(Request $request): array
     {
-        $contractErrors = $this->validator->validate($contract);
-
         $errors = [];
-        foreach ($contractErrors as $contractError) {
-            if (!isset($errors[$contractError->getPropertyPath()])){
-                $errors['errors'][] = [
-                    'field' => $contractError->getPropertyPath(),
-                    'message' => $contractError->getMessage()
+        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        if (!isset($data['type'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain type field',
+            ];
+        }
+        foreach ($data as $key => $value) {
+            if (($key === 'type') && $this->validator->validatePropertyValue(Contract::class, 'type', $value)->count() > 0) {
+                $errors[] = [
+                    'field' => 'type',
+                    'message' => $this->validator->validatePropertyValue(Contract::class, 'type', $value)->get(0)->getMessage(),
+                    'passedValue' => $value
                 ];
             }
         }
-        if ($errors) {
-            return $errors;
-        }
-        return [];
+        return $errors;
     }
 }
