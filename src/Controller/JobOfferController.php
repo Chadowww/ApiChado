@@ -3,17 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\JobOffer;
-use App\Exceptions\DatabaseException;
-use App\Exceptions\InvalidRequestException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
 use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Annotations as OA;
 
@@ -38,7 +34,6 @@ class JobOfferController extends AbstractController
      * @throws DatabaseException
      * @throws InvalidRequestException
      * @throws JsonException
-     * @Route("/api/doc/job-offer/create", name="job_offer_create", methods={"POST"})
      * @OA\Response(
      *     response=201,
      *     description="Job offer created",
@@ -114,7 +109,6 @@ class JobOfferController extends AbstractController
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @throws JsonException
-     * @Route("/api/doc/job-offer/read/{id}", name="job_offer_read", methods={"GET"})
      * @OA\Response(
      *     response=200,
      *     description="Job offer found",
@@ -161,7 +155,6 @@ class JobOfferController extends AbstractController
      * @throws InvalidRequestException
      * @throws ResourceNotFoundException
      * @throws JsonException
-     * @Route("/api/doc/job-offer/update/{id}", name="job_offer_update", methods={"PUT"})
      * @OA\Response(
      *     response=204,
      *     description="Job offer updated",
@@ -261,7 +254,6 @@ class JobOfferController extends AbstractController
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @throws JsonException
-     * @Route("/api/doc/job-offer/delete/{id}", name="job_offer_delete", methods={"DELETE"})
      * @OA\Response(
      *     response=200,
      *     description="Job offer deleted",
@@ -310,7 +302,6 @@ class JobOfferController extends AbstractController
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @throws JsonException
-     * @Route("/api/doc/job-offer/list", name="job_offer_list", methods={"GET"})
      * @OA\Response(
      *     response=200,
      *     description="Job offers found",
