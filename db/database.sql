@@ -8,7 +8,10 @@ CREATE TABLE user
     `id`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `email`    VARCHAR(255)                   NULL,
     `password` VARCHAR(255)                   NULL,
-    `role`     VARCHAR(255)                   NULL
+    `role`     INT                            NULL,
+    `is_verified` BOOLEAN DEFAULT FALSE       NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE candidate
@@ -20,8 +23,9 @@ CREATE TABLE candidate
     `address`     VARCHAR(255)                   NULL,
     `city`        VARCHAR(50)                    NULL,
     `country`     VARCHAR(50)                    NULL,
-    `birthdate`   DATE                           NULL,
-    `description` TEXT                           NULL,
+    `avatar`      VARCHAR(255)                   NULL,
+    `slug`        VARCHAR(255)                   NULL,
+    `coverLetter` TEXT                           NULL,
     `user_id`     INT                            NULL,
     CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
@@ -30,13 +34,29 @@ CREATE TABLE company
 (
     `id`      INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name`    VARCHAR(255)                   NULL,
+    `phone`   VARCHAR(10)                    NULL,
     `address` VARCHAR(255)                   NULL,
     `city`    VARCHAR(50)                    NULL,
     `country` VARCHAR(50)                    NULL,
-    `phone`   VARCHAR(10)                    NULL,
-    `website` VARCHAR(255)                   NULL,
+    `description` TEXT                       NULL,
+    `siret`       VARCHAR(14)                NULL,
+    `logo`        VARCHAR(255)               NULL,
+    `slug`       VARCHAR(255)                NULL,
+    `cover`       VARCHAR(255)               NULL,
     `user_id` INT                            NULL,
     CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+);
+
+CREATE TABLE socialeMedia(
+    `id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `linkedin`    VARCHAR(255)                   NULL,
+    `github`      VARCHAR(255)                   NULL,
+    `twitter`     VARCHAR(255)                   NULL,
+    `facebook`    VARCHAR(255)                   NULL,
+    `instagram`   VARCHAR(255)                   NULL,
+    `website`     VARCHAR(255)                   NULL,
+    `user_id` INT                            NULL,
+    CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
 
 CREATE TABLE contract
@@ -114,50 +134,50 @@ CREATE FULLTEXT INDEX `idx_joboffer_title_description` ON `joboffer` (`title`, `
 CREATE FULLTEXT INDEX `idx_candidate_firstname_lastname_description` ON `candidate` (`firstname`, `lastname`, `description`);
 
 # Create data user
-INSERT INTO user (email, password, role)
-VALUES ('company1@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('company2@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('company3@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('company4@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('company5@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('company6@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_COMPANY');
-INSERT INTO user (email, password, role)
-VALUES ('candidate7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('candidate8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('candidate9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('candidate10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('candidate11@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('candidate12@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_CANDIDATE');
-INSERT INTO user (email, password, role)
-VALUES ('admin@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 'ROLE_ADMIN');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company1@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company2@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company3@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company4@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company5@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('company6@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate11@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('candidate12@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+VALUES ('admin@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 9, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 
 # Create data candidate
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Jean', 'Dupont', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1990-01-01',
         'Je suis un candidat motivé et passionné par le développement web.', 7);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Marie', 'Martin', '0123456789', '123 rue de la République', 'Lyon', 'France',
         '1992-01-01', 'Je suis une candidate motivée et passionnée par le développement web.', 8);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Pierre', 'Durand', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1991-01-01',
         'Je suis un candidat motivé et passionné par le développement web.', 9);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Julie', 'Dufour', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1993-01-01',
         'Je suis une candidate motivée et passionnée par le développement web.', 10);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Thomas', 'Leroy', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1994-01-01',
         'Je suis un candidat motivé et passionné par le développement web.', 11);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, description, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
 VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1995-01-01',
         'Je suis une candidate motivée et passionnée par le développement web.', 12);
 
