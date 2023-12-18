@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\JobOffer;
+use App\Services\EntityServices\JobOfferService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
-use JobOfferService;
 use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
