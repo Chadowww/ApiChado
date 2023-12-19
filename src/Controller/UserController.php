@@ -308,8 +308,17 @@ class UserController extends AbstractController
         return new JsonResponse('User has been deleted', 204, [], false);
     }
 
-    public function list()
+    /**
+     * @throws DatabaseException
+     */
+    public function list(): JsonResponse
     {
+        try {
+            $users = $this->userRepository->list();
+        } catch (PDOException $e) {
+            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+        }
 
+        return new JsonResponse($this->serializer->serialize($users, 'json'), 200, [], true);
     }
 }
