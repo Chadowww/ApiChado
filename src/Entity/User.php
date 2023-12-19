@@ -39,7 +39,7 @@ class User
 
     #[Assert\NotBlank(message: "Role is required")]
     #[Assert\Choice(
-        choices: ['1', '3', '5', '9'],
+        choices: [1, 3, 5, 9],
         message: "Role must be one of the following: 1 (ROLE_USER), 3 (ROLE_CANDIDATE), 5 (ROLE_COMPANY), 9 (ROLE_ADMIN)"
     )]
     protected ?int $roles = null;
