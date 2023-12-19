@@ -8,7 +8,7 @@ CREATE TABLE user
     `id`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `email`    VARCHAR(255)                   NULL,
     `password` VARCHAR(255)                   NULL,
-    `role`     INT                            NULL,
+    `roles`     INT                            NULL,
     `is_verified` BOOLEAN DEFAULT FALSE       NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -131,70 +131,70 @@ CREATE TABLE `resume_technology`(
 
 # Create index for fulltext search
 CREATE FULLTEXT INDEX `idx_joboffer_title_description` ON `joboffer` (`title`, `description`);
-CREATE FULLTEXT INDEX `idx_candidate_firstname_lastname_description` ON `candidate` (`firstname`, `lastname`, `description`);
+CREATE FULLTEXT INDEX `idx_candidate_firstname_lastname_description` ON `candidate` (`firstname`, `lastname`);
 
 # Create data user
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company1@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company2@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company3@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company4@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company5@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company6@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate11@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate12@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, role, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('admin@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 9, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 
 # Create data candidate
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
-VALUES ('Jean', 'Dupont', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1990-01-01',
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Jean', 'Dupont', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 7);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
 VALUES ('Marie', 'Martin', '0123456789', '123 rue de la République', 'Lyon', 'France',
-        '1992-01-01', 'Je suis une candidate motivée et passionnée par le développement web.', 8);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
-VALUES ('Pierre', 'Durand', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1991-01-01',
+         'Je suis une candidate motivée et passionnée par le développement web.', 8);
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Pierre', 'Durand', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 9);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
-VALUES ('Julie', 'Dufour', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1993-01-01',
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Julie', 'Dufour', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 10);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
-VALUES ('Thomas', 'Leroy', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1994-01-01',
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Thomas', 'Leroy', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 11);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, birthdate, coverLetter, user_id)
-VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France', '1995-01-01',
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 12);
 
 
 # Create data company
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '0123456789', 'www.asturing.fr', 1);
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '0123456789', 'www.xyz.fr', 2);
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '0123456789', 'www.abc.fr', 3);
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '0123456789', 'www.123.fr', 4);
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '0123456789', 'www.456.fr', 5);
-INSERT INTO company (name, address, city, country, phone, website, user_id)
-VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '0123456789', 'www.789.fr', 6);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '0123456789', 1);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '0123456789', 2);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '0123456789', 3);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '0123456789', 4);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '0123456789', 5);
+INSERT INTO company (name, address, city, country, phone, user_id)
+VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '0123456789', 6);
 
 # Create data contract
 INSERT INTO contract (type)
