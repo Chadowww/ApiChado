@@ -76,7 +76,7 @@ class UserController extends AbstractController
      *     type="string",
      *     example="
      *         {
-     *     'password': Fw7jzpdr7!'
+     *     'password': '
      *     }
      *     "
      *  ),
