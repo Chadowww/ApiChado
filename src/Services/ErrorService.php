@@ -17,10 +17,13 @@ class ErrorService
         $this->validator = $validator;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function getErrorsJobOfferRequest(Request $request): array
     {
         $errors = [];
-        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['title'], $data['description'], $data['city'], $data['salaryMin'], $data['salaryMax'])) {
             $errors[] = [
@@ -84,10 +87,13 @@ class ErrorService
         return $errors;
     }
 
+    /**
+     * @throws \JsonException
+     */
     Public function getErrorsContractRequest(Request $request): array
     {
         $errors = [];
-        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (!isset($data['type'])) {
             $errors[] = [
                 'field' => 'request',
@@ -106,10 +112,13 @@ class ErrorService
         return $errors;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function getErrorsUserRequest(Request $request): array
     {
         $errors = [];
-        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (!isset($data['email'], $data['password'], $data['roles'])) {
             $errors[] = [
                 'field' => 'request',
