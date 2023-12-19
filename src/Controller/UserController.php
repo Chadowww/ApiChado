@@ -156,9 +156,104 @@ class UserController extends AbstractController
         return new JsonResponse($this->serializer->serialize($user, 'json'), 200, [], true);
     }
 
-    public function update()
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @OA\Response(
+     *     response=204,
+     *     description="User updated",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Updated"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the user to update",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *   )
+     * )
+     * @OA\RequestBody(
+     *     request="User",
+     *     description="User to update",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="email",
+     *     type="string",
+     *     example="
+     *         {
+     *     'email': '
+     *     }
+     *     "
+     *   ),
+     *     @OA\Property(
+     *     property="password",
+     *     type="string",
+     *     example="
+     *        {
+     *     'password': '
+     *     }
+     *     "
+     *  ),
+     *     @OA\Property(
+     *     property="roles",
+     *     type="integer",
+     *     description="1 = ROLE_USER, 3 = ROLE_CANDIDATE, 5 = ROLE_COMPANY, 9 = ROLE_ADMIN",
+     *     example=1,
+     *     @OA\Items(
+     *     enum={1, 2, 4, 8},
+     *     type="integer"
+     * )
+     * )))
+     */
+    public function update(int $id, Request $request): JsonResponse
     {
+        if ($this->errorService->getErrorsUserRequest($request) !== []) {
+            throw new InvalidRequestException(json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR), 400);
+        }
+        $user = $this->userRepository->read($id);
+        if (!$user) {
+            throw new resourceNotFoundException(
+                json_encode([
+                    'error' => 'The user with id ' . $id . ' does not exist.'
+                ],
+                    JSON_THROW_ON_ERROR),
+                404
+            );
+        }
 
+        try {
+            $user = $this->UserService->UpdateUser($request, $user);
+            $this->userRepository->update($user);
+        } catch (PDOException $e) {
+            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+        }
+
+        return new JsonResponse('Updated', 204);
     }
 
     public function delete()
