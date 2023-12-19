@@ -84,20 +84,21 @@ class User
     {
         return ($this->roles & self::ROLES[$role]) === self::ROLES[$role];
     }
-    public function getRoles(): ?array
+    public function getRoles(): ?int
     {
+        return $this->roles;
+    }
+
+    public function getArrayRoles(): ?array
+    {
+
         $roles = [];
         foreach (self::ROLES as $role => $value) {
-            if (($this->hasRole($role) & $value) === $value) {
+            if (($this->roles & $value) === $value) {
                 $roles[] = $role;
             }
         }
         return $roles;
-    }
-
-    public function getRolesInt(): ?int
-    {
-        return $this->roles;
     }
 
     public function setRoles(?int $roleValue): void
