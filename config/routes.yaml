@@ -53,3 +53,28 @@ ContractList:
     path: /contract/list
     controller: App\Controller\ContractController::list
     methods: GET
+
+UserCreate:
+    path: /user/create
+    controller: App\Controller\UserController::create
+    methods: POST
+
+UserRead:
+    path: /user/read/{id}
+    controller: App\Controller\UserController::read
+    methods: GET
+
+UserUpdate:
+    path: /user/update/{id}
+    controller: App\Controller\UserController::update
+    methods: PUT
+
+UserDelete:
+    path: /user/delete/{id}
+    controller: App\Controller\UserController::delete
+    methods: DELETE
+
+UserList:
+    path: /user/list
+    controller: App\Controller\UserController::list
+    methods: GET
