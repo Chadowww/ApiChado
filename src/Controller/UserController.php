@@ -256,9 +256,56 @@ class UserController extends AbstractController
         return new JsonResponse('Updated', 204);
     }
 
-    public function delete()
+    /**
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=204,
+     *     description="User deleted",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Deleted"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the user to delete",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *  )
+     * )
+     */
+    public function delete(int $id): JsonResponse
     {
+        try {
+            $user = $this->userRepository->read($id);
+            if (!$user) {
+                throw new resourceNotFoundException(
+                    json_encode([
+                        'error' => 'The user with id ' . $id . ' does not exist.'
+                    ],
+                        JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+            $this->userRepository->delete($id);
+        } catch (PDOException $e) {
+            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+        }
 
+        return new JsonResponse('User has been deleted', 204, [], false);
     }
 
     public function list()
