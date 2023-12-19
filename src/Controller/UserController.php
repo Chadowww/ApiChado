@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\UserRepository;
 use App\Services\EntityServices\UserService;
 use App\Services\ErrorService;
@@ -12,18 +13,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class UserController extends AbstractController
 {
     private ErrorService $errorService;
     private UserService $UserService;
     private UserRepository $userRepository;
+    private SerializerInterface $serializer;
 
-    public function __construct(ErrorService $errorService, UserService $UserService, UserRepository $userRepository)
+    public function __construct(
+        ErrorService $errorService,
+        UserService $UserService,
+        UserRepository $userRepository,
+        SerializerInterface $serializer,
+
+    )
     {
         $this->errorService = $errorService;
         $this->UserService = $UserService;
         $this->userRepository = $userRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -73,14 +83,14 @@ class UserController extends AbstractController
      *     @OA\Property(
      *     property="roles",
      *     type="integer",
-     *     example="
-     *        {
-     *     'roles': 3'
-     *     }
-     *     "
+     *     description="1 = ROLE_USER, 3 = ROLE_CANDIDATE, 5 = ROLE_COMPANY, 9 = ROLE_ADMIN",
+     *     example=1,
+     *     @OA\Items(
+     *          enum={1, 2, 4, 8},
+     *          type="integer"
+     *      )
      * )))
-     */
-    public function create(Request $request): JsonResponse
+     */    public function create(Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsUserRequest($request) !== []) {
             throw new InvalidRequestException(json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR), 400);
@@ -96,9 +106,28 @@ class UserController extends AbstractController
         return new JsonResponse(['201' => 'new user created'], 201);
     }
 
-    public function read()
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
+    public function read(int $id): JsonResponse
     {
-
+        try {
+            $user = $this->userRepository->read($id);
+            if (!$user) {
+                throw new resourceNotFoundException(
+                    json_encode([
+                        'error' => 'The user with id ' . $id . ' does not exist.'
+                    ],
+                    JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+        } catch (PDOException $e) {
+            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+        }
+        return new JsonResponse($this->serializer->serialize($user, 'json'), 200, [], true);
     }
 
     public function update()
