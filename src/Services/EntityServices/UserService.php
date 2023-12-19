@@ -17,17 +17,42 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function buildUser(Request $request): User
     {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
         if ($this->userRepository->findOneBy(['email' => $request->get('email')])) {
             throw new InvalidArgumentException('User with this email already exists');
         }
+
         $user = new User();
-        $user->setEmail($request->get('email'));
-        $user->setPassword(password_hash($request->get('password'), PASSWORD_ARGON2ID));
-        $user->setRoles($request->get('roles'));
-        $user->setCreatedAt(new DateTime());
+        $user->setEmail($data['email']);
+        $user->setPassword(password_hash($data['password'], PASSWORD_ARGON2ID));
+        $user->setRoles($data['roles']);
         $user->setUpdatedAt(new DateTime());
+
+        return $user;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function UpdateUser(Request $request, User $user)
+    {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        if ($this->userRepository->findOneBy(['email' => $data['email']]) && $user->getEmail() !== $data['email']) {
+            throw new InvalidArgumentException('User with this email already exists');
+        }
+
+        $user->setEmail($data['email']);
+        $user->setPassword(password_hash($data['password'], PASSWORD_ARGON2ID));
+        $user->setRoles($data['roles']);
+        $user->setUpdatedAt(new DateTime());
+
         return $user;
     }
 }
