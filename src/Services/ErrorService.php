@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Contract;
 use App\Entity\JobOffer;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -100,6 +101,52 @@ class ErrorService
                     'message' => $this->validator->validatePropertyValue(Contract::class, 'type', $value)->get(0)->getMessage(),
                     'passedValue' => $value
                 ];
+            }
+        }
+        return $errors;
+    }
+
+    public function getErrorsUserRequest(Request $request): array
+    {
+        $errors = [];
+        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        if (!isset($data['email'], $data['password'], $data['roles'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain email, password and role fields',
+            ];
+        }
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'email':
+                    if ($this->validator->validatePropertyValue(User::class, 'email', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'email',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'email', $value)->get(0)
+                                ->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'password':
+                    if ($this->validator->validatePropertyValue(User::class, 'password', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'password',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'password', $value)->get
+                            (0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'roles':
+                    if ($this->validator->validatePropertyValue(User::class, 'roles', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'roles',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'roles', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
             }
         }
         return $errors;
