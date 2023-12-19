@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @OA\Tag(name="User")
+ */
 class UserController extends AbstractController
 {
     private ErrorService $errorService;
@@ -85,10 +88,7 @@ class UserController extends AbstractController
      *     type="integer",
      *     description="1 = ROLE_USER, 3 = ROLE_CANDIDATE, 5 = ROLE_COMPANY, 9 = ROLE_ADMIN",
      *     example=1,
-     *     @OA\Items(
-     *          enum={1, 2, 4, 8},
-     *          type="integer"
-     *      )
+     *     enum={1, 2, 4, 8},
      * )))
      */    public function create(Request $request): JsonResponse
     {
@@ -224,10 +224,7 @@ class UserController extends AbstractController
      *     type="integer",
      *     description="1 = ROLE_USER, 3 = ROLE_CANDIDATE, 5 = ROLE_COMPANY, 9 = ROLE_ADMIN",
      *     example=1,
-     *     @OA\Items(
      *     enum={1, 2, 4, 8},
-     *     type="integer"
-     * )
      * )))
      */
     public function update(int $id, Request $request): JsonResponse

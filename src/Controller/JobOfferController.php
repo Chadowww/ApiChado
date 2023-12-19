@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(name="JobOffer")
+ */
 class JobOfferController extends AbstractController
 {
     private JobOfferRepository $jobOfferRepository;

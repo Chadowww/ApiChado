@@ -12,6 +12,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @OA\Tag(name="Contract")
+ */
 class ContractController extends AbstractController
 {
     private ContractRepository $contractRepository;
