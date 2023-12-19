@@ -110,6 +110,32 @@ class UserController extends AbstractController
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="User found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User found"
+     *  )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the user to read",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *    )
+     * )
      */
     public function read(int $id): JsonResponse
     {
