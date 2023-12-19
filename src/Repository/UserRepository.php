@@ -115,4 +115,26 @@ class UserRepository
             throw $e;
         }
     }
+
+    public function findOneBy(array $array)
+    {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'SELECT * FROM APICHADO.user WHERE ';
+            foreach ($array as $key => $value) {
+                $query .= $key . ' = :' . $key;
+            }
+            $statement = $this->connection->prepare($query);
+            foreach ($array as $key => $value) {
+                $statement->bindValue(':' . $key, $value);
+            }
+            $statement->execute();
+            $user = $statement->fetchObject(User::class);
+            $this->connection->commit();
+            return $user;
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
 }
