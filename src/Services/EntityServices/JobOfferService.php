@@ -1,5 +1,6 @@
 <?php
 
+namespace App\Services\EntityServices;
 
 use App\Entity\JobOffer;
 use Symfony\Component\HttpFoundation\Request;

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Contract;
 use App\Entity\JobOffer;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -16,10 +17,13 @@ class ErrorService
         $this->validator = $validator;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function getErrorsJobOfferRequest(Request $request): array
     {
         $errors = [];
-        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['title'], $data['description'], $data['city'], $data['salaryMin'], $data['salaryMax'])) {
             $errors[] = [
@@ -83,10 +87,13 @@ class ErrorService
         return $errors;
     }
 
+    /**
+     * @throws \JsonException
+     */
     Public function getErrorsContractRequest(Request $request): array
     {
         $errors = [];
-        $data = $request->isMethod('put') ? $request->query->all() : $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (!isset($data['type'])) {
             $errors[] = [
                 'field' => 'request',
@@ -100,6 +107,55 @@ class ErrorService
                     'message' => $this->validator->validatePropertyValue(Contract::class, 'type', $value)->get(0)->getMessage(),
                     'passedValue' => $value
                 ];
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function getErrorsUserRequest(Request $request): array
+    {
+        $errors = [];
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        if (!isset($data['email'], $data['password'], $data['roles'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain email, password and role fields',
+            ];
+        }
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'email':
+                    if ($this->validator->validatePropertyValue(User::class, 'email', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'email',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'email', $value)->get(0)
+                                ->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'password':
+                    if ($this->validator->validatePropertyValue(User::class, 'password', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'password',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'password', $value)->get
+                            (0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'roles':
+                    if ($this->validator->validatePropertyValue(User::class, 'roles', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'roles',
+                            'message' => $this->validator->validatePropertyValue(User::class, 'roles', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
             }
         }
         return $errors;
