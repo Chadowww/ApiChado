@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class User
 {
-    public const ROLES = [
+    public const array ROLES = [
         'ROLE_USER' => 1,
         'ROLE_CANDIDATE' => 2,
         'ROLE_COMPANY' => 4,
@@ -28,7 +28,6 @@ class User
         pattern: '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/',
         message: "Email must be a valid email"
     )]
-    #[Assert\Unique(message: "An account already exists with this email")]
     protected ?string $email = null;
 
     #[Assert\NotBlank(message: "Password is required")]
@@ -38,13 +37,18 @@ class User
         match: true)]
     protected ?string $password = null;
 
+    #[Assert\NotBlank(message: "Role is required")]
+    #[Assert\Choice(
+        choices: ['1', '3', '5', '9'],
+        message: "Role must be one of the following: 1 (ROLE_USER), 3 (ROLE_CANDIDATE), 5 (ROLE_COMPANY), 9 (ROLE_ADMIN)"
+    )]
     protected ?int $roles = null;
 
     protected bool $is_verified = false;
 
-    protected ?DateTime $created_at = null;
+    protected string | DateTime | null $created_at = null;
 
-    protected ?DateTime $updated_at = null;
+    protected string | DateTime | null $updated_at = null;
 
     public function getId(): ?int
     {
@@ -95,9 +99,10 @@ class User
     {
         return $this->roles;
     }
-    public function setRoles(?array $roles): void
+
+    public function setRoles(?int $roleValue): void
     {
-        $this->roles = $roles;
+        $this->roles = $roleValue;
     }
 
     public function isIsVerified(): bool
@@ -110,7 +115,7 @@ class User
         $this->is_verified = $is_verified;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): DateTime | string
     {
         return $this->created_at;
     }
@@ -120,7 +125,7 @@ class User
         $this->created_at = $created_at;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?string
     {
         return $this->updated_at;
     }
