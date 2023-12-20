@@ -193,6 +193,101 @@ class CandidateController extends AbstractController
      * @throws \JsonException
      * @throws ResourceNotFoundException
      * @throws DatabaseException
+     * @OA\Response(
+     *     response=200,
+     *     description="Candidate updated",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate updated"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Candidate not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the candidate to update",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *  )
+     * )
+     * @OA\RequestBody(
+     *     request="Candidate",
+     *     description="Candidate object that needs to be updated in the database",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="firstName",
+     *     type="string",
+     *     example="John"
+     *   ),
+     *     @OA\Property(
+     *     property="lastName",
+     *     type="string",
+     *     example="Doe"
+     *  ),
+     *     @OA\Property(
+     *     property="phone",
+     *     type="string",
+     *     example="
+     *      {
+     *     'phone': '
+     *     }
+     *     "
+     * ),
+     *     @OA\Property(
+     *     property="address",
+     *     type="string",
+     *     example="
+     *     {
+     *     'address': '
+     *     }
+     *     "
+     * ),
+     *     @OA\Property(
+     *     property="city",
+     *     type="string",
+     *     example="
+     *    {
+     *     'city': '
+     *     }
+     *     "
+     * ),
+     *     @OA\Property(
+     *     property="country",
+     *     type="string",
+     *     example="
+     *    {
+     *     'country': '
+     *     }
+     *     "
+     * ),
+     *     @OA\Property(
+     *     property="user_id",
+     *     type="integer",
+     *     example="
+     *    {
+     *     'user_id': '
+     *     }
+     *     "
+     * )))
      */
     public function update(int $id, Request $request): JsonResponse
     {
@@ -223,9 +318,58 @@ class CandidateController extends AbstractController
         return new JsonResponse(['message' => 'Candidate updated'], 200);
     }
 
-    public function delete(): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Candidate deleted",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate deleted"
+     *  )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Candidate not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate not found"
+     *  )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the candidate to delete",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *  )
+     * )
+     */
+    public function delete(int $id): JsonResponse
     {
-        // ...
+        try {
+            $candidate = $this->candidateRepository->read($id);
+            if (!$candidate) {
+                throw new resourceNotFoundException(
+                    json_encode([
+                        'error' => 'The candidate with id ' . $id . ' does not exist.'
+                    ],
+                        JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+            $this->candidateRepository->delete($id);
+
+            return new JsonResponse(['message' => 'Candidate deleted'], 200);
+
+        } catch (PDOException $exception) {
+            throw new DatabaseException($exception->getMessage(), 500);
+        }
+
     }
 
     public function list(): JsonResponse
