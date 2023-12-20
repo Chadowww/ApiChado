@@ -25,7 +25,7 @@ class UserRepository
                 INSERT INTO APICHADO.user 
                     (`email`,
                      `password`,
-                     `role`)
+                     `roles`)
                 VALUES 
                     (:email,
                      :password,
@@ -33,7 +33,7 @@ class UserRepository
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':email', $user->getEmail());
             $statement->bindValue(':password', $user->getPassword());
-            $statement->bindValue(':role', $user->getRolesInt());
+            $statement->bindValue(':role', $user->getRoles());
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -66,14 +66,14 @@ class UserRepository
                 SET 
                     `email` = :email,
                     `password` = :password,
-                    `role` = :role
+                    `roles` = :role
                 WHERE 
                     `id` = :id';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':id', $user->getId());
             $statement->bindValue(':email', $user->getEmail());
             $statement->bindValue(':password', $user->getPassword());
-            $statement->bindValue(':role', $user->getRolesInt());
+            $statement->bindValue(':role', $user->getRoles());
             $statement->execute();
             $this->connection->commit();
             return true;
