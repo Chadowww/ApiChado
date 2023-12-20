@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\ErrorService;
 use PDOException;
@@ -135,9 +137,55 @@ class CandidateController extends AbstractController
         return new JsonResponse(['message' => 'Candidate created'], 201);
     }
 
-    public function read(): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Candidate found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate found"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Candidate not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the candidate to read",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     *   )
+     * )
+     */
+    public function read(int $id): JsonResponse
     {
+        try {
+            $candidate = $this->candidateRepository->read($id);
+            if (!$candidate) {
+                throw new resourceNotFoundException(
+                    json_encode([
+                        'error' => 'The candidate with id ' . $id . ' does not exist.'
+                    ],
+                        JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+        } catch (PDOException $exception) {
+            throw new DatabaseException($exception->getMessage(), 500);
 
+        }
+        return new JsonResponse($this->serializer->serialize($candidate, 'json'), 200, [], true);
     }
 
     public function update(): JsonResponse
