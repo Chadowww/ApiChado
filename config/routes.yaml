@@ -78,3 +78,28 @@ UserList:
     path: /user/list
     controller: App\Controller\UserController::list
     methods: GET
+
+CandidateCreate:
+    path: /candidate/create
+    controller: App\Controller\CandidateController::create
+    methods: POST
+
+CandidateRead:
+    path: /candidate/read/{id}
+    controller: App\Controller\CandidateController::read
+    methods: GET
+
+CandidateUpdate:
+    path: /candidate/update/{id}
+    controller: App\Controller\CandidateController::update
+    methods: PUT
+
+CandidateDelete:
+    path: /candidate/delete/{id}
+    controller: App\Controller\CandidateController::delete
+    methods: DELETE
+
+CandidateList:
+    path: /candidate/list
+    controller: App\Controller\CandidateController::list
+    methods: GET
