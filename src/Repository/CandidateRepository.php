@@ -36,7 +36,7 @@ class CandidateRepository
             $statement->bindValue(':avatar', $candidate->getAvatar());
             $statement->bindValue(':slug', $candidate->getSlug());
             $statement->bindValue(':coverLetter', $candidate->getCoverLetter());
-            $statement->bindValue(':user_id', $candidate->getId());
+            $statement->bindValue(':user_id', $candidate->getUserId());
             $statement->execute();
             $this->connection->commit();
             return true;
