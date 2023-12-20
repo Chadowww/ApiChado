@@ -65,7 +65,7 @@ class CandidateRepository
             $this->connection->beginTransaction();
             $query = '
             UPDATE APICHADO.candidate
-            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, coverLetter = :coverLetter
+            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, slug = :slug, user_id = :user_id
             WHERE id = :id';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':firstname', $candidate->getFirstname());
@@ -74,10 +74,9 @@ class CandidateRepository
             $statement->bindValue(':address', $candidate->getAddress());
             $statement->bindValue(':city', $candidate->getCity());
             $statement->bindValue(':country', $candidate->getCountry());
-            $statement->bindValue(':avatar', $candidate->getAvatar());
             $statement->bindValue(':slug', $candidate->getSlug());
-            $statement->bindValue(':coverLetter', $candidate->getCoverLetter());
-            $statement->bindValue(':user_id', $candidate->getId());
+            $statement->bindValue(':user_id', $candidate->getUserId());
+            $statement->bindValue(':id', $candidate->getId());
             $statement->execute();
             $this->connection->commit();
             return true;
