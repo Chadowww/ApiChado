@@ -372,8 +372,44 @@ class CandidateController extends AbstractController
 
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="List of candidates",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="List of candidates"
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="Database error",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Database error"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="Page number",
+     *     required=false,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
+     */
     public function list(): JsonResponse
     {
-        // ...
+        try {
+            $candidates = $this->candidateRepository->list();
+        } catch (PDOException $exception) {
+            throw new DatabaseException($exception->getMessage(), 500);
+        }
+
+        return new JsonResponse($this->serializer->serialize($candidates, 'json'), 200, [], true);
     }
 }
