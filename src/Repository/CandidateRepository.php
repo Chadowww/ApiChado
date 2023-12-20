@@ -105,9 +105,9 @@ class CandidateRepository
     public function list(){
         try {
             $this->connection->beginTransaction();
-            $query = 'SELECT * FROM APICHADO.candidate';
+            $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.id';
             $statement = $this->connection->query($query);
-            $candidates = $statement->fetchAll(PDO::FETCH_CLASS, Candidate::class);
+            $candidates = $statement->fetchObject(Candidate::class);
             $this->connection->commit();
 
             return $candidates;
