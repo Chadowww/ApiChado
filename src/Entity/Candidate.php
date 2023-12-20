@@ -13,6 +13,8 @@ class Candidate extends User
         $this->socialMedia = new SocialMedia();
     }
 
+    protected ?int $id = null;
+
     #[Assert\NotBlank(message: "Firstname is required")]
     #[Assert\Length(
         min: 3,
@@ -72,6 +74,10 @@ class Candidate extends User
     protected  ?string $slug = null;
 
     protected ?string $coverLetter = null;
+
+    #[Assert\NotBlank(message: "User id is required")]
+    #[Assert\Type(type: 'integer', message: "User id must be an integer")]
+    protected ?int $user_id = null;
 
     public function getFirstname(): ?string
     {
@@ -167,5 +173,15 @@ class Candidate extends User
     public function getSocialMedia(): SocialMedia
     {
         return $this->socialMedia;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?int $user_id): void
+    {
+        $this->user_id = $user_id;
     }
 }
