@@ -298,11 +298,12 @@ class UserController extends AbstractController
                 );
             }
             $this->userRepository->delete($id);
+
+            return new JsonResponse('User has been deleted', 204, [], false);
+
         } catch (PDOException $e) {
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
-
-        return new JsonResponse('User has been deleted', 204, [], false);
     }
 
     /**
