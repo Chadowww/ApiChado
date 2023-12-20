@@ -18,6 +18,7 @@ class CandidateService
         $candidate->setFirstName($data['firstname']);
         $candidate->setLastName($data['lastname']);
         $candidate->setUserId($data['user_id']);
+        $candidate->setSlug($data['firstname'], $data['lastname']);
         $candidate->setPhone($data['phone'] ?? null);
         $candidate->setAddress($data['address'] ?? null);
         $candidate->setCity($data['city'] ?? null);
