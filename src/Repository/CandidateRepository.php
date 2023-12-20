@@ -49,7 +49,7 @@ class CandidateRepository
     public function read(int $id) : Candidate | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.candidate WHERE id = :id';
+        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.id WHERE c.id = :id';
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':id', $id);
         $statement->execute();
