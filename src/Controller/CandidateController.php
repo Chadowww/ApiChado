@@ -188,9 +188,39 @@ class CandidateController extends AbstractController
         return new JsonResponse($this->serializer->serialize($candidate, 'json'), 200, [], true);
     }
 
-    public function update(): JsonResponse
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     */
+    public function update(int $id, Request $request): JsonResponse
     {
-        // ...
+        if($this->errorService->getErrorsCandidateRequest($request) !== []){
+            throw new InvalidRequestException(json_encode($this->errorService->getErrorsCandidateRequest($request),
+                JSON_THROW_ON_ERROR), 400);
+        }
+
+        $candidate = $this->candidateRepository->read($id);
+
+        if (!$candidate){
+            throw new resourceNotFoundException(
+                json_encode([
+                    'error' => 'The candidate with id ' . $id . ' does not exist.'
+                ],
+                    JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
+        try {
+            $this->candidateService->updateCandidate($candidate, $request);
+            $this->candidateRepository->update($candidate);
+        } catch (PDOException $exception) {
+            throw new DatabaseException($exception->getMessage(), 500);
+        }
+
+        return new JsonResponse(['message' => 'Candidate updated'], 200);
     }
 
     public function delete(): JsonResponse
