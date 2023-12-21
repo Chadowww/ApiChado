@@ -118,6 +118,36 @@ class CompanyController extends AbstractController
 
     /**
      * @throws InvalidRequestException
+     * @OA\Response(
+     *     response=200,
+     *     description="Company found",
+     *     @OA\JsonContent(
+     *    type="string",
+     *     example="Company found"
+     * ))
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * ))
+     * @OA\Response(
+     *     response=404,
+     *     description="Company not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Company not found"
+     * ))
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the company to read",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * ))
      */
     public function read(int $id): JsonResponse
     {
@@ -137,6 +167,71 @@ class CompanyController extends AbstractController
      * @throws \JsonException
      * @throws ResourceNotFoundException
      * @throws DatabaseException
+     * @OA\Response(
+     *     response=200,
+     *     description="Company updated",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Updated"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Company not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Company not found"
+     * )
+     * )
+     * @OA\RequestBody(
+     *     request="Company",
+     *     description="Company object that needs to be updated in the database",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="name",
+     *     type="string",
+     *     example="Company name"
+     * ),
+     *     @OA\Property(
+     *     property="phone",
+     *     type="string",
+     *     example="Company phone"
+     * ),
+     *     @OA\Property(
+     *     property="address",
+     *     type="string",
+     *     example="Company address"
+     * ),
+     *     @OA\Property(
+     *     property="city",
+     *     type="string",
+     *     example="Company city"
+     * ),
+     *     @OA\Property(
+     *     property="country",
+     *     type="string",
+     *     example="Company country"
+     * ),
+     *     @OA\Property(
+     *     property="siret",
+     *     type="string",
+     *     example="Company siret code"
+     * ),
+     *     @OA\Property(
+     *     property="user_id",
+     *     type="integer",
+     *     example="Company user id"
+     * )))
      */
     public function update(int $id, Request $request): JsonResponse
     {
@@ -165,6 +260,40 @@ class CompanyController extends AbstractController
 
     /**
      * @throws InvalidRequestException
+     * @OA\Response(
+     *     response=200,
+     *     description="Company deleted",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Deleted"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Company not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Company not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the company to delete",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
      */
     public function delete(int $id): JsonResponse
     {
@@ -182,6 +311,30 @@ class CompanyController extends AbstractController
 
     /**
      * @throws InvalidRequestException
+     * @OA\Response(
+     *     response=200,
+     *     description="List of companies",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="List of companies"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Company not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Company not found"
+     * )
+     * )
      */
     public function list(): JsonResponse
     {

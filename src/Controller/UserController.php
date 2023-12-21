@@ -90,7 +90,8 @@ class UserController extends AbstractController
      *     example=1,
      *     enum={1, 2, 4, 8},
      * )))
-     */    public function create(Request $request): JsonResponse
+     */
+    public function create(Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsUserRequest($request) !== []) {
             throw new InvalidRequestException(json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR), 400);
@@ -162,7 +163,7 @@ class UserController extends AbstractController
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @OA\Response(
-     *     response=204,
+     *     response=200,
      *     description="User updated",
      *     @OA\JsonContent(
      *     type="string",
@@ -250,7 +251,7 @@ class UserController extends AbstractController
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
 
-        return new JsonResponse('Updated', 204);
+        return new JsonResponse(['200' => 'user updated'], 200);
     }
 
     /**
