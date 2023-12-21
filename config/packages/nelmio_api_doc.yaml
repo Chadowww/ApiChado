@@ -19,3 +19,4 @@ nelmio_api_doc:
             - ^/job-offer/
             - ^/contract/
             - ^/candidate/
+            - ^/company/

@@ -103,3 +103,28 @@ CandidateList:
     path: /candidate/list
     controller: App\Controller\CandidateController::list
     methods: GET
+
+CompanyCreate:
+    path: /company/create
+    controller: App\Controller\CompanyController::create
+    methods: POST
+
+CompanyRead:
+    path: /company/read/{id}
+    controller: App\Controller\CompanyController::read
+    methods: GET
+
+CompanyUpdate:
+    path: /company/update/{id}
+    controller: App\Controller\CompanyController::update
+    methods: PUT
+
+CompanyDelete:
+    path: /company/delete/{id}
+    controller: App\Controller\CompanyController::delete
+    methods: DELETE
+
+CompanyList:
+    path: /company/list
+    controller: App\Controller\CompanyController::list
+    methods: GET
