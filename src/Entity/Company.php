@@ -12,6 +12,9 @@ class Company extends User
     {
         $this->socialMedia = new SocialMedia();
     }
+
+    protected ?int $id = null;
+
     #[Assert\NotBlank(message: "Name is required")]
     #[Assert\Length(
         min: 3,
@@ -21,6 +24,7 @@ class Company extends User
     )]
     protected ?string $name = null;
 
+    #[Assert\NotBlank(message: "phone is required")]
     #[Assert\Length(
         min: 10,
         max: 10,
@@ -33,6 +37,7 @@ class Company extends User
     )]
     protected ?string $phone = null;
 
+    #[Assert\NotBlank(message: "address is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -41,6 +46,7 @@ class Company extends User
     )]
     protected ?string $address = null;
 
+    #[Assert\NotBlank(message: "coty is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -49,6 +55,7 @@ class Company extends User
     )]
     protected ?string $city = null;
 
+    #[Assert\NotBlank(message: "country is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -77,6 +84,8 @@ class Company extends User
     protected ?string $slug = null;
 
     protected ?string $cover = null;
+
+    protected ?int $user_id = null;
 
     public function getName(): ?string
     {
@@ -177,6 +186,17 @@ class Company extends User
     {
         $this->cover = $cover;
     }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?int $user_id): void
+    {
+        $this->user_id = $user_id;
+    }
+
 
     public function getSocialMedia(): SocialMedia
     {
