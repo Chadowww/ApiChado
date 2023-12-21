@@ -128,7 +128,7 @@ class CompanyRepository
     public function list(): array
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.company';
+        $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.id';
         $statement = $this->connection->prepare($query);
         $statement->execute();
         $companies = $statement->fetchAll(PDO::FETCH_CLASS, Company::class);
