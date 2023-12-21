@@ -26,4 +26,20 @@ class CompanyService
 
         return $company;
     }
+
+    /**
+     * @throws \JsonException
+     */
+    public function updateCompany(Company $company, Request $request): Company
+    {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        foreach ($data as $key => $value) {
+            $method = 'set' . ucfirst($key);
+            if (method_exists($company, $method) && $method !== 'setId') {
+                $company->$method($value);
+            }
+        }
+
+        return $company;
+    }
 }
