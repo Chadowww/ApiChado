@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entity\Candidate;
+use App\Entity\Company;
 use App\Entity\Contract;
 use App\Entity\JobOffer;
 use App\Entity\User;
@@ -237,6 +238,83 @@ class ErrorService
                         $errors[] = [
                             'field' => 'country',
                             'message' => $this->validator->validatePropertyValue(Candidate::class, 'country', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+            }
+        }
+
+        return $errors;
+    }
+
+
+    /**
+     * @throws \JsonException
+     */
+    public function getErrorsCompanyRequest(Request $request): array
+    {
+        $errors = [];
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['user_id'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain name, phone, address, city, country and user_id fields',
+            ];
+        }
+
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case  'name':
+                    if ($this->validator->validatePropertyValue(Company::class, 'name', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'name',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'name', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'phone':
+                    if ($this->validator->validatePropertyValue(Company::class, 'phone', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'phone',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'phone', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'address':
+                    if ($this->validator->validatePropertyValue(Company::class, 'address', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'address',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'address', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'city':
+                    if ($this->validator->validatePropertyValue(Company::class, 'city', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'city',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'city', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'country':
+                    if ($this->validator->validatePropertyValue(Company::class, 'country', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'country',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'country', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'siret':
+                    if ($this->validator->validatePropertyValue(Company::class, 'siret', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'siret',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'siret', $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }
