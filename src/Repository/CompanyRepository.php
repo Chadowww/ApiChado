@@ -24,28 +24,31 @@ class CompanyRepository
             $query = '
                 INSERT INTO APICHADO.company 
                     (`name`,
-                     `logo`,
-                     `description`,
+                     `phone`,
                      `address`,
                      `city`,
                      `country`,
-                     `slug`)
+                     `siret`,
+                     `slug`,
+                     `user_id`)
                 VALUES 
                     (:name,
-                     :logo,
-                     :description,
+                     :phone,
                      :address,
                      :city,
                      :country,
-                     :slug)';
+                     :siret,
+                     :slug,
+                     :user_id)';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':name', $company->getName());
-            $statement->bindValue(':logo', $company->getLogo());
-            $statement->bindValue(':description', $company->getDescription());
+            $statement->bindValue(':phone', $company->getPhone());
             $statement->bindValue(':address', $company->getAddress());
             $statement->bindValue(':city', $company->getCity());
             $statement->bindValue(':country', $company->getCountry());
+            $statement->bindValue(':siret', $company->getSiret());
             $statement->bindValue(':slug', $company->getSlug());
+            $statement->bindValue(':user_id', $company->getUserId());
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -58,7 +61,7 @@ class CompanyRepository
     public function read(int $id): Company | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.company WHERE id = :id';
+        $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.id WHERE c.id = :id';
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':id', $id);
         $statement->execute();
