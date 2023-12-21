@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CompanyRepository;
 use App\Services\EntityServices\CompanyService;
 use App\Services\ErrorService;
+use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -129,8 +132,35 @@ class CompanyController extends AbstractController
         }
     }
 
-    public function update()
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     */
+    public function update(int $id, Request $request): JsonResponse
     {
+        if ($this->errorService->getErrorsCompanyRequest($request) !== []) {
+            throw new InvalidRequestException(json_encode($this->errorService->getErrorsCompanyRequest($request),
+                JSON_THROW_ON_ERROR), 400);
+        }
+
+        $company = $this->companyRepository->read($id);
+
+        if (!$company){
+            throw new ResourceNotFoundException(json_encode('The company with id ' . $id . ' was not found',
+                JSON_THROW_ON_ERROR), 404);
+        }
+
+        $company = $this->companyService->updateCompany($company, $request);
+
+        try {
+            $this->companyRepository->update($company);
+
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(), $e->getCode());
+        }
+        return new JsonResponse(['response' => 'company updated'], 200);
     }
 
     public function delete()
