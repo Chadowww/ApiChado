@@ -127,7 +127,7 @@ class CompanyController extends AbstractController
                 throw new InvalidRequestException('Company not found', 404);
             }
             return new JsonResponse($this->serializer->serialize($company, 'json'), 200, [], true);
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             throw new InvalidRequestException($e->getMessage(), 400);
         }
     }
@@ -163,8 +163,21 @@ class CompanyController extends AbstractController
         return new JsonResponse(['response' => 'company updated'], 200);
     }
 
-    public function delete()
+    /**
+     * @throws InvalidRequestException
+     */
+    public function delete(int $id): JsonResponse
     {
+        try {
+            $company = $this->companyRepository->read($id);
+            if (!$company) {
+                throw new InvalidRequestException('Company not found', 404);
+            }
+            $this->companyRepository->delete($id);
+            return new JsonResponse(['response' => 'company deleted'], 200);
+        } catch ( PDOException $e) {
+            throw new InvalidRequestException($e->getMessage(), 400);
+        }
     }
 
     public function list()
