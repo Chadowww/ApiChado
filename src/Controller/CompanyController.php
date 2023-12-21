@@ -180,7 +180,16 @@ class CompanyController extends AbstractController
         }
     }
 
-    public function list()
+    /**
+     * @throws InvalidRequestException
+     */
+    public function list(): JsonResponse
     {
+        try {
+            $companies = $this->companyRepository->list();
+            return new JsonResponse($this->serializer->serialize($companies, 'json'), 200, [], true);
+        } catch (PDOException $e) {
+            throw new InvalidRequestException($e->getMessage(), 400);
+        }
     }
 }
