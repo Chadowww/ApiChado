@@ -113,8 +113,20 @@ class CompanyController extends AbstractController
         return new JsonResponse(['201' => 'new company created'], 201);
     }
 
-    public function read()
+    /**
+     * @throws InvalidRequestException
+     */
+    public function read(int $id): JsonResponse
     {
+        try {
+            $company = $this->companyRepository->read($id);
+            if (!$company) {
+                throw new InvalidRequestException('Company not found', 404);
+            }
+            return new JsonResponse($this->serializer->serialize($company, 'json'), 200, [], true);
+        } catch (\Exception $e) {
+            throw new InvalidRequestException($e->getMessage(), 400);
+        }
     }
 
     public function update()
