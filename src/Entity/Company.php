@@ -197,7 +197,6 @@ class Company extends User
         $this->user_id = $user_id;
     }
 
-
     public function getSocialMedia(): SocialMedia
     {
         return $this->socialMedia;

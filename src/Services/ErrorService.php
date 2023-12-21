@@ -259,7 +259,7 @@ class ErrorService
         if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['user_id'])) {
             $errors[] = [
                 'field' => 'request',
-                'message' => 'Request must contain name, phone, address, city, country and user_id fields',
+                'message' => 'Request must contain name, phone, address, city, country, siret and user_id fields',
             ];
         }
 

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Candidate extends User
+class Candidate
 {
     private SocialMedia $socialMedia;
 
@@ -78,6 +78,17 @@ class Candidate extends User
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Type(type: 'integer', message: "User id must be an integer")]
     protected ?int $user_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
 
     public function getFirstname(): ?string
     {
