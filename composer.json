@@ -9,6 +9,7 @@
         "ext-iconv": "*",
         "ext-pdo": "*",
         "nelmio/api-doc-bundle": "^4.12",
+        "nelmio/cors-bundle": "^2.4",
         "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/dotenv": "6.3.*",

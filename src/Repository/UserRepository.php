@@ -137,4 +137,20 @@ class UserRepository
             throw $e;
         }
     }
+
+    public function getLastId(): int
+    {
+        try {
+            $this->connection->beginTransaction();
+            $query = 'SELECT MAX(id) FROM APICHADO.user';
+            $statement = $this->connection->prepare($query);
+            $statement->execute();
+            $id = $statement->fetchColumn();
+            $this->connection->commit();
+            return $id;
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
 }
