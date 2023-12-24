@@ -103,8 +103,14 @@ class UserController extends AbstractController
         } catch (PDOException $e) {
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
-        
-        return new JsonResponse(['201' => 'new user created'], 201);
+
+        $lastId = $this->userRepository->getLastId();
+        return new JsonResponse([
+            '201' => 'new user created',
+            'user_id' => $lastId,
+            ],
+        201
+        );
     }
 
     /**
