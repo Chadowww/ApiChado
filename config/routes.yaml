@@ -128,3 +128,8 @@ CompanyList:
     path: /company/list
     controller: App\Controller\CompanyController::list
     methods: GET
+
+Login:
+    path: /login
+    controller: App\Controller\LoginController::login
+    methods: POST
