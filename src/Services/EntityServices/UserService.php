@@ -7,14 +7,17 @@ use App\Repository\UserRepository;
 use DateTime;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
 {
     private UserRepository $userRepository;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
     {
         $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -30,7 +33,7 @@ class UserService
 
         $user = new User();
         $user->setEmail($data['email']);
-        $user->setPassword(password_hash($data['password'], PASSWORD_ARGON2ID));
+        $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
         $user->setRoles($data['roles']);
         $user->setUpdatedAt(new DateTime());
 
