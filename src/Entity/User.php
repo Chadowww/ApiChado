@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use DateTime;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class User
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const array ROLES = [
         'ROLE_USER' => 1,
@@ -84,12 +86,12 @@ class User
     {
         return ($this->roles & self::ROLES[$role]) === self::ROLES[$role];
     }
-    public function getRoles(): ?int
+    public function getRoles(): array
     {
-        return $this->roles;
+        return $this->getArrayRoles();
     }
 
-    public function getArrayRoles(): ?array
+    public function getArrayRoles(): array
     {
 
         $roles = [];
@@ -134,5 +136,15 @@ class User
     public function setUpdatedAt(?DateTime $updated_at): void
     {
         $this->updated_at = $updated_at;
+    }
+
+    #[\Override] public function eraseCredentials()
+    {
+
+    }
+
+    #[\Override] public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 }
