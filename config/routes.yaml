@@ -138,3 +138,28 @@ Login:
     path: /login
     controller: App\Controller\LoginController::login
     methods: POST
+
+ImageCreate:
+    path: /image/create
+    controller: App\Controller\ImageController::create
+    methods: POST
+
+ImageRead:
+    path: /image/read
+    controller: App\Controller\ImageController::read
+    methods: GET
+
+ImageUpdate:
+    path: /image/update
+    controller: App\Controller\ImageController::update
+    methods: PUT
+
+ImageDelete:
+    path: /image/delete
+    controller: App\Controller\ImageController::delete
+    methods: DELETE
+
+ImageList:
+    path: /image/list
+    controller: App\Controller\ImageController::list
+    methods: GET
