@@ -136,4 +136,22 @@ class CompanyRepository
 
         return $companies;
     }
+
+    public function topOffers(): array
+    {
+        $this->connection->beginTransaction();
+        $query = '
+           SELECT c.id, c.name, c.slug, c.logo, COUNT(jo.company_id) as offers_count
+            FROM APICHADO.company c
+            JOIN APICHADO.joboffer jo ON jo.company_id = c.id
+            GROUP BY c.id, c.name
+            ORDER BY offers_count DESC
+            LIMIT 6';
+        $statement = $this->connection->prepare($query);
+        $statement->execute();
+        $companies = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $this->connection->commit();
+
+        return $companies;
+    }
 }
