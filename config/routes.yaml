@@ -129,6 +129,11 @@ CompanyList:
     controller: App\Controller\CompanyController::list
     methods: GET
 
+CompanyTopOffers:
+    path: /company/top-offers
+    controller: App\Controller\CompanyController::topOffers
+    methods: GET
+
 Login:
     path: /login
     controller: App\Controller\LoginController::login
