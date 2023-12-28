@@ -160,6 +160,14 @@ INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('candidate12@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('admin@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 9, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+VALUES ('company7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+VALUES ('company8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+VALUES ('company9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+VALUES ('company10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 
 # Create data candidate
 INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
@@ -183,18 +191,35 @@ VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
 
 
 # Create data company
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '0123456789', 1);
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '0123456789', 2);
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '0123456789', 3);
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '0123456789', 4);
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '0123456789', 5);
-INSERT INTO company (name, address, city, country, phone, user_id)
-VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '0123456789', 6);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'as-turing', '0123456789',1);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '12345678901234', 'description',
+        'Entreprise-XYZ', '0123456789', 2);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-ABC',
+        '0123456789', 3);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Entreprise-123',
+        '0123456789', 4);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-456',
+        '0123456789', 5);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-789',
+        '0123456789', 6);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('Company 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Company-789',
+        '0123456789', 14);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789',
+        '0123456789', 15);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('entreprise 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'entreprise-789',
+        '0123456789', 16);
+INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+VALUES ('s2i 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 's2i-789',
+        '0123456789', 17);
 
 # Create data contract
 INSERT INTO contract (type)
@@ -235,6 +260,123 @@ INSERT INTO category (name)
 VALUES ('Autre');
 
 # Create data joboffer
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Développeur Web',
+        'Titre du poste : Développeur Web
+
+
+Présentation de l''entreprise :
+Vous travaillerez pour la société AS Turing dans le pole déveoppement
+Description du poste :
+En tant que développeur web au sein de notre entreprise, vous rejoindrez une équipe dynamique et passionnée qui se consacre à la création de solutions web exceptionnelles. Vous participerez au développement, à la maintenance et à l''amélioration de nos applications web, contribuant ainsi à la croissance de notre entreprise.
+
+Responsabilités principales :
+
+Concevoir, développer, tester et mettre en œuvre des applications web de haute qualité.
+Collaborer avec les équipes interfonctionnelles pour comprendre les besoins et les exigences du projet.
+Résoudre les problèmes techniques et optimiser les performances des applications existantes.
+Suivre les meilleures pratiques en matière de développement web, y compris la sécurité et l''accessibilité.
+Exigences :
+
+Diplôme en informatique, génie logiciel ou dans un domaine connexe.
+Solide expérience dans le développement web, y compris la maîtrise de langages comme HTML, CSS, JavaScript, et PHP (ou d''autres langages pertinents).
+Connaissance des frameworks web, des systèmes de gestion de contenu (CMS) et des outils de développement.
+Capacité à résoudre des problèmes de manière créative et à travailler de manière autonome ou en équipe.
+Excellentes compétences en communication et en résolution de problèmes.
+Avantages :
+
+Environnement de travail stimulant et innovant.
+Opportunités de formation continue pour rester à la pointe de la technologie.
+Équipe dynamique et collaborative.
+Possibilités d''évolution au sein de l''entreprise.',
+        'Paris',
+        30000,
+        40000,
+        1,
+        1,
+        1);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Développeur Front-End',
+        'Présentation de l\'entreprise : Entreprise XYZ, leader dans le secteur de l\'e-commerce. Description du
+           poste : Nous recherchons un développeur Front-End pour rejoindre notre équipe et contribuer au développement de notre site web.',
+        'New York',
+        45000,
+        60000,
+        2,
+        2,
+        1);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Développeur Full-Stack',
+        'Présentation de l''entreprise : Startup innovante dans le domaine de la santé connectée. Description du poste : En tant que développeur Full-Stack, vous participerez à la création d''une application de suivi de la santé.',
+        'San Francisco',
+        55000,
+        70000,
+        3,
+        3,
+        6);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Ingénieur DevOps',
+        'Présentation de l''entreprise : Entreprise de technologie spécialisée dans le cloud computing. Description du poste : Nous cherchons un ingénieur DevOps pour optimiser notre infrastructure cloud.',
+        'Seattle',
+        60000,
+        80000,
+        4,
+        4,
+        4);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Designer UX/UI',
+        'Présentation de l''entreprise : Agence de design renommée. Description du poste : Nous recrutons un designer UX/UI pour créer des interfaces utilisateur intuitives et esthétiques.',
+        'Londres',
+        40000,
+        55000,
+        5,
+        5,
+        2);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Analyste de données',
+        'Présentation de l''entreprise : Géant de la finance. Description du poste : Rejoignez notre équipe d''analystes de données pour analyser les tendances financières.',
+        'Francfort',
+        70000,
+        90000,
+        1,
+        6,
+        1);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Développeur Mobile (iOS)',
+        'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applications mobiles. Description du poste : Vous serez responsable du développement d''applications iOS de qualité.',
+        'Toronto',
+        50000,
+        65000,
+        2,
+        1,
+        5);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Ingénieur en cybersécurité',
+        'Présentation de l''entreprise : Leader de la sécurité informatique. Description du poste : Protégez nos systèmes contre les menaces en tant qu''ingénieur en cybersécurité.',
+        'Singapour',
+        65000,
+        85000,
+        3,
+        2,
+        4);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Chef de Projet Agile',
+        'Présentation de l''entreprise : Entreprise de conseil en gestion. Description du poste : Dirigez des projets agiles et collaborez avec nos clients pour atteindre leurs objectifs.',
+        'Paris',
+        60000,
+        80000,
+        4,
+        3,
+        3);
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+VALUES ('Ingénieur en intelligence artificielle',
+        'Présentation de l''entreprise : Société technologique axée sur l''IA. Description du poste : Vous travaillerez sur des projets d''intelligence artificielle passionnants.',
+        'Pékin',
+        70000,
+        95000,
+        5,
+        4,
+        2);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Web',
         'Titre du poste : Développeur Web
