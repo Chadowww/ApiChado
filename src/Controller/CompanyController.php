@@ -345,4 +345,42 @@ class CompanyController extends AbstractController
             throw new InvalidRequestException($e->getMessage(), 400);
         }
     }
+
+
+    /**
+     * @throws InvalidRequestException
+     * @OA\Response(
+     *     response=200,
+     *     description="List of companies",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="List of companies"
+     * )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Invalid request"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Company not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Company not found"
+     * )
+     * )
+     */
+    public function topOffers(): JsonResponse
+    {
+        try {
+            $companies = $this->companyRepository->topOffers();
+            return new JsonResponse($this->serializer->serialize($companies, 'json'), 200, [], true);
+        } catch (PDOException $e) {
+            throw new InvalidRequestException($e->getMessage(), 400);
+        }
+    }
 }
