@@ -191,35 +191,45 @@ VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
 
 
 # Create data company
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
-VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'as-turing', '0123456789',1);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'as-turing',
+        'https://upload.wikimedia.org/wikipedia/fr/9/9b/Logo-societe-generale.png', 'GroupWork2.jpg', '0123456789',1);
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '12345678901234', 'description',
-        'Entreprise-XYZ', '0123456789', 2);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+        'Entreprise-XYZ','https://upload.wikimedia.org/wikipedia/fr/thumb/0/0a/Logo-konbini.svg/1200px-Logo-konbini
+.svg.png', 'GroupWork3.jpg', '0123456789', 2);
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-ABC',
+        'https://logos-marques.com/wp-content/uploads/2021/03/Conforama-Logo-1987.png', 'GroupWork4.jpg',
         '0123456789', 3);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Entreprise-123',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Ikea-logo.png/1200px-Ikea-logo.png', 'GroupWork5
+.jpg',
         '0123456789', 4);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-456',
+        'https://logos-marques.com/wp-content/uploads/2022/07/Fnac-Logo-1969.jpg', 'GroupWork6.jpg',
         '0123456789', 5);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-789',
+        'https://assets.stickpng.com/images/580b57fcd9996e24bc43c516.png', 'GroupWork7.jpg',
         '0123456789', 6);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Company 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Company-789',
+        'https://pbs.twimg.com/media/Eoyb0g8XYAI88bD?format=jpg&name=4096x4096', 'GroupWork8.jpg',
         '0123456789', 14);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
-VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789',
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789', 'https://news
+.microsoft.com/wp-content/uploads/prod/sites/113/2017/06/Microsoft-logo_rgb_c-gray.png', 'GroupWork9.jpg',
         '0123456789', 15);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('entreprise 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'entreprise-789',
+        'https://www.guarani.fr/wp-content/themes/NakedWordpress/img/logoheader.png', 'GroupWork10.jpg',
         '0123456789', 16);
-INSERT INTO company (name, address, city, country, siret, description, slug, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('s2i 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 's2i-789',
-        '0123456789', 17);
+        'https://www.vtscan.fr/wp-content/uploads/2016/06/logo-citadium.png', 'GroupWork11.jpg', '0123456789', 17);
 
 # Create data contract
 INSERT INTO contract (type)
