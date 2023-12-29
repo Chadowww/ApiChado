@@ -55,9 +55,18 @@ class ImageController extends AbstractController
     return new JsonResponse(['message' => 'file not uploaded! :s']);
   }
 
-  public function delete(int $id): Response
+  public function delete(string $fileName): Response
   {
+    $directory = $this->getParameter('images_directory');
 
+    $filePath = $directory . $fileName;
+    if (!file_exists($filePath)) {
+        throw $this->createNotFoundException('Image not found.');
+    }
+
+    unlink($filePath);
+
+    return new JsonResponse(['message' => 'File deleted with success!']);
   }
 
   public function list(): Response
