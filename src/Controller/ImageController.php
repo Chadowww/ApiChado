@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,12 +25,22 @@ class ImageController extends AbstractController
       return new JsonResponse(['message' => 'file not uploaded! :s']);
   }
 
-  public function read(int $id): Response
+  public function read(string $fileName): Response
   {
+    $directory = $this->getParameter('images_directory');
 
+    $filePath = $directory . $fileName;
+    error_log($filePath);
+    if (!file_exists($filePath)) {
+        throw $this->createNotFoundException('Image not found.');
+    }
+
+    $file = new File($filePath);
+
+    return $this->file($file);
   }
 
-  public function update(int $id, Request $request): Response
+  public function update(string $name, Request $request): Response
   {
 
   }
