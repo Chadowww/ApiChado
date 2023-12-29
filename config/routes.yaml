@@ -155,7 +155,7 @@ ImageUpdate:
     methods: PUT
 
 ImageDelete:
-    path: /image/delete
+    path: /image/delete/{fileName}
     controller: App\Controller\ImageController::delete
     methods: DELETE
 
