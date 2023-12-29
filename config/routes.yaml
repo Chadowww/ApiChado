@@ -145,7 +145,7 @@ ImageCreate:
     methods: POST
 
 ImageRead:
-    path: /image/read
+    path: /image/read/{fileName}
     controller: App\Controller\ImageController::read
     methods: GET
 
