@@ -71,6 +71,22 @@ class ImageController extends AbstractController
 
   public function list(): Response
   {
+    $directory = $this->getParameter('images_directory');
 
+    $files = scandir($directory);
+
+    $images = [];
+    foreach ($files as $file) {
+        if (in_array($file, ['.', '..'])) {
+            continue;
+        }
+
+        $images[] = [
+            'name' => $file,
+            'url' => $this->generateUrl('ImageRead', ['fileName' => $file]),
+        ];
+    }
+
+    return new JsonResponse($images);
   }
 }
