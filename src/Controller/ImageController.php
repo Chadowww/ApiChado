@@ -30,7 +30,6 @@ class ImageController extends AbstractController
     $directory = $this->getParameter('images_directory');
 
     $filePath = $directory . $fileName;
-    error_log($filePath);
     if (!file_exists($filePath)) {
         throw $this->createNotFoundException('Image not found.');
     }
@@ -40,9 +39,20 @@ class ImageController extends AbstractController
     return $this->file($file);
   }
 
-  public function update(string $name, Request $request): Response
+  public function update(string $fileName, Request $request): Response
   {
+    $file = $this->read($fileName);
 
+    $newFile = $request->files->get('file');
+
+    if ($newFile) {
+        $newFilename = uniqid('', true) . '.' . $newFile->guessExtension();
+        $newFile->move($this->getParameter('images_directory'), $newFilename);
+        $this->delete($fileName);
+
+        return new JsonResponse(['message' => 'File uploaded with success!']);
+    }
+    return new JsonResponse(['message' => 'file not uploaded! :s']);
   }
 
   public function delete(int $id): Response
