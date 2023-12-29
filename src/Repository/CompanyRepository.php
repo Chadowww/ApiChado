@@ -141,7 +141,7 @@ class CompanyRepository
     {
         $this->connection->beginTransaction();
         $query = '
-           SELECT c.id, c.name, c.slug, c.logo, COUNT(jo.company_id) as offers_count
+           SELECT c.id, c.name, c.slug, c.logo, c.cover, COUNT(jo.company_id) as offers_count
             FROM APICHADO.company c
             JOIN APICHADO.joboffer jo ON jo.company_id = c.id
             GROUP BY c.id, c.name
