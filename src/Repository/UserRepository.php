@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Services\ConnectionDbService;
 use PDO;
 use PDOException;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserRepository
 {
@@ -33,7 +34,7 @@ class UserRepository
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':email', $user->getEmail());
             $statement->bindValue(':password', $user->getPassword());
-            $statement->bindValue(':role', $user->getRoles());
+            $statement->bindValue(':role', $user->getRolesValue());
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -148,6 +149,27 @@ class UserRepository
             $id = $statement->fetchColumn();
             $this->connection->commit();
             return $id;
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
+
+    public function findByEmail(Request $request): bool
+    {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        try {
+            $this->connection->beginTransaction();
+            $query = 'SELECT * FROM APICHADO.user WHERE email = :email';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':email', $data['email']);
+            $statement->execute();
+            $user = $statement->fetchObject(User::class);
+            $this->connection->commit();
+            if ($user) {
+                return true;
+            }
+            return false;
         } catch (PDOException $e) {
             $this->connection->rollBack();
             throw $e;
