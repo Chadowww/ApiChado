@@ -15,7 +15,9 @@ security:
         main:
             lazy: true
             provider: your_custom_user_provider
-            custom_authenticator: App\Security\UserAuthenticator
+            pattern: ^/
+            stateless: true
+            jwt: ~
         login:
             pattern: ^/login
             stateless: true
