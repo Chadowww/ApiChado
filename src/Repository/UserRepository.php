@@ -175,4 +175,22 @@ class UserRepository
             throw $e;
         }
     }
+
+    public function getUserWithCandidate(int $id): array | bool
+    {
+        $this->connection->beginTransaction();
+        $query = '
+            SELECT u.id, email, password, roles, is_verified, created_at, updated_at, c.*, sM.*
+            FROM APICHADO.user u 
+            LEFT JOIN APICHADO.socialeMedia sM on u.id = sM.user_id
+            LEFT JOIN APICHADO.candidate c ON u.id = c.user_id WHERE u.id = :id
+            ';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $this->connection->commit();
+
+        return $user;
+    }
 }
