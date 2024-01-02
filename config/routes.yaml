@@ -79,6 +79,11 @@ UserList:
     controller: App\Controller\UserController::list
     methods: GET
 
+GetUserFromToken:
+    path: /user/get-from-token
+    controller: App\Controller\UserController::getUserFromToken
+    methods: GET
+
 CandidateCreate:
     path: /candidate/create
     controller: App\Controller\CandidateController::create
