@@ -5,14 +5,17 @@ namespace App\Controller;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
+use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Services\EntityServices\UserService;
 use App\Services\ErrorService;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -326,5 +329,15 @@ class UserController extends AbstractController
         }
 
         return new JsonResponse($this->serializer->serialize($users, 'json'), 200, [], true);
+    }
+
+    public function getUserFromToken(TokenInterface $token): JsonResponse
+    {
+        $user = $token->getUser();
+        $dataUser = [];
+        if ($user) {
+            $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getId());
+        }
+        return new JsonResponse($this->serializer->serialize($dataUser['user'], 'json'), 200, [], true);
     }
 }
