@@ -109,6 +109,11 @@ CandidateList:
     controller: App\Controller\CandidateController::list
     methods: GET
 
+CandidateUploadAvatar:
+    path: /candidate/upload-avatar
+    controller: App\Controller\CandidateController::uploadAvatar
+    methods: POST
+
 CompanyCreate:
     path: /company/create
     controller: App\Controller\CompanyController::create
