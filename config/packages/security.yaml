@@ -12,16 +12,16 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        login:
+            pattern: ^/login
+            stateless: true
+            custom_authenticator: App\Security\UserAuthenticator
         main:
             lazy: true
             provider: your_custom_user_provider
             pattern: ^/
             stateless: true
             jwt: ~
-        login:
-            pattern: ^/login
-            stateless: true
-            custom_authenticator: App\Security\UserAuthenticator
         api:
             pattern: ^/
             stateless: true
