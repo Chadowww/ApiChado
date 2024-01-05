@@ -74,7 +74,7 @@ class UserRepository
             $statement->bindValue(':id', $user->getId());
             $statement->bindValue(':email', $user->getEmail());
             $statement->bindValue(':password', $user->getPassword());
-            $statement->bindValue(':role', $user->getRoles());
+            $statement->bindValue(':role', $user->getRolesValue());
             $statement->execute();
             $this->connection->commit();
             return true;

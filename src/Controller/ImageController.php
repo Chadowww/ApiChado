@@ -19,7 +19,11 @@ class ImageController extends AbstractController
           $newFilename = uniqid('', true) . '.' . $uploadedFile->guessExtension();
           $uploadedFile->move($this->getParameter('images_directory'), $newFilename);
 
-          return new JsonResponse(['message' => 'File uploaded with success!']);
+          return new JsonResponse([
+              'code' => '201',
+              'message' => 'File uploaded with success!',
+              'name' => $newFilename,
+          ]);
       }
 
       return new JsonResponse(['message' => 'file not uploaded! :s']);

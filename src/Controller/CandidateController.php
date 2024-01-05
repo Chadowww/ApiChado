@@ -318,6 +318,7 @@ class CandidateController extends AbstractController
         return new JsonResponse(['message' => 'Candidate updated'], 200);
     }
 
+
     /**
      * @throws DatabaseException
      * @throws ResourceNotFoundException
@@ -411,5 +412,41 @@ class CandidateController extends AbstractController
         }
 
         return new JsonResponse($this->serializer->serialize($candidates, 'json'), 200, [], true);
+    }
+
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
+    public function uploadAvatar(Request $request, ImageController $imageController): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if ($user) {
+            $candidate = $this->candidateRepository->getByUserId($user->getId());
+            if (!$candidate) {
+                throw new resourceNotFoundException(
+                    json_encode([
+                        'error' => 'The candidate with id ' . $user->getId() . ' does not exist.'
+                    ],
+                        JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+            $upload = $imageController->create($request);
+            $jsonDecode = json_decode($upload->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            if ($jsonDecode['code'] === '201') {
+                try {
+                    $candidate->setAvatar($jsonDecode['name']);
+                    $this->candidateRepository->update($candidate);
+                    return new JsonResponse(['message' => 'File uploaded with success!', 'fileName' => $jsonDecode['name']]);
+                } catch (PDOException $exception) {
+                    error_log('error after upload file');
+                    throw new DatabaseException($exception->getMessage(), 500);
+                }
+            }
+        }
+        return new JsonResponse(['message' => 'file not uploaded! :s']);
     }
 }

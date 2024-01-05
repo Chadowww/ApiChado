@@ -52,7 +52,6 @@ class UserService
         }
 
         $user->setEmail($data['email']);
-        $user->setPassword(password_hash($data['password'], PASSWORD_ARGON2ID));
         $user->setRoles($data['roles']);
         $user->setUpdatedAt(new DateTime());
 
