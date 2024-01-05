@@ -61,12 +61,13 @@ class CandidateRepository
 
     public function update(Candidate $candidate): bool
     {
+        error_log($candidate->getId());
         try {
             $this->connection->beginTransaction();
             $query = '
             UPDATE APICHADO.candidate
-            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, slug = :slug, user_id = :user_id
-            WHERE id = :id';
+            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, user_id = :user_id
+            WHERE user_id = :user_id';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':firstname', $candidate->getFirstname());
             $statement->bindValue(':lastname', $candidate->getLastname());
@@ -74,13 +75,15 @@ class CandidateRepository
             $statement->bindValue(':address', $candidate->getAddress());
             $statement->bindValue(':city', $candidate->getCity());
             $statement->bindValue(':country', $candidate->getCountry());
+            $statement->bindValue(':avatar', $candidate->getAvatar());
             $statement->bindValue(':slug', $candidate->getSlug());
             $statement->bindValue(':user_id', $candidate->getUserId());
-            $statement->bindValue(':id', $candidate->getId());
             $statement->execute();
             $this->connection->commit();
+            error_log('update candidate');
             return true;
         } catch (PDOException $e) {
+            error_log('error in update candidate');
             $this->connection->rollBack();
             throw $e;
         }
@@ -115,5 +118,18 @@ class CandidateRepository
             $this->connection->rollBack();
             throw $e;
         }
+    }
+
+    public function getByUserId($id):Candidate
+    {
+        $this->connection->beginTransaction();
+        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.id WHERE c.user_id = :id';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        $candidate = $statement->fetchObject(Candidate::class);
+        $this->connection->commit();
+
+        return $candidate;
     }
 }
