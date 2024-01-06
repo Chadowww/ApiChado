@@ -256,4 +256,33 @@ class CandidateTest extends TestCase
 
         $this->mockController->update(18, $request);
     }
+
+    public function testCandidateUpdateError404(): void
+    {
+        $data = [
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ];
+        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request->setMethod('PUT');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn(false);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionCode(404);
+
+        $this->mockController->update(18, $request);
+    }
 }
