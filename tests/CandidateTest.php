@@ -432,4 +432,24 @@ class CandidateTest extends TestCase
         $response = $this->mockController->list();
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testCandidateListError500(): void
+    {
+        $request = new Request([], [], [], [], [], [], null);
+        $request->setMethod('GET');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('list')
+            ->willThrowException(new \PDOException());
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer
+        );
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+
+        $this->mockController->list();
+    }
 }
