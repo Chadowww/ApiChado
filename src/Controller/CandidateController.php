@@ -127,11 +127,10 @@ class CandidateController extends AbstractController
                 JSON_THROW_ON_ERROR), 400);
         }
         $candidate = $this->candidateService->createCandidate($request);
-
         try {
             $this->candidateRepository->create($candidate);
         } catch (PDOException $exception) {
-            throw new InvalidRequestException($exception->getMessage(), 400);
+            throw new DatabaseException($exception->getMessage(), 500);
         }
 
         return new JsonResponse(['message' => 'Candidate created'], 201);
