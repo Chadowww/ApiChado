@@ -403,4 +403,33 @@ class CandidateTest extends TestCase
 
         $this->mockController->delete($request->get('id'));
     }
+
+    public function testCandidateList(): void
+    {
+        $candidate = new Candidate([
+            'id' => 18,
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ]);
+        $request = new Request([], [], [], [], [], [], null);
+        $request->setMethod('GET');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('list')
+            ->willReturn([$candidate]);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer
+        );
+
+        $response = $this->mockController->list();
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
