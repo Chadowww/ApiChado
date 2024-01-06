@@ -13,13 +13,11 @@ use App\Services\ErrorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CandidateTest extends TestCase
 {
     private CandidateService $candidateService;
     private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
     private ErrorService $errorService;
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
@@ -29,7 +27,6 @@ class CandidateTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->candidateService = $this->createMock(CandidateService::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->validator = $this->createMock(ValidatorInterface::class);
         $this->errorService = $this->createMock(ErrorService::class);
         $this->mockRepository = $this->createMock(CandidateRepository::class);
         $this->mockController = new CandidateController(
