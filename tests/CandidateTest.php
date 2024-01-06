@@ -57,4 +57,41 @@ class CandidateTest extends TestCase
         $response = $this->mockController->create($request);
         $this->assertEquals(201, $response->getStatusCode());
     }
+
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
+    public function testCandidateCreateError400(): void
+    {
+        $data = [
+            'firstname' => '',
+            'lastname' => '',
+            'phone' => 'a',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ];
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request->setMethod('POST');
+        $request->headers->set('Content-Type', 'application/json');
+
+        $this->errorService->expects($this->atLeastOnce())
+            ->method('getErrorsCandidateRequest')
+            ->willReturn(['This value should not be blank.']);
+
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionCode(400);
+
+        $this->mockController->create($request);
+    }
+
 }
