@@ -6,14 +6,13 @@ use App\Controller\CandidateController;
 use App\Entity\Candidate;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\CandidateService;
 use App\Services\ErrorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CandidateTest extends TestCase
@@ -155,4 +154,25 @@ class CandidateTest extends TestCase
         $response = $this->mockController->read($request->get('id'));
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testCandidateReadError404(): void
+    {
+        $request = new Request(['id' => 18], [], [], [], [], [], null);
+        $request->setMethod('GET');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn(false);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionCode(404);
+
+        $this->mockController->read($request->get('id'));
+    }
+
 }
