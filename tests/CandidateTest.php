@@ -318,4 +318,36 @@ class CandidateTest extends TestCase
 
         $this->mockController->update(18, $request);
     }
+
+    public function testCandidateDelete(): void
+    {
+        $candidate = new Candidate([
+            'id' => 18,
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ]);
+        $request = new Request(['id' => 18], [], [], [], [], [], null);
+        $request->setMethod('DELETE');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn($candidate);
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('delete')
+            ->willReturn(true);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer
+        );
+
+        $response = $this->mockController->delete($request->get('id'));
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
