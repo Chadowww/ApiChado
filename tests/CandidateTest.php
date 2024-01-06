@@ -94,4 +94,35 @@ class CandidateTest extends TestCase
         $this->mockController->create($request);
     }
 
+    public function testCandidateCreateError500(): void
+    {
+        $data = [
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ];
+        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request->setMethod('POST');
+        $request->headers->set('Content-Type', 'application/json');
+
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('create')
+            ->willThrowException(new \PDOException());
+
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+
+        $this->mockController->create($request);
+    }
 }
