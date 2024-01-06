@@ -8,6 +8,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\JobOfferRepository;
+use App\Services\EntityServices\JobOfferService;
 use App\Services\ErrorService;
 use JsonException;
 use PDOException;
@@ -23,6 +24,7 @@ class JobOfferTest extends TestCase
     private ErrorService $errorService;
     private JobOfferRepository $mockRepository;
     private JobOfferController $mockController;
+    private JobOfferService $jobOfferService;
 
     public function __construct()
     {
@@ -30,7 +32,13 @@ class JobOfferTest extends TestCase
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->errorService = new ErrorService($this->createMock(ValidatorInterface::class));
         $this->mockRepository = $this->createMock(JobOfferRepository::class);
-        $this->mockController = new JobOfferController($this->mockRepository, $this->serializer, $this->errorService);
+        $this->jobOfferService = $this->createMock(JobOfferService::class);
+        $this->mockController = new JobOfferController(
+            $this->mockRepository,
+            $this->serializer,
+            $this->errorService,
+            $this->jobOfferService
+        );
     }
 
     /**
