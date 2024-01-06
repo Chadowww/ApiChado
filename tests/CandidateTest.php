@@ -350,4 +350,24 @@ class CandidateTest extends TestCase
         $response = $this->mockController->delete($request->get('id'));
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testCandidateDeleteError404(): void
+    {
+        $request = new Request(['id' => 18], [], [], [], [], [], null);
+        $request->setMethod('DELETE');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn(false);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer
+        );
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionCode(404);
+
+        $this->mockController->delete($request->get('id'));
+    }
 }
