@@ -285,4 +285,37 @@ class CandidateTest extends TestCase
 
         $this->mockController->update(18, $request);
     }
+
+    public function testCandidateUpdateError500(): void
+    {
+        $data = [
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ];
+        $candidate = new Candidate($data);
+        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request->setMethod('PUT');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn($candidate);
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('update')
+            ->willThrowException(new \PDOException());
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+
+        $this->mockController->update(18, $request);
+    }
 }
