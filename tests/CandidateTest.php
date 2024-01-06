@@ -226,4 +226,34 @@ class CandidateTest extends TestCase
         $response = $this->mockController->update(18, $request);
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testCandidateUpdateError400(): void
+    {
+        $data = [
+            'firstname' => '',
+            'lastname' => '',
+            'phone' => 'a',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ];
+        $candidate = new Candidate($data);
+        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request->setMethod('PUT');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->errorService->expects($this->atLeastOnce())
+            ->method('getErrorsCandidateRequest')
+            ->willReturn(['This value should not be blank.']);
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionCode(400);
+
+        $this->mockController->update(18, $request);
+    }
 }
