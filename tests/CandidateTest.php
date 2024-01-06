@@ -370,4 +370,37 @@ class CandidateTest extends TestCase
 
         $this->mockController->delete($request->get('id'));
     }
+
+    public function testCandidateDeleteError500(): void
+    {
+        $candidate = new Candidate([
+            'id' => 18,
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'city' => 'New York',
+            'country' => 'USA',
+            'user_id' => '1',
+        ]);
+        $request = new Request(['id' => 18], [], [], [], [], [], null);
+        $request->setMethod('DELETE');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn($candidate);
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('delete')
+            ->willThrowException(new \PDOException());
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer
+        );
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+
+        $this->mockController->delete($request->get('id'));
+    }
 }
