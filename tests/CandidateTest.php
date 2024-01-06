@@ -175,4 +175,23 @@ class CandidateTest extends TestCase
         $this->mockController->read($request->get('id'));
     }
 
+    public function testCandidateReadError500(): void
+    {
+        $request = new Request(['id' => 18], [], [], [], [], [], null);
+        $request->setMethod('GET');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willThrowException(new \PDOException());
+        $this->mockController = new CandidateController(
+            $this->errorService,
+            $this->candidateService,
+            $this->mockRepository,
+            $this->serializer,
+        );
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionCode(500);
+
+        $this->mockController->read($request->get('id'));
+    }
 }
