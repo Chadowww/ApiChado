@@ -18,15 +18,14 @@ class JobOfferService {
         return $jobOffer;
     }
 
-    public function updateJobOffer(JobOffer|bool $jobOffer, Request $request): JobOffer|bool
+    public function updateJobOffer(JobOffer $jobOffer, Request $request): JobOffer
     {
-        if ($jobOffer instanceof JobOffer) {
-            $jobOffer->setTitle($request->get('title'));
-            $jobOffer->setDescription($request->get('description'));
-            $jobOffer->setCity($request->get('city'));
-            $jobOffer->setSalaryMin($request->get('salaryMin'));
-            $jobOffer->setSalaryMax($request->get('salaryMax'));
-        }
+        $jobOffer->setTitle($request->get('title'));
+        $jobOffer->setDescription($request->get('description'));
+        $jobOffer->setCity($request->get('city'));
+        $jobOffer->setSalaryMin($request->get('salaryMin'));
+        $jobOffer->setSalaryMax($request->get('salaryMax'));
+
         return $jobOffer;
     }
 }

@@ -248,7 +248,6 @@ class JobOfferController extends AbstractController
                 400
             );
         }
-
         $jobOffer = $this->jobOfferRepository->read($id);
 
         if ($jobOffer === false) {
