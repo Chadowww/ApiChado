@@ -37,6 +37,11 @@ class CandidateTest extends TestCase
         );
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testCandidateCreate(): void
     {
         $data = [
@@ -48,7 +53,7 @@ class CandidateTest extends TestCase
             'country' => 'USA',
             'user_id' => '1',
         ];
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
         $response = $this->mockController->create($request);
