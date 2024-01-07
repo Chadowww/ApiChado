@@ -4,58 +4,53 @@ namespace App\Repository;
 
 use App\Entity\Company;
 use App\Services\ConnectionDbService;
+use App\Services\DataBaseServices\BindValueService;
 use PDO;
 use PDOException;
 
 class CompanyRepository
 {
     private PDO $connection;
+    private BindValueService $bindValueService;
 
-    public function __construct(ConnectionDbService $connection)
+    CONST array VALUES = [
+        'name' => ':name',
+        'phone' => ':phone',
+        'address' => ':address',
+        'city' => ':city',
+        'country' => ':country',
+        'siret' => ':siret',
+        'slug' => ':slug',
+        'user_id' => ':user_id',
+    ];
+
+    public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
     {
         $this->connection = $connection->connection();
+        $this->bindValueService = $bindValueService;
     }
 
     public function create(Company $company): bool
     {
-        $this->connection->beginTransaction();
+        $companyAttributes = [];
 
-        try {
+        $this->executeTransaction(function () use ($company, &$companyAttributes){
             $query = '
-                INSERT INTO APICHADO.company 
-                    (`name`,
-                     `phone`,
-                     `address`,
-                     `city`,
-                     `country`,
-                     `siret`,
-                     `slug`,
-                     `user_id`)
-                VALUES 
-                    (:name,
-                     :phone,
-                     :address,
-                     :city,
-                     :country,
-                     :siret,
-                     :slug,
-                     :user_id)';
+            INSERT INTO APICHADO.company
+            (name, phone, address, city, country, siret, slug, user_id) 
+            VALUES 
+            (:name, :phone, :address, :city, :country, :siret, :slug, :user_id)';
+
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':name', $company->getName());
-            $statement->bindValue(':phone', $company->getPhone());
-            $statement->bindValue(':address', $company->getAddress());
-            $statement->bindValue(':city', $company->getCity());
-            $statement->bindValue(':country', $company->getCountry());
-            $statement->bindValue(':siret', $company->getSiret());
-            $statement->bindValue(':slug', $company->getSlug());
-            $statement->bindValue(':user_id', $company->getUserId());
+
+            foreach (self::VALUES as $key => $value) {
+                $companyAttributes[$value] = $company->{"get" . ucfirst($key)}();
+            }
+            $this->bindValueService->bindValuesToStatement($statement, $companyAttributes);
             $statement->execute();
-            $this->connection->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->connection->rollBack();
-            throw $e;
-        }
+        });
+
+        return true;
     }
 
     public function read(int $id): Company | bool
@@ -77,36 +72,33 @@ class CompanyRepository
 
     public function update(Company $company): bool
     {
-        try {
-            $this->connection->beginTransaction();
+        $companyAttributes = [];
+
+        $this->executeTransaction(function () use ($company, &$companyAttributes){
             $query = '
-                UPDATE APICHADO.company 
-                SET 
-                    `name` = :name,
-                    `phone` = :phone,
-                    `address` = :address,
-                    `city` = :city,
-                    `country` = :country,
-                    `siret` = :siret,
-                    `slug` = :slug
-                WHERE 
-                    `id` = :id';
+            UPDATE APICHADO.company
+            SET 
+                name = :name,
+                phone = :phone,
+                address = :address,
+                city = :city,
+                country = :country,
+                siret = :siret,
+                slug = :slug,
+                user_id = :user_id
+            WHERE id = :id';
+
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':name', $company->getName());
-            $statement->bindValue(':phone', $company->getPhone());
-            $statement->bindValue(':address', $company->getAddress());
-            $statement->bindValue(':city', $company->getCity());
-            $statement->bindValue(':country', $company->getCountry());
-            $statement->bindValue(':siret', $company->getSiret());
-            $statement->bindValue(':slug', $company->getSlug());
-            $statement->bindValue(':id', $company->getId());
+
+            foreach (self::VALUES as $key => $value) {
+                $companyAttributes[$value] = $company->{"get" . ucfirst($key)}();
+            }
+            $companyAttributes[':id'] = $company->getId();
+            $this->bindValueService->bindValuesToStatement($statement, $companyAttributes);
             $statement->execute();
-            $this->connection->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->connection->rollBack();
-            throw $e;
-        }
+        });
+
+        return true;
     }
 
     public function delete(int $id): bool
@@ -129,8 +121,7 @@ class CompanyRepository
     {
         $this->connection->beginTransaction();
         $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.id';
-        $statement = $this->connection->prepare($query);
-        $statement->execute();
+        $statement = $this->connection->query($query);
         $companies = $statement->fetchAll(PDO::FETCH_CLASS, Company::class);
         $this->connection->commit();
 
@@ -147,11 +138,24 @@ class CompanyRepository
             GROUP BY c.id, c.name
             ORDER BY offers_count DESC
             LIMIT 6';
-        $statement = $this->connection->prepare($query);
-        $statement->execute();
+        $statement = $this->connection->query($query);
         $companies = $statement->fetchAll(PDO::FETCH_ASSOC);
         $this->connection->commit();
 
         return $companies;
+    }
+
+    private function executeTransaction(callable $transaction): Void
+    {
+        try {
+            $this->connection->beginTransaction();
+
+            $transaction();
+
+            $this->connection->commit();
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            throw $e;
+        }
     }
 }
