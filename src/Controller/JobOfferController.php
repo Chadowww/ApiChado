@@ -93,7 +93,10 @@ class JobOfferController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
 
         $jobOffer = $this->jobOfferService->buildJobOffer($request);
@@ -149,10 +152,16 @@ class JobOfferController extends AbstractController
         try {
             $jobOffer = $this->jobOfferRepository->read($id);
             if (!$jobOffer) {
-                throw new resourceNotFoundException(json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
+                throw new resourceNotFoundException(
+                    json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                    404
+                );
             }
         } catch (PDOException $e) {
-            throw new databaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
+            throw new databaseException(
+                json_encode($e->getMessage(), JSON_THROW_ON_ERROR),
+                $e->getCode()
+            );
         }
 
         return new JsonResponse($this->serializer->serialize($jobOffer, 'json'), 200, [], true);
@@ -234,14 +243,19 @@ class JobOfferController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
-                400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
 
         $jobOffer = $this->jobOfferRepository->read($id);
 
         if ($jobOffer === false) {
-            throw new ResourceNotFoundException(json_encode('The job offer with id ' . $id . ' was not found.', JSON_THROW_ON_ERROR), 404);
+            throw new ResourceNotFoundException(
+                json_encode('The job offer with id ' . $id . ' was not found.', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         try {
@@ -290,7 +304,10 @@ class JobOfferController extends AbstractController
         $jobOffer = $this->jobOfferRepository->read($id);
 
         if ($jobOffer === false){
-            throw new resourceNotFoundException(json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
+            throw new resourceNotFoundException(
+                json_encode('the job offer with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         try {
@@ -330,10 +347,13 @@ class JobOfferController extends AbstractController
         } catch (PDOException $e) {
             throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
-       if( empty($jobOffers)){
-           throw new ResourceNotFoundException(json_encode('no job offer found', JSON_THROW_ON_ERROR), 404);
-       }
+        if( empty($jobOffers)){
+            throw new ResourceNotFoundException(
+                json_encode('no job offer found', JSON_THROW_ON_ERROR),
+                404
+            );
+        }
 
-       return new JsonResponse($this->serializer->serialize($jobOffers, 'json'), 200, [], true);
+        return new JsonResponse($this->serializer->serialize($jobOffers, 'json'), 200, [], true);
     }
 }

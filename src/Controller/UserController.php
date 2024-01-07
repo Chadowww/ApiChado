@@ -97,10 +97,16 @@ class UserController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if ($this->userRepository->findByEmail($request)) {
-            throw new InvalidRequestException(json_encode(['error' => 'This email is already used'], JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode(['error' => 'This email is already used'], JSON_THROW_ON_ERROR),
+                400
+            );
         }
         if ($this->errorService->getErrorsUserRequest($request) !== []) {
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
         $user = $this->UserService->buildUser($request);
         try {
@@ -241,7 +247,10 @@ class UserController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsUserRequest($request) !== []) {
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
         $user = $this->userRepository->read($id);
         if (!$user) {
@@ -338,6 +347,11 @@ class UserController extends AbstractController
         if ($user) {
             $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getId());
         }
-        return new JsonResponse($this->serializer->serialize($dataUser['user'], 'json'), 200, [], true);
+        return new JsonResponse(
+            $this->serializer->serialize($dataUser['user'], 'json'),
+            200,
+            [],
+            true
+        );
     }
 }

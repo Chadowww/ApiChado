@@ -102,8 +102,10 @@ class CompanyController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if($this->errorService->getErrorsCompanyRequest($request) !== []) {
-           throw new InvalidRequestException(json_encode($this->errorService->getErrorsCompanyRequest($request),
-                JSON_THROW_ON_ERROR), 400);
+           throw new InvalidRequestException(
+               json_encode($this->errorService->getErrorsCompanyRequest($request), JSON_THROW_ON_ERROR),
+               400
+           );
         }
         $company = $this->companyService->buildCompany($request);
 
@@ -236,15 +238,19 @@ class CompanyController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsCompanyRequest($request) !== []) {
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsCompanyRequest($request),
-                JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsCompanyRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
 
         $company = $this->companyRepository->read($id);
 
         if (!$company){
-            throw new ResourceNotFoundException(json_encode('The company with id ' . $id . ' was not found',
-                JSON_THROW_ON_ERROR), 404);
+            throw new ResourceNotFoundException(
+                json_encode('The company with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         $company = $this->companyService->updateCompany($company, $request);
