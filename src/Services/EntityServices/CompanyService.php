@@ -22,7 +22,7 @@ class CompanyService
         $company->setCountry($data['country']);
         $company->setSiret($data['siret']);
         $company->setSlug(str_ireplace(' ', '-', $data['name']));
-        $company->setUserId($data['user_id']);
+        $company->setUser_Id($data['user_id']);
 
         return $company;
     }

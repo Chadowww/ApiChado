@@ -69,7 +69,10 @@ class ContractController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if($this->errorService->getErrorsContractRequest($request) !== []) {
-        throw new InvalidRequestException(json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
 
         $contract = new Contract();
@@ -123,7 +126,10 @@ class ContractController extends AbstractController
         try {
             $contract = $this->contractRepository->read($id);
             if (!$contract) {
-                throw new resourceNotFoundException(json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
+                throw new resourceNotFoundException(
+                    json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                    404
+                );
             }
         } catch (PDOException $e) {
             throw new databaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
@@ -191,13 +197,19 @@ class ContractController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
        if ($this->errorService->getErrorsContractRequest($request) !== []) {
-           throw new InvalidRequestException(json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR), 400);
+           throw new InvalidRequestException(
+               json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR),
+               400
+           );
        }
 
        $contract = $this->contractRepository->read($id);
 
        if (!$contract) {
-           throw new ResourceNotFoundException(json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
+           throw new ResourceNotFoundException(
+               json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+               404
+           );
        }
 
         try {
@@ -248,7 +260,10 @@ class ContractController extends AbstractController
         $contract = $this->contractRepository->read($id);
 
         if(!$contract) {
-            throw new ResourceNotFoundException(json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR), 404);
+            throw new ResourceNotFoundException(
+                json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         try {

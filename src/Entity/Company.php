@@ -187,12 +187,12 @@ class Company extends User
         $this->cover = $cover;
     }
 
-    public function getUserId(): ?int
+    public function getUser_Id(): ?int
     {
         return $this->user_id;
     }
 
-    public function setUserId(?int $user_id): void
+    public function setUser_Id(?int $user_id): void
     {
         $this->user_id = $user_id;
     }
