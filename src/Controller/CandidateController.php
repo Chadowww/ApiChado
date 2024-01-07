@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
@@ -42,6 +43,7 @@ class CandidateController extends AbstractController
     /**
      * @throws InvalidRequestException
      * @throws \JsonException
+     * @throws DatabaseException
      * @OA\Response(
      *     response=201,
      *     description="Candidate created",
@@ -123,8 +125,10 @@ class CandidateController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if($this->errorService->getErrorsCandidateRequest($request) !== []){
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsCandidateRequest($request),
-                JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
         $candidate = $this->candidateService->createCandidate($request);
         try {
@@ -132,7 +136,6 @@ class CandidateController extends AbstractController
         } catch (PDOException $exception) {
             throw new DatabaseException($exception->getMessage(), 500);
         }
-
         return new JsonResponse(['message' => 'Candidate created'], 201);
     }
 
@@ -291,8 +294,10 @@ class CandidateController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
         if($this->errorService->getErrorsCandidateRequest($request) !== []){
-            throw new InvalidRequestException(json_encode($this->errorService->getErrorsCandidateRequest($request),
-                JSON_THROW_ON_ERROR), 400);
+            throw new InvalidRequestException(
+                json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
+                400
+            );
         }
 
         $candidate = $this->candidateRepository->read($id);
@@ -414,15 +419,40 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
+     * Uploads an avatar for the authenticated user's candidate profile.
+     *
+     * @param Request $request The HTTP request object containing the avatar image file.
+     * @param ImageController $imageController The image controller for handling image uploads.
+     *
+     * @return JsonResponse Returns a JSON response indicating the success or failure of the avatar upload.
+     *
+     * @throws ResourceNotFoundException If the candidate for the authenticated user does not exist.
+     * @throws DatabaseException If there is an error updating the candidate's avatar in the database.
      * @throws \JsonException
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="File uploaded with success!",
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(property="201", type="string", example="File uploaded with success!"),
+     *     @OA\Property(property="fileName", type="string", example="example.jpg")
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Candidate not found",
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(property="message", type="string", example="file not uploaded! :s")
+     * )
+     * )
      */
     public function uploadAvatar(Request $request, ImageController $imageController): JsonResponse
     {
         $user = $this->getUser();
 
-        if ($user) {
+        if ($user instanceof User) {
             $candidate = $this->candidateRepository->getByUserId($user->getId());
             if (!$candidate) {
                 throw new resourceNotFoundException(
@@ -439,7 +469,8 @@ class CandidateController extends AbstractController
                 try {
                     $candidate->setAvatar($jsonDecode['name']);
                     $this->candidateRepository->update($candidate);
-                    return new JsonResponse(['message' => 'File uploaded with success!', 'fileName' => $jsonDecode['name']]);
+                    return new JsonResponse(['201' => 'File uploaded with success!', 'fileName' =>
+                        $jsonDecode['name']]);
                 } catch (PDOException $exception) {
                     error_log('error after upload file');
                     throw new DatabaseException($exception->getMessage(), 500);
