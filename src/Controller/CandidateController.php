@@ -454,6 +454,7 @@ class CandidateController extends AbstractController
 
         if ($user instanceof User) {
             $candidate = $this->candidateRepository->getByUserId($user->getId());
+
             if (!$candidate) {
                 throw new resourceNotFoundException(
                     json_encode([
@@ -463,16 +464,20 @@ class CandidateController extends AbstractController
                     404
                 );
             }
+
             $upload = $imageController->create($request);
             $jsonDecode = json_decode($upload->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
             if ($jsonDecode['code'] === '201') {
                 try {
                     $candidate->setAvatar($jsonDecode['name']);
                     $this->candidateRepository->update($candidate);
-                    return new JsonResponse(['201' => 'File uploaded with success!', 'fileName' =>
-                        $jsonDecode['name']]);
+
+                    return new JsonResponse([
+                        '201' => 'File uploaded with success!', 'fileName' =>
+                        $jsonDecode['name']
+                    ]);
                 } catch (PDOException $exception) {
-                    error_log('error after upload file');
                     throw new DatabaseException($exception->getMessage(), 500);
                 }
             }
