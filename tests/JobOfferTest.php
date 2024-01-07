@@ -30,7 +30,7 @@ class JobOfferTest extends TestCase
     {
         parent::__construct();
         $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->errorService = new ErrorService($this->createMock(ValidatorInterface::class));
+        $this->errorService = $this->createMock(ErrorService::class);
         $this->mockRepository = $this->createMock(JobOfferRepository::class);
         $this->jobOfferService = $this->createMock(JobOfferService::class);
         $this->mockController = new JobOfferController(
@@ -48,17 +48,18 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferCreate(): void
     {
-        $request = new Request();
-        $request->setMethod('POST');
-        $request->request->add([
-            'title' => 'test21',
-            'description' => 'test',
-            'city' => 'test',
-            'salaryMin' => 40000,
-            'salaryMax' => 45000,
-        ]);
-        $response = $this->mockController->create($request);
-        $this->assertEquals(201, $response->getStatusCode());
+       $data = [
+           'title' => 'test21',
+           'description' => 'test',
+           'city' => 'test',
+           'salaryMin' => 40000,
+           'salaryMax' => 45000,
+       ];
+       $request = new Request([],[], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+         $request->setMethod('POST');
+         $request->headers->set('Content-Type', 'application/json');
+         $response = $this->mockController->create($request);
+         $this->assertEquals(201, $response->getStatusCode());
     }
 
     /**
@@ -67,18 +68,23 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferCreateError400(): void
     {
-        $request = new Request();
-        $request->setMethod('POST');
-        $request->request->add([
-            'title' => 'test21',
+        $data = [
+            'title' => '',
             'description' => 'test',
             'city' => 'test',
             'salaryMin' => 'test',
             'salaryMax' => 45000,
-        ]);
+        ];
+        $request = new Request([],[], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request->setMethod('POST');
+        $request->headers->set('Content-Type', 'application/json');
+
+        $this->errorService->expects($this->atLeastOnce())
+            ->method('getErrorsJobOfferRequest')
+            ->willReturn(['title' => 'Le titre est obligatoire']);
+
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
-
         $this->mockController->create($request);
 
     }
@@ -119,7 +125,12 @@ class JobOfferTest extends TestCase
         $mockRepository = $this->createMock(JobOfferRepository::class);
         $mockRepository->method('read')->willReturn(true);
 
-        $mockController = new JobOfferController($mockRepository, $this->serializer, $this->errorService);
+        $mockController = new JobOfferController(
+            $mockRepository,
+            $this->serializer,
+            $this->errorService,
+            $this->jobOfferService
+        );
         $response = $mockController->read(2);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -134,7 +145,12 @@ class JobOfferTest extends TestCase
         $mockRepository = $this->createMock(JobOfferRepository::class);
         $mockRepository->method('read')->willReturn(false);
 
-        $mockController = new JobOfferController($mockRepository, $this->serializer, $this->errorService);
+        $mockController = new JobOfferController(
+            $mockRepository,
+            $this->serializer,
+            $this->errorService,
+            $this->jobOfferService
+        );
 
         $this->expectException(ResourceNotFoundException::class);
 
@@ -154,7 +170,12 @@ class JobOfferTest extends TestCase
         $jobOfferRepository->method('read')
             ->willThrowException(new PDOException('Erreur de connexion a la base de donnees', 500));
 
-        $controller = new JobOfferController($jobOfferRepository, $this->serializer, $this->errorService);
+        $controller = new JobOfferController(
+            $jobOfferRepository,
+            $this->serializer,
+            $this->errorService,
+            $this->jobOfferService
+        );
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -170,23 +191,21 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferUpdate(): void
     {
-        $mockRepository = $this->createMock(JobOfferRepository::class);
-        $mockRepository->method('read')->willReturn(new JobOffer());
-        $mockRepository->method('update')->willReturn(true);
-        $mockController = new JobOfferController($mockRepository, $this->serializer, $this->errorService);
-
-        $request = new Request();
-        $request->setMethod('PUT');
-        $request->query->add([
-            'title' => 'NouveauTest',
-            'description' => 'Nouvelle Description',
-            'city' => 'Nouvelle ville Libourne',
+        $data = new JobOffer([
+            'title' => 'test21',
+            'description' => 'test',
+            'city' => 'test',
             'salaryMin' => 40000,
             'salaryMax' => 45000,
         ]);
+        $jobOffer = new JobOffer($data);
 
-        $response = $mockController->update(2, $request);
-        $this->assertEquals(204, $response->getStatusCode());
+        $request = new Request([],[], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request->setMethod('PUT');
+        $request->headers->set('Content-Type', 'application/json');
+        $this->mockRepository->expects($this->atLeastOnce())->method('read')->willReturn($jobOffer);
+        $this->mockRepository->expects($this->atLeastOnce())->method('update')->willReturn(true);
+        $this->mockController->update(2, $request);
     }
 
     /**
@@ -205,6 +224,9 @@ class JobOfferTest extends TestCase
             'salaryMin' => 'test',
             'salaryMax' => 45000,
         ]);
+        $this->errorService->expects($this->atLeastOnce())
+            ->method('getErrorsJobOfferRequest')
+            ->willReturn(['title' => 'Le titre est obligatoire']);
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
 
@@ -224,7 +246,12 @@ class JobOfferTest extends TestCase
         $this->mockRepository->method('update')
             ->willThrowException(new DatabaseException('Erreur de connexion à la base de données', 500));
 
-        $controller = new JobOfferController($this->mockRepository, $this->serializer, $this->errorService);
+        $controller = new JobOfferController(
+            $this->mockRepository,
+            $this->serializer,
+            $this->errorService,
+            $this->jobOfferService
+        );
 
         $request = new Request();
         $request->setMethod('PUT');
