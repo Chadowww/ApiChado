@@ -96,6 +96,10 @@ class CandidateTest extends TestCase
         $this->mockController->create($request);
     }
 
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testCandidateCreateError500(): void
     {
         $data = [
@@ -107,7 +111,7 @@ class CandidateTest extends TestCase
             'country' => 'USA',
             'user_id' => '1',
         ];
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
@@ -128,6 +132,11 @@ class CandidateTest extends TestCase
         $this->mockController->create($request);
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function  testCandidateRead(): void
     {
         $candidate = new Candidate([
@@ -157,6 +166,10 @@ class CandidateTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testCandidateReadError404(): void
     {
         $request = new Request(['id' => 18], [], [], [], [], [], null);
@@ -177,6 +190,10 @@ class CandidateTest extends TestCase
         $this->mockController->read($request->get('id'));
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testCandidateReadError500(): void
     {
         $request = new Request(['id' => 18], [], [], [], [], [], null);
@@ -197,6 +214,12 @@ class CandidateTest extends TestCase
         $this->mockController->read($request->get('id'));
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testCandidateUpdate(): void
     {
         $data = [
@@ -209,7 +232,7 @@ class CandidateTest extends TestCase
             'user_id' => '1',
         ];
         $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
         $this->mockRepository->expects($this->atLeastOnce())
@@ -229,6 +252,11 @@ class CandidateTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testCandidateUpdateError400(): void
     {
         $data = [
@@ -241,7 +269,7 @@ class CandidateTest extends TestCase
             'user_id' => '1',
         ];
         $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
         $this->errorService->expects($this->atLeastOnce())
@@ -259,6 +287,11 @@ class CandidateTest extends TestCase
         $this->mockController->update(18, $request);
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testCandidateUpdateError404(): void
     {
         $data = [
@@ -288,6 +321,11 @@ class CandidateTest extends TestCase
         $this->mockController->update(18, $request);
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testCandidateUpdateError500(): void
     {
         $data = [
@@ -300,7 +338,7 @@ class CandidateTest extends TestCase
             'user_id' => '1',
         ];
         $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
         $this->mockRepository->expects($this->atLeastOnce())
@@ -321,6 +359,11 @@ class CandidateTest extends TestCase
         $this->mockController->update(18, $request);
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testCandidateDelete(): void
     {
         $candidate = new Candidate([
@@ -353,6 +396,10 @@ class CandidateTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testCandidateDeleteError404(): void
     {
         $request = new Request(['id' => 18], [], [], [], [], [], null);
@@ -373,6 +420,10 @@ class CandidateTest extends TestCase
         $this->mockController->delete($request->get('id'));
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testCandidateDeleteError500(): void
     {
         $candidate = new Candidate([
@@ -406,6 +457,10 @@ class CandidateTest extends TestCase
         $this->mockController->delete($request->get('id'));
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testCandidateList(): void
     {
         $candidate = new Candidate([
@@ -435,6 +490,9 @@ class CandidateTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function testCandidateListError500(): void
     {
         $request = new Request([], [], [], [], [], [], null);
