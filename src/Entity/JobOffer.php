@@ -15,18 +15,23 @@ class JobOffer
     /**
      * @SerializedName("title")
      */
-    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\NotBlank(message: "Title is required")]
     #[Assert\Type("string", message: "Title must be a string")]
-    #[Assert\Length(min: 3, max: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Title must be at least {{ limit }} characters long",
+        maxMessage: "Title must be at least {{ limit }} characters long",
+    )]
     private ?string $title = null;
 
     /**
      * @var string|null $description
      */
-    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\NotBlank(message: "Description is required")]
     #[Assert\Type("string", message: "Description must be a string")]
     #[Assert\Length(
-        min: 3,
+        min: 50,
         max: 2500,
         minMessage: "Description must be at least {{ limit }} characters long",
         maxMessage: "Description must be at least {{ limit }} characters long"
@@ -36,7 +41,7 @@ class JobOffer
     /**
      * @var string|null $city
      */
-    #[Assert\NotBlank(message: "Salary min is required")]
+    #[Assert\NotBlank(message: "City is required")]
     #[Assert\Type("string", message: "City must be a string")]
     #[Assert\Length(
         min: 3,

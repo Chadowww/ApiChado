@@ -124,7 +124,7 @@ class ErrorService
         if (!isset($data['email'], $data['password'], $data['roles'])) {
             $errors[] = [
                 'field' => 'request',
-                'message' => 'Request must contain email, password and role fields',
+                'message' => 'Request must contain email, password and roles fields',
             ];
         }
         foreach ($data as $key => $value) {
@@ -315,6 +315,15 @@ class ErrorService
                         $errors[] = [
                             'field' => 'siret',
                             'message' => $this->validator->validatePropertyValue(Company::class, 'siret', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case  'user_id':
+                    if ($this->validator->validatePropertyValue(Company::class, 'user_id', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'user_id',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'user_id', $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }

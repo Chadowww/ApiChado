@@ -18,13 +18,13 @@ class Company extends User
     #[Assert\NotBlank(message: "Name is required")]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 50,
         minMessage: "Name must be at least {{ limit }} characters long",
         maxMessage: "Name must be at least {{ limit }} characters long"
     )]
     protected ?string $name = null;
 
-    #[Assert\NotBlank(message: "phone is required")]
+    #[Assert\NotBlank(message: "Phone is required")]
     #[Assert\Length(
         min: 10,
         max: 10,
@@ -37,7 +37,7 @@ class Company extends User
     )]
     protected ?string $phone = null;
 
-    #[Assert\NotBlank(message: "address is required")]
+    #[Assert\NotBlank(message: "Address is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -46,7 +46,7 @@ class Company extends User
     )]
     protected ?string $address = null;
 
-    #[Assert\NotBlank(message: "coty is required")]
+    #[Assert\NotBlank(message: "City is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -55,7 +55,7 @@ class Company extends User
     )]
     protected ?string $city = null;
 
-    #[Assert\NotBlank(message: "country is required")]
+    #[Assert\NotBlank(message: "Country is required")]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -85,6 +85,9 @@ class Company extends User
 
     protected ?string $cover = null;
 
+    #[Assert\NotBlank(message: "User id is required")]
+    #[Assert\Positive(message: "User id must be a positive number")]
+    #[Assert\Type("integer", message: "User id must be a number")]
     protected ?int $user_id = null;
 
     public function getName(): ?string

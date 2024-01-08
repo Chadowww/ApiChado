@@ -11,6 +11,10 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    App\Command\RunTestCommand:
+      arguments:
+        $projectDir: '%kernel.project_dir%'
+
     Symfony\Component\Serializer\SerializerInterface: '@serializer'
     Symfony\Component\Serializer\Encoder\JsonEncoder: ~
     Symfony\Component\Serializer\Normalizer\ObjectNormalizer: ~
