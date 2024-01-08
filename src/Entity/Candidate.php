@@ -16,18 +16,20 @@ class Candidate
     protected ?int $id = null;
 
     #[Assert\NotBlank(message: "Firstname is required")]
+    #[Assert\Type(type: 'string', message: "Firstname must be a string")]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 50,
         minMessage: "Firstname must be at least {{ limit }} characters long",
         maxMessage: "Firstname must be at least {{ limit }} characters long"
     )]
     protected ?string $firstname = null;
 
     #[Assert\NotBlank(message: "Lastname is required")]
+    #[Assert\Type(type: 'string', message: "Lastname must be a string")]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 50,
         minMessage: "Lastname must be at least {{ limit }} characters long",
         maxMessage: "Lastname must be at least {{ limit }} characters long"
     )]
@@ -39,6 +41,7 @@ class Candidate
         minMessage: "Phone must be at least {{ limit }} characters long",
         maxMessage: "Phone must be at least {{ limit }} characters long"
     )]
+    #[Assert\Type(type: 'string', message: "Phone must be a string")]
     #[Assert\Regex(
         pattern: '/^0[1-9]([-. ]?[0-9]{2}){4}$/',
         message: "Phone must be a valid phone number"
@@ -51,6 +54,7 @@ class Candidate
         minMessage: "Address must be at least {{ limit }} characters long",
         maxMessage: "Address must be at least {{ limit }} characters long"
     )]
+    #[Assert\Type(type: 'string', message: "Address must be a string")]
     protected ?string $address = null;
 
     #[Assert\Length(
@@ -62,8 +66,8 @@ class Candidate
     protected ?string $city = null;
 
     #[Assert\Length(
-        min: 3,
-        max: 255,
+        min: 5,
+        max: 50,
         minMessage: "Country must be at least {{ limit }} characters long",
         maxMessage: "Country must be at least {{ limit }} characters long"
     )]
@@ -77,6 +81,7 @@ class Candidate
 
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Type(type: 'integer', message: "User id must be an integer")]
+    #[Assert\Positive(message: "User id must be a positive integer")]
     protected ?int $user_id = null;
 
     public function getId(): ?int

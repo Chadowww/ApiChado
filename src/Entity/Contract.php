@@ -5,9 +5,6 @@ namespace App\Entity;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @SerializedName("contract")
- */
 class Contract
 {
     /**
@@ -26,7 +23,7 @@ class Contract
     )]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 50,
         minMessage: "Type must be at least {{ limit }} characters long",
         maxMessage: "Type must be at least {{ limit }} characters long"
     )]

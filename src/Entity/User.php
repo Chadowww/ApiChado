@@ -22,7 +22,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Assert\Email(message: "Email must be a valid email")]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 50,
         minMessage: "Email must be at least {{ limit }} characters long",
         maxMessage: "Email must be at least {{ limit }} characters long"
     )]
@@ -35,7 +35,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Assert\NotBlank(message: "Password is required")]
     #[Assert\Regex(
         pattern: '/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/',
-        message: 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial ',
+        message: 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial',
         match: true)]
     protected ?string $password = null;
 
