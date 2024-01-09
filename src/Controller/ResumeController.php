@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ResumeRepository;
 use App\Services\EntityServices\ResumeService;
 use App\Services\ErrorService;
@@ -33,6 +35,7 @@ class ResumeController extends AbstractController
     /**
      * @throws InvalidRequestException
      * @throws \JsonException
+     * @throws DatabaseException
      */
     public function create(Request $request, ImageController $imageController): JsonResponse
     {
@@ -53,19 +56,31 @@ class ResumeController extends AbstractController
         try {
             $this->resumeRepository->create($resume);
         } catch (\Exception $e) {
-            throw new InvalidRequestException(
+            throw new DatabaseException(
                 json_encode(
                     $this->errorService->getErrorsResumeRequest($request),
                     JSON_THROW_ON_ERROR),
-                400
+                500
             );
         }
         return new JsonResponse('Resume created with success!', 201, [], true);
     }
 
-    public function read(): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
+    public function read(int $id): JsonResponse
     {
-
+        try {
+            $resume = $this->resumeRepository->read($id);
+            if (!$resume) {
+                throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
+            }
+        } catch (\Exception $e) {
+            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        }
+        return new JsonResponse($this->serializer->serialize($resume, 'json'), 200, [], true);
     }
 
     public function update(): JsonResponse
