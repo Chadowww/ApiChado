@@ -33,3 +33,4 @@ qodana.yaml
 ###< lexik/jwt-authentication-bundle ###
 
 public/images
+/public/cv
