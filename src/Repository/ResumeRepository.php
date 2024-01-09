@@ -16,7 +16,7 @@ class ResumeRepository
     CONST array VALUES = [
         'title' => ':title',
         'filename' => ':filename',
-        'candidate_id' => ':candidate_id',
+        'candidateId' => ':candidateId',
     ];
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
@@ -32,9 +32,9 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             INSERT INTO APICHADO.resume
-            (title, filename, candidate_id) 
+            (title, filename, candidateId) 
             VALUES 
-            (:title, :filename, :candidate_id)';
+            (:title, :filename, :candidateId)';
 
             $statement = $this->connection->prepare($query);
 
@@ -66,7 +66,7 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             UPDATE APICHADO.resume
-            SET title = :title, filename = :filename, candidate_id = :candidate_id
+            SET title = :title, filename = :filename, candidateId = :candidateId
             WHERE id = :id';
 
             $statement = $this->connection->prepare($query);

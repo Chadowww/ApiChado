@@ -343,10 +343,10 @@ class ErrorService
 
         $data = $request->request->all();
 
-        if (!isset($data['title'], $data['candidate_id'])) {
+        if (!isset($data['title'], $data['candidateId'])) {
             $errors[] = [
                 'field' => 'request',
-                'message' => 'Request must contain title and candidate_id fields',
+                'message' => 'Request must contain title and candidateId fields',
             ];
         }
         foreach ($data as $key => $value) {
@@ -360,11 +360,12 @@ class ErrorService
                         ];
                     }
                     break;
-                case 'candidate_id':
-                    if ($this->validator->validatePropertyValue(Resume::class, 'candidate_id', $value)->count() > 0) {
+                case 'candidateId':
+                    if ($this->validator->validatePropertyValue(Resume::class, 'candidateId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'candidate_id',
-                            'message' => $this->validator->validatePropertyValue(Resume::class, 'candidate_id', $value)->get(0)->getMessage(),
+                            'field' => 'candidateId',
+                            'message' => $this->validator->validatePropertyValue(Resume::class, 'candidateId',
+                                $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }

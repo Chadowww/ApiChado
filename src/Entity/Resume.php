@@ -30,7 +30,7 @@ class Resume
     protected string $createdAt;
     protected string $updatedAt;
     #[Assert\NotBlank(message: "Candidate Id is required")]
-    protected int $candidate_Id;
+    protected int $candidateId;
 
     public function getId(): ?int
     {
@@ -82,13 +82,13 @@ class Resume
         $this->updatedAt = $updatedAt;
     }
 
-    public function getCandidate_Id(): int
+    public function getCandidateId(): int
     {
-        return $this->candidate_Id;
+        return $this->candidateId;
     }
 
-    public function setCandidateId(int $candidate_Id): void
+    public function setCandidateId(int $candidateId): void
     {
-        $this->candidate_Id = $candidate_Id;
+        $this->candidateId = $candidateId;
     }
 }
