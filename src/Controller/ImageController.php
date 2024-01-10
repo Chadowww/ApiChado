@@ -17,15 +17,15 @@ class ImageController extends AbstractController
 
         if ($uploadedFile) {
             $newFilename = uniqid('', true) . '.' . $uploadedFile->guessExtension();
-            $uploadedFile->move($this->getParameter('images_directory'), $newFilename);
 
-            return new JsonResponse([
-                'code' => '201',
-                'message' => 'File uploaded with success!',
-                'name' => $newFilename,
-            ]);
+            if (mime_content_type($uploadedFile->getRealPath()) === 'application/pdf') {
+                $uploadedFile->move($this->getParameter('cv.directory'), $newFilename);
+            } else {
+                $uploadedFile->move($this->getParameter('images.directory'), $newFilename);
+            }
+
+            return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $newFilename,]);
         }
-
         return new JsonResponse(['message' => 'file not uploaded! :s']);
     }
 

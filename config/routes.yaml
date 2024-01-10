@@ -173,3 +173,28 @@ ImageList:
     path: /image/list
     controller: App\Controller\ImageController::list
     methods: GET
+
+ResumeCreate:
+    path: /resume/create
+    controller: App\Controller\ResumeController::create
+    methods: POST
+
+ResumeRead:
+    path: /resume/read/{id}
+    controller: App\Controller\ResumeController::read
+    methods: GET
+
+ResumeUpdate:
+    path: /resume/update/{id}
+    controller: App\Controller\ResumeController::update
+    methods: POST
+
+ResumeDelete:
+    path: /resume/delete/{filename}
+    controller: App\Controller\ResumeController::delete
+    methods: DELETE
+
+ResumeList:
+    path: /resume/list
+    controller: App\Controller\ResumeController::list
+    methods: GET

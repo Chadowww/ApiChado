@@ -118,7 +118,7 @@ CREATE TABLE `favlist`
 CREATE TABLE `resume`(
                          `id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
                          `title`        VARCHAR(255)                   NULL,
-                         `file`         varchar(255)                   NULL,
+                         `filename`         varchar(255)                   NULL,
                          `candidate_id` INT                            NULL,
                          CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`)
 );
@@ -696,25 +696,25 @@ INSERT INTO favlist (candidate_id, joboffer_id)
 VALUES (3, 4);
 
 # Create data resume
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Jean Dupont', 'cv_jean_dupont.pdf', 1);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Marie Martin', 'cv_marie_martin.pdf', 2);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Pierre Durand', 'cv_pierre_durand.pdf', 3);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Thomas Leroy', 'cv_thomas_leroy.pdf', 5);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Sophie Moreau', 'cv_sophie_moreau.pdf', 6);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Jean Dupont', 'cv_jean_dupont.pdf', 1);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Marie Martin', 'cv_marie_martin.pdf', 2);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Pierre Durand', 'cv_pierre_durand.pdf', 3);
-INSERT INTO resume (title, file, candidate_id)
+INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
 
 # Create data resume_technology

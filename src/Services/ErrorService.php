@@ -6,6 +6,7 @@ use App\Entity\Candidate;
 use App\Entity\Company;
 use App\Entity\Contract;
 use App\Entity\JobOffer;
+use App\Entity\Resume;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -331,6 +332,45 @@ class ErrorService
             }
         }
 
+        return $errors;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function getErrorsResumeRequest(Request $request): array {
+        $errors = [];
+
+        $data = $request->request->all();
+
+        if (!isset($data['title'], $data['candidateId'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain title and candidateId fields',
+            ];
+        }
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'title':
+                    if ($this->validator->validatePropertyValue(Resume::class, 'title', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'title',
+                            'message' => $this->validator->validatePropertyValue(Resume::class, 'title', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'candidateId':
+                    if ($this->validator->validatePropertyValue(Resume::class, 'candidateId', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'candidateId',
+                            'message' => $this->validator->validatePropertyValue(Resume::class, 'candidateId',
+                                $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+            }
+        }
         return $errors;
     }
 }

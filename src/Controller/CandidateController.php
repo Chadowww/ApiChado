@@ -322,7 +322,6 @@ class CandidateController extends AbstractController
         return new JsonResponse(['message' => 'Candidate updated'], 200);
     }
 
-
     /**
      * @throws DatabaseException
      * @throws ResourceNotFoundException
