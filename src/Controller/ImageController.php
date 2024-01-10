@@ -31,7 +31,7 @@ class ImageController extends AbstractController
 
     public function read(string $fileName): Response
     {
-        $directory = $this->getParameter('images_directory');
+        $directory = $this->getParameter('images.directory');
 
         $filePath = $directory . $fileName;
         if (!file_exists($filePath)) {
@@ -51,7 +51,7 @@ class ImageController extends AbstractController
 
         if ($newFile) {
             $newFilename = uniqid('', true) . '.' . $newFile->guessExtension();
-            $newFile->move($this->getParameter('images_directory'), $newFilename);
+            $newFile->move($this->getParameter('images.directory'), $newFilename);
             $this->delete($fileName);
 
             return new JsonResponse(['message' => 'File uploaded with success!']);
@@ -61,7 +61,7 @@ class ImageController extends AbstractController
 
     public function delete(string $fileName): Response
     {
-        $directory = $this->getParameter('images_directory');
+        $directory = $this->getParameter('images.directory');
 
         $filePath = $directory . $fileName;
         if (!file_exists($filePath)) {
@@ -75,7 +75,7 @@ class ImageController extends AbstractController
 
     public function list(): Response
     {
-        $directory = $this->getParameter('images_directory');
+        $directory = $this->getParameter('images.directory');
 
         $files = scandir($directory);
 
