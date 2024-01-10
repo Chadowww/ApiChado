@@ -20,3 +20,5 @@ nelmio_api_doc:
             - ^/contract/
             - ^/candidate/
             - ^/company/
+            - ^/resume/
+            - ^/Images/

@@ -328,6 +328,23 @@ class UserController extends AbstractController
 
     /**
      * @throws DatabaseException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="List of users",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="List of users"
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="Database error",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Database error"
+     * )
+     * )
      */
     public function list(): JsonResponse
     {
@@ -340,18 +357,52 @@ class UserController extends AbstractController
         return new JsonResponse($this->serializer->serialize($users, 'json'), 200, [], true);
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="User found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User found"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="User not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="token",
+     *     in="header",
+     *     description="Token of the user to read",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="string",
+     *     example="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MDQ4Nzc3NTUsImV4cCI6MTcwNDg4MTM1NSwicm9sZXMiOlsiUk9MRV9VU0VSIiwiUk9MRV9DQU5ESURBVEUiXSwidXNlcm5hbWUiOiJhLnNhbGVAb3V0bG9vay5mciJ9.k3OX2Ctw7WyqLby8bPOC0texHRuwMj1zRiqyeJd_YlT2s3vvM7NDYjTg3TfpjKDni6RpY3t7J1PkByAmXdzc_rgKTPPltrs_AQQsRTYPJeamGUrj7QKs4hlpM9ZhkbcQV1gSxnRkd49TQ9L3DOg_WVlv9axYXPiJgbvnlC7qSwLih5qLgPfWfYOnwWUj8T3KtQoXOLK5HGvM56moMX9loCG8QU1AbYwZaK2aS-3Y-Wdr4fNqAFaAyVfdJfGBWiFi7fuXAcPiOTzAMHGeMXv5vWOOxJgKND3h-tDcynkTj7iSvHAQP_vJk8enOgQlGHm7hBoAnh2p-qkNlZfndi6R2Q"
+     * )
+     * )
+     */
     public function getUserFromToken(TokenInterface $token): JsonResponse
     {
         $user = $token->getUser();
         $dataUser = [];
         if ($user) {
             $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getId());
+            return new JsonResponse(
+                $this->serializer->serialize($dataUser['user'], 'json'),
+                200,
+                [],
+                true
+            );
         }
         return new JsonResponse(
-            $this->serializer->serialize($dataUser['user'], 'json'),
-            200,
-            [],
-            true
+            json_encode(['error' => 'User not found'], JSON_THROW_ON_ERROR),
+            404
         );
     }
 }
