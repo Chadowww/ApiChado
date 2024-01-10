@@ -83,9 +83,39 @@ class ResumeController extends AbstractController
         return new JsonResponse($this->serializer->serialize($resume, 'json'), 200, [], true);
     }
 
-    public function update(): JsonResponse
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     * @throws DatabaseException
+     */
+    public function update(int $id, Request $request, ImageController $imageController): JsonResponse
     {
+        if ($this->errorService->getErrorsResumeRequest($request) !== []) {
+            throw new InvalidRequestException(
+                json_encode(
+                    $this->errorService->getErrorsResumeRequest($request),
+                    JSON_THROW_ON_ERROR),
+                400
+            );
+        }
+        try {
+            $resume = $this->resumeRepository->read($id);
+            if (!$resume) {
+                throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
+            }
+        } catch (\Exception $e) {
+            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        }
 
+        $fileName = json_decode($imageController->create($request)->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->resumeService->updateResume($resume, $request, $fileName['name']);
+
+        try {
+            $this->resumeRepository->update($resume);
+        } catch (\Exception $e) {
+            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        }
+        return new JsonResponse('Resume updated with success!', 200, [], true);
     }
 
     public function delete(): JsonResponse
