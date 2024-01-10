@@ -118,9 +118,27 @@ class ResumeController extends AbstractController
         return new JsonResponse('Resume updated with success!', 200, [], true);
     }
 
-    public function delete(): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
+    public function delete(string $filename): JsonResponse
     {
+        $directory = $this->getParameter('cv.directory');
 
+        $filePath = $directory . $filename;
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('Resume not found.');
+        }
+
+        unlink($filePath);
+        try {
+            $this->resumeRepository->delete($filename);
+        } catch (\Exception $e) {
+            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+
+        }
+        return new JsonResponse('Resume deleted with success!', 200, [], true);
     }
 
     public function list(): JsonResponse
