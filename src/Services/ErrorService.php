@@ -339,9 +339,7 @@ class ErrorService
      */
     public function getErrorsResumeRequest(Request $request): array {
         $errors = [];
-
         $data = $request->request->all();
-
         if (!isset($data['title'], $data['candidateId'])) {
             $errors[] = [
                 'field' => 'request',
@@ -360,7 +358,9 @@ class ErrorService
                     }
                     break;
                 case 'candidateId':
-                    if ($this->validator->validatePropertyValue(Resume::class, 'candidateId', $value)->count() > 0) {
+                    $value = (int)$value;
+                    if ($this->validator->validatePropertyValue(Resume::class, 'candidateId', intval($value))->count()
+                        > 0) {
                         $errors[] = [
                             'field' => 'candidateId',
                             'message' => $this->validator->validatePropertyValue(Resume::class, 'candidateId',

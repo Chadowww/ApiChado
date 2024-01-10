@@ -180,8 +180,8 @@ class UserRepository
     {
         $this->connection->beginTransaction();
         $query = '
-            SELECT u.id, email, password, roles, is_verified, created_at, updated_at, c.*, sM.*
-            FROM APICHADO.user u 
+            SELECT u.id as userId, email, roles, created_at, updated_at, c.id as candidateId, c.firstname, c.lastname, c.phone, c.address, c.city, c.country, c.avatar, c.slug, c.coverLetter, c.user_id, sM.id as socialeMediaId, sM.linkedin, sM.github, sM.twitter, sM.facebook, sM.instagram, sM.website   
+            FROM APICHADO.user u
             LEFT JOIN APICHADO.socialeMedia sM on u.id = sM.user_id
             LEFT JOIN APICHADO.candidate c ON u.id = c.user_id WHERE u.id = :id
             ';

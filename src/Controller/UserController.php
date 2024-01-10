@@ -360,14 +360,38 @@ class UserController extends AbstractController
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * /**
      * @OA\Response(
-     *     response=200,
-     *     description="User found",
-     *     @OA\JsonContent(
-     *     type="string",
-     *     example="User found"
-     * )
-     * )
+     *      response=200,
+     *      description="User found",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="id", type="integer", example=1),
+     *          @OA\Property(property="email", type="string", example="e.email@mail.de"),
+     *          @OA\Property(property="password", type="string", example="$argon2id$v=19$m=10,t=2,p=1$Rnc3anpwZHI3$bIwLu12m1AEf2ANUZQJVow"),
+     *          @OA\Property(property="roles", type="integer", example=3),
+     *          @OA\Property(property="is_verified", type="integer", example=1),
+     *          @OA\Property(property="created_at", type="string", example="2023-12-31 12:40:28"),
+     *          @OA\Property(property="updated_at", type="string", example="2024-01-03 12:40:28"),
+     *          @OA\Property(property="firstname", type="string", example="Edward"),
+     *          @OA\Property(property="lastname", type="string", example="Email"),
+     *          @OA\Property(property="phone", type="string", example="1234567890"),
+     *          @OA\Property(property="address", type="string", example="10 rue de la paix"),
+     *          @OA\Property(property="city", type="string", example="Paris"),
+     *          @OA\Property(property="country", type="string", example="France"),
+     *          @OA\Property(property="avatar", type="string", example="659e5ecc4d5217.08563480.jpg"),
+     *          @OA\Property(property="slug", type="string", example="edward-email"),
+     *          @OA\Property(property="coverLetter", type="string", example=null),
+     *          @OA\Property(property="user_id", type="integer", example=18),
+     *          @OA\Property(property="linkedin", type="string", example="https://www.linkedin.com/in/edward-email/"),
+     *          @OA\Property(property="github", type="string", example="https://github.com/edward-email"),
+     *          @OA\Property(property="twitter", type="string", example=null),
+     *          @OA\Property(property="facebook", type="string", example=null),
+     *          @OA\Property(property="instagram", type="string", example=null),
+     *          @OA\Property(property="website", type="string", example="www.ee.turing.fr"),
+     *      )
+     *  )
+     * /
      * @OA\Response(
      *     response=404,
      *     description="User not found",
