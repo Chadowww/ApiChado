@@ -143,6 +143,11 @@ class ResumeController extends AbstractController
 
     public function list(): JsonResponse
     {
-
+        try {
+            $resumes = $this->resumeRepository->list();
+        } catch (\Exception $e) {
+            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        }
+        return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
     }
 }
