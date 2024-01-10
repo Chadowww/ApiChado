@@ -187,7 +187,7 @@ ResumeRead:
 ResumeUpdate:
     path: /resume/update/{id}
     controller: App\Controller\ResumeController::update
-    methods: PUT
+    methods: POST
 
 ResumeDelete:
     path: /resume/delete/{id}
