@@ -20,4 +20,14 @@ class ResumeService
 
         return $resume;
     }
+
+    public function updateResume(Resume $resume, Request $request, string $fileName): Resume
+    {
+        $resume->setTitle($request->request->get('title'));
+        $resume->setFilename($fileName);
+        $resume->setCandidateId($request->request->get('candidateId'));
+        $resume->setUpdatedAt(date('Y-m-d H:i:s'));
+
+        return $resume;
+    }
 }
