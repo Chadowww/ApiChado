@@ -190,7 +190,7 @@ ResumeUpdate:
     methods: POST
 
 ResumeDelete:
-    path: /resume/delete/{id}
+    path: /resume/delete/{filename}
     controller: App\Controller\ResumeController::delete
     methods: DELETE
 
