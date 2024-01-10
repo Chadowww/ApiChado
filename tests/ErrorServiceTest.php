@@ -365,7 +365,7 @@ class ErrorServiceTest extends KernelTestCase
             foreach ($badData[$key] as $invalidValue) {
                 $newData = $goodData;
                 $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
+                $request = new Request([], $newData, [], [], [], [], []);
                 $errors = $errorService->getErrorsResumeRequest($request);
                 $this->assertEquals($invalidValue[1], $errors[0]['message']);
             }
