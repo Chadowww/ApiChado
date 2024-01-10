@@ -30,6 +30,8 @@ class Resume
     protected string $createdAt;
     protected string $updatedAt;
     #[Assert\NotBlank(message: "Candidate Id is required")]
+    #[Assert\Type(type: 'integer', message: "Candidate Id must be an integer")]
+    #[Assert\Positive(message: "Candidate Id must be a positive integer")]
     protected int $candidateId;
 
     public function getId(): ?int

@@ -327,4 +327,48 @@ class ErrorServiceTest extends KernelTestCase
                 $this->assertEquals($invalidValue[1], $errors[0]['message']);
             }
         }    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function testGetErrorsResumeRequest(): void
+    {
+        self::bootKernel();
+        $container = self::getContainer();
+
+        $errorService = $container->get(ErrorService::class);
+
+        $goodData = [
+            'title' => 'test',
+            'candidateId' => 1,
+        ];
+
+        $badData = [
+            'title' => [
+                [null, 'Request must contain title and candidateId fields'],
+                ['', 'Title is required'],
+                [true, 'Title must be a string'],
+                ['az', 'Title must be at least 3 characters long'],
+                ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn',
+                    'Title must be at least 50 characters long'],
+            ],
+            'candidateId' => [
+                [null, 'Request must contain title and candidateId fields'],
+                ['', 'Candidate Id is required'],
+                [true, 'Candidate Id must be an integer'],
+                [-1, 'Candidate Id must be a positive integer'],
+                ['1a', 'Candidate Id must be an integer'],
+            ],
+        ];
+
+        foreach ($goodData as $key => $value) {
+            foreach ($badData[$key] as $invalidValue) {
+                $newData = $goodData;
+                $newData[$key] = $invalidValue[0];
+                $request = new Request([], $newData, [], [], [], [], []);
+                $errors = $errorService->getErrorsResumeRequest($request);
+                $this->assertEquals($invalidValue[1], $errors[0]['message']);
+            }
+        }
+    }
 }

@@ -249,7 +249,6 @@ class ErrorService
         return $errors;
     }
 
-
     /**
      * @throws \JsonException
      */
