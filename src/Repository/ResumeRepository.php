@@ -114,4 +114,16 @@ class ResumeRepository
             throw $e;
         }
     }
+
+    public function findByCandidate($id)
+    {
+        $this->connection->beginTransaction();
+        $query = 'SELECT * FROM APICHADO.resume WHERE candidateId = :id';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->execute();
+        $resumes = $statement->fetchAll(PDO::FETCH_CLASS, Resume::class);
+        $this->connection->commit();
+        return $resumes;
+    }
 }
