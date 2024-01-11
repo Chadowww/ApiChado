@@ -334,4 +334,10 @@ class ResumeController extends AbstractController
         }
         return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
     }
+
+    public function getResumesByCandidate($id): JsonResponse
+    {
+        $resumes = $this->resumeRepository->findByCandidate($id);
+        return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
+    }
 }
