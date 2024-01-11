@@ -198,3 +198,7 @@ ResumeList:
     path: /resume/list
     controller: App\Controller\ResumeController::list
     methods: GET
+ResumeByCandidate:
+    path: /resume/by-candidate/{id}
+    controller: App\Controller\ResumeController::getResumesByCandidate
+    methods: GET
