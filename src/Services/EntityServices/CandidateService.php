@@ -32,7 +32,7 @@ class CandidateService
     {
         $candidate->setFirstName($data['firstname']);
         $candidate->setLastName($data['lastname']);
-        $candidate->setUser_Id($data['user_id']);
+        $candidate->setUserId($data['user_id']);
         $candidate->setSlug($data['firstname'], $data['lastname']);
         $candidate->setPhone($data['phone'] ?? null);
         $candidate->setAddress($data['address'] ?? null);
