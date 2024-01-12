@@ -23,7 +23,7 @@ class CandidateRepository
         'avatar' => ':avatar',
         'slug' => ':slug',
         'coverLetter' => ':coverLetter',
-        'user_id' => ':user_id',
+        'userId' => ':userId',
     ];
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
@@ -41,7 +41,7 @@ class CandidateRepository
             INSERT INTO APICHADO.candidate
             (firstname, lastname, phone, address, city, country, avatar, slug, coverLetter, user_id) 
             VALUES 
-            (:firstname, :lastname, :phone, :address, :city, :country, :avatar, :slug, :coverLetter, :user_id)';
+            (:firstname, :lastname, :phone, :address, :city, :country, :avatar, :slug, :coverLetter, :userId)';
 
             $statement = $this->connection->prepare($query);
 
@@ -75,8 +75,8 @@ class CandidateRepository
         $this->executeTransaction(function () use ($candidate, &$candidateAttributes){
             $query = '
             UPDATE APICHADO.candidate
-            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, user_id = :user_id
-            WHERE user_id = :user_id';
+            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, user_id = :userId
+            WHERE user_id = :userId';
 
             $statement = $this->connection->prepare($query);
 
