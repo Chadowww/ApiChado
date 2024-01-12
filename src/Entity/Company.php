@@ -88,7 +88,7 @@ class Company extends User
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Positive(message: "User id must be a positive number")]
     #[Assert\Type("integer", message: "User id must be a number")]
-    protected ?int $user_id = null;
+    protected ?int $userId = null;
 
     public function getName(): ?string
     {
@@ -190,14 +190,14 @@ class Company extends User
         $this->cover = $cover;
     }
 
-    public function getUser_Id(): ?int
+    public function getUserId(): ?int
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
-    public function setUser_Id(?int $user_id): void
+    public function setUserId(?int $userId): void
     {
-        $this->user_id = $user_id;
+        $this->userId = $userId;
     }
 
     public function getSocialMedia(): SocialMedia
