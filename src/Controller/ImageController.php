@@ -125,6 +125,7 @@ class ImageController extends AbstractController
         $directory = $this->getParameter('images.directory');
 
         $filePath = $directory . $fileName;
+
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException('Image not found.');
         }
