@@ -84,12 +84,13 @@ class ResumeController extends AbstractController
             $request,
             json_decode($fileName->getContent(), true, 512, JSON_THROW_ON_ERROR)['name']
         );
+
         try {
             $this->resumeRepository->create($resume);
         } catch (\Exception $e) {
             throw new DatabaseException(
                 json_encode(
-                    $this->errorService->getErrorsResumeRequest($request),
+                    $e->getMessage(),
                     JSON_THROW_ON_ERROR),
                 500
             );

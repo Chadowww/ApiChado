@@ -113,11 +113,11 @@ class CandidateController extends AbstractController
      *     "
      * ),
      *     @OA\Property(
-     *     property="user_id",
+     *     property="userId",
      *     type="integer",
      *     example="
      *    {
-     *     'user_id': '
+     *     'userId': '
      *     }
      *     "
      * )))
@@ -282,11 +282,11 @@ class CandidateController extends AbstractController
      *     "
      * ),
      *     @OA\Property(
-     *     property="user_id",
+     *     property="userId",
      *     type="integer",
      *     example="
      *    {
-     *     'user_id': '
+     *     'userId': '
      *     }
      *     "
      * )))

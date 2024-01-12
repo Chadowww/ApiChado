@@ -122,7 +122,8 @@ class ErrorService
     {
         $errors = [];
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        if (!isset($data['email'], $data['password'], $data['roles'])) {
+        if (!isset($data['email'], $data['password'], $data['roles']) && !preg_match('/\/user\/update\/\d+/',
+                $request->getPathInfo())) {
             $errors[] = [
                 'field' => 'request',
                 'message' => 'Request must contain email, password and roles fields',
@@ -171,10 +172,10 @@ class ErrorService
     {
         $errors = [];
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        if (!isset($data['firstname'], $data['lastname'], $data['user_id'])) {
+        if (!isset($data['firstname'], $data['lastname'], $data['userId'])) {
             $errors[] = [
                 'field' => 'request',
-                'message' => 'Request must contain firstname, lastname, user_id fields',
+                'message' => 'Request must contain firstname, lastname, userId fields',
             ];
         }
 
@@ -198,11 +199,11 @@ class ErrorService
                         ];
                     }
                     break;
-                case  'user_id':
-                    if ($this->validator->validatePropertyValue(Candidate::class, 'user_id', $value)->count() > 0) {
+                case  'userId':
+                    if ($this->validator->validatePropertyValue(Candidate::class, 'userId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'user_id',
-                            'message' => $this->validator->validatePropertyValue(Candidate::class, 'user_id', $value)->get(0)->getMessage(),
+                            'field' => 'userId',
+                            'message' => $this->validator->validatePropertyValue(Candidate::class, 'userId', $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }
@@ -256,10 +257,10 @@ class ErrorService
     {
         $errors = [];
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['user_id'])) {
+        if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['userId'])) {
             $errors[] = [
                 'field' => 'request',
-                'message' => 'Request must contain name, phone, address, city, country, siret and user_id fields',
+                'message' => 'Request must contain name, phone, address, city, country, siret and userId fields',
             ];
         }
 
@@ -319,11 +320,11 @@ class ErrorService
                         ];
                     }
                     break;
-                case  'user_id':
-                    if ($this->validator->validatePropertyValue(Company::class, 'user_id', $value)->count() > 0) {
+                case  'userId':
+                    if ($this->validator->validatePropertyValue(Company::class, 'userId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'user_id',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'user_id', $value)->get(0)->getMessage(),
+                            'field' => 'userId',
+                            'message' => $this->validator->validatePropertyValue(Company::class, 'userId', $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }
@@ -349,21 +350,35 @@ class ErrorService
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'title':
-                    if ($this->validator->validatePropertyValue(Resume::class, 'title', $value)->count() > 0) {
+                    if ($this->validator->validatePropertyValue(
+                        Resume::class,
+                        'title',
+                        $value)->count() > 0
+                    ) {
                         $errors[] = [
                             'field' => 'title',
-                            'message' => $this->validator->validatePropertyValue(Resume::class, 'title', $value)->get(0)->getMessage(),
+                            'message' => $this->validator->validatePropertyValue(
+                                Resume::class,
+                                'title',
+                                $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];
                     }
                     break;
                 case 'candidateId':
-                    $value = (int)$value;
-                    if ($this->validator->validatePropertyValue(Resume::class, 'candidateId', intval($value))->count()
-                        > 0) {
+                    if ($request->getPathInfo() === '/resume/create') {
+                        $value = (int)$value;
+                    }
+                    if ($this->validator->validatePropertyValue(
+                        Resume::class,
+                        'candidateId',
+                        $value)->count() > 0
+                    ) {
                         $errors[] = [
                             'field' => 'candidateId',
-                            'message' => $this->validator->validatePropertyValue(Resume::class, 'candidateId',
+                            'message' => $this->validator->validatePropertyValue(
+                                Resume::class,
+                                'candidateId',
                                 $value)->get(0)->getMessage(),
                             'passedValue' => $value
                         ];

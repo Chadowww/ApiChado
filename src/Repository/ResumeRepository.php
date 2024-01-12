@@ -32,7 +32,7 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             INSERT INTO APICHADO.resume
-            (title, filename, candidateId) 
+            (title, filename, candidate_id) 
             VALUES 
             (:title, :filename, :candidateId)';
 
@@ -66,7 +66,7 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             UPDATE APICHADO.resume
-            SET title = :title, filename = :filename, candidateId = :candidateId
+            SET title = :title, filename = :filename, candidate_id = :candidateId
             WHERE id = :id';
 
             $statement = $this->connection->prepare($query);
@@ -118,9 +118,9 @@ class ResumeRepository
     public function findByCandidate($id)
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.resume WHERE candidateId = :id';
+        $query = 'SELECT * FROM APICHADO.resume WHERE candidate_id = :candidateId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':candidateId', $id, PDO::PARAM_INT);
         $statement->execute();
         $resumes = $statement->fetchAll(PDO::FETCH_CLASS, Resume::class);
         $this->connection->commit();
