@@ -82,7 +82,7 @@ class Candidate
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Type(type: 'integer', message: "User id must be an integer")]
     #[Assert\Positive(message: "User id must be a positive integer")]
-    protected ?int $user_id = null;
+    protected ?int $userId = null;
 
     public function getId(): ?int
     {
@@ -191,13 +191,13 @@ class Candidate
         return $this->socialMedia;
     }
 
-    public function getUser_id(): ?int
+    public function getUserId(): ?int
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
-    public function setUser_id(?int $user_id): void
+    public function setUserId(?int $userId): void
     {
-        $this->user_id = $user_id;
+        $this->userId = $userId;
     }
 }
