@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Company extends User
+class Company
 {
     private SocialMedia $socialMedia;
 
@@ -13,7 +13,7 @@ class Company extends User
         $this->socialMedia = new SocialMedia();
     }
 
-    protected ?int $id = null;
+    protected ?int $company_id = null;
 
     #[Assert\NotBlank(message: "Name is required")]
     #[Assert\Length(
@@ -88,7 +88,17 @@ class Company extends User
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Positive(message: "User id must be a positive number")]
     #[Assert\Type("integer", message: "User id must be a number")]
-    protected ?int $userId = null;
+    protected ?int $user_id = null;
+
+    public function getCompany_id(): ?int
+    {
+        return $this->company_id;
+    }
+
+    public function setCompany_id(?int $company_id): void
+    {
+        $this->company_id = $company_id;
+    }
 
     public function getName(): ?string
     {
@@ -190,14 +200,14 @@ class Company extends User
         $this->cover = $cover;
     }
 
-    public function getUserId(): ?int
+    public function getUser_id(): ?int
     {
-        return $this->userId;
+        return $this->user_id;
     }
 
-    public function setUserId(?int $userId): void
+    public function setUser_id(?int $user_id): void
     {
-        $this->userId = $userId;
+        $this->user_id = $user_id;
     }
 
     public function getSocialMedia(): SocialMedia

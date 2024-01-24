@@ -53,16 +53,16 @@ class CompanyRepository
         return true;
     }
 
-    public function read(int $id): Company | bool
+    public function read(int $company_id): Company | bool
     {
         $this->connection->beginTransaction();
         $query = '
                 SELECT c.*, u.* 
-                FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.id
-                WHERE c.id = :id;
+                FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.user_id
+                WHERE c.company_id = :company_id;
                 ';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':id', $id);
+        $statement->bindValue(':company_id', $company_id);
         $statement->execute();
         $company = $statement->fetchObject(Company::class);
         $this->connection->commit();
@@ -86,14 +86,14 @@ class CompanyRepository
                 siret = :siret,
                 slug = :slug,
                 user_id = :user_id
-            WHERE id = :id';
+            WHERE company_id = :company_id';
 
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
                 $companyAttributes[$value] = $company->{"get" . ucfirst($key)}();
             }
-            $companyAttributes[':id'] = $company->getId();
+            $companyAttributes[':company_id'] = $company->getCompany_id();
             $this->bindValueService->bindValuesToStatement($statement, $companyAttributes);
             $statement->execute();
         });
@@ -101,13 +101,13 @@ class CompanyRepository
         return true;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $company_id): bool
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'DELETE FROM APICHADO.company WHERE id = :id';
+            $query = 'DELETE FROM APICHADO.company WHERE company_id = :company_id';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':id', $id);
+            $statement->bindValue(':company_id', $company_id);
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -120,7 +120,7 @@ class CompanyRepository
     public function list(): array
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.id';
+        $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.user_id = u.user_id';
         $statement = $this->connection->query($query);
         $companies = $statement->fetchAll(PDO::FETCH_CLASS, Company::class);
         $this->connection->commit();
@@ -132,10 +132,10 @@ class CompanyRepository
     {
         $this->connection->beginTransaction();
         $query = '
-           SELECT c.id, c.name, c.slug, c.logo, c.cover, COUNT(jo.company_id) as offers_count
+           SELECT c.company_id, c.name, c.slug, c.logo, c.cover, COUNT(jo.company_id) as offers_count
             FROM APICHADO.company c
-            JOIN APICHADO.joboffer jo ON jo.company_id = c.id
-            GROUP BY c.id, c.name
+            JOIN APICHADO.joboffer jo ON jo.company_id = c.company_id
+            GROUP BY c.company_id, c.name
             ORDER BY offers_count DESC
             LIMIT 6';
         $statement = $this->connection->query($query);
