@@ -25,7 +25,7 @@ class ResumeService
     {
         $resume->setTitle($request->request->get('title'));
         $resume->setFilename($fileName);
-        $resume->setCandidateId($request->request->get('candidateId'));
+        $resume->setCandidate_id($request->request->get('candidate_id'));
         $resume->setUpdatedAt(date('Y-m-d H:i:s'));
 
         return $resume;
