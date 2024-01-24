@@ -13,7 +13,7 @@ class Candidate
         $this->socialMedia = new SocialMedia();
     }
 
-    protected ?int $id = null;
+    protected ?int $candidate_id = null;
 
     #[Assert\NotBlank(message: "Firstname is required")]
     #[Assert\Type(type: 'string', message: "Firstname must be a string")]
@@ -82,16 +82,16 @@ class Candidate
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Type(type: 'integer', message: "User id must be an integer")]
     #[Assert\Positive(message: "User id must be a positive integer")]
-    protected ?int $userId = null;
+    protected ?int $user_id = null;
 
-    public function getId(): ?int
+    public function getCandidate_id(): ?int
     {
-        return $this->id;
+        return $this->candidate_id;
     }
 
-    public function setId(?int $id): void
+    public function setCandidate_id(?int $candidate_id): void
     {
-        $this->id = $id;
+        $this->candidate_id = $candidate_id;
     }
 
 
@@ -191,13 +191,13 @@ class Candidate
         return $this->socialMedia;
     }
 
-    public function getUserId(): ?int
+    public function getUser_id(): ?int
     {
-        return $this->userId;
+        return $this->user_id;
     }
 
-    public function setUserId(?int $userId): void
+    public function setUser_id(?int $user_id): void
     {
-        $this->userId = $userId;
+        $this->user_id = $user_id;
     }
 }
