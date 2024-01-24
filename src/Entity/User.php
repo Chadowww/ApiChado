@@ -16,7 +16,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         'ROLE_ADMIN' => 8,
     ];
 
-    protected ?int $id = null;
+    protected ?int $user_id = null;
 
     #[Assert\NotBlank(message: "Email is required")]
     #[Assert\Email(message: "Email must be a valid email")]
@@ -52,14 +52,14 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     protected string | DateTime | null $updated_at = null;
 
-    public function getId(): ?int
+    public function getUser_id(): ?int
     {
-        return $this->id;
+        return $this->user_id;
     }
 
-    public function setId(?int $id): void
+    public function setUser_id(?int $id): void
     {
-        $this->id = $id;
+        $this->user_id = $id;
     }
 
     public function getEmail(): ?string
