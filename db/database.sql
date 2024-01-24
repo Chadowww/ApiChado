@@ -5,7 +5,7 @@ USE APICHADO;
 
 CREATE TABLE user
 (
-    `id`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `user_id`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `email`    VARCHAR(255)                   NULL,
     `password` VARCHAR(255)                   NULL,
     `roles`     INT                            NULL,
@@ -16,7 +16,7 @@ CREATE TABLE user
 
 CREATE TABLE candidate
 (
-    `id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `candidate_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `firstname`   VARCHAR(50)                    NULL,
     `lastname`    VARCHAR(50)                    NULL,
     `phone`       VARCHAR(10)                    NULL,
@@ -27,12 +27,12 @@ CREATE TABLE candidate
     `slug`        VARCHAR(255)                   NULL,
     `coverLetter` TEXT                           NULL,
     `user_id`     INT                            NULL,
-    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 );
 
 CREATE TABLE company
 (
-    `id`      INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `company_id`      INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name`    VARCHAR(255)                   NULL,
     `phone`   VARCHAR(10)                    NULL,
     `address` VARCHAR(255)                   NULL,
@@ -44,36 +44,36 @@ CREATE TABLE company
     `slug`       VARCHAR(255)                NULL,
     `cover`       VARCHAR(255)               NULL,
     `user_id` INT                            NULL,
-    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 );
 
 CREATE TABLE socialeMedia(
-    `id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    `linkedin`    VARCHAR(255)                   NULL,
-    `github`      VARCHAR(255)                   NULL,
-    `twitter`     VARCHAR(255)                   NULL,
-    `facebook`    VARCHAR(255)                   NULL,
-    `instagram`   VARCHAR(255)                   NULL,
-    `website`     VARCHAR(255)                   NULL,
-    `user_id` INT                            NULL,
-    CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+     `socialeMedia_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+     `linkedin`    VARCHAR(255)                   NULL,
+     `github`      VARCHAR(255)                   NULL,
+     `twitter`     VARCHAR(255)                   NULL,
+     `facebook`    VARCHAR(255)                   NULL,
+     `instagram`   VARCHAR(255)                   NULL,
+     `website`     VARCHAR(255)                   NULL,
+     `user_id` INT                            NULL,
+     CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 );
 
 CREATE TABLE contract
 (
-    `id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `contract_id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `type` VARCHAR(255)                   NULL
 );
 
 CREATE TABLE `category`
 (
-    `id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `category_id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name` VARCHAR(255)                   NULL
 );
 
 CREATE TABLE `joboffer`
 (
-    `id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `joboffer_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `title`       VARCHAR(255)                   NULL,
     `description` TEXT                           NULL,
     `city`        VARCHAR(50)                    NULL,
@@ -82,51 +82,51 @@ CREATE TABLE `joboffer`
     `contract_id` INT                            NULL,
     `company_id`  INT                            NULL,
     `category_id` INT                            NULL,
-    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE SET NULL
+    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`company_id`) ON DELETE SET NULL,
+    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`contract_id`) ON DELETE SET NULL,
+    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`) ON DELETE SET NULL
 
 );
 
 CREATE TABLE `application`
 (
-    `id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `application_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `status`       VARCHAR(255)                   NULL,
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
-    CONSTRAINT `fk_application_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`),
-    CONSTRAINT `fk_application_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_application_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`),
+    CONSTRAINT `fk_application_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `technology`
 (
-    `id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `technology_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name`        VARCHAR(255)                   NULL,
     `category_id` INT                            NULL,
-    CONSTRAINT `fk_technology_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
+    CONSTRAINT `fk_technology_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`)
 );
 
 CREATE TABLE `favlist`
 (
-    `id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `favlist_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
-    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`),
-    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`),
+    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume`(
-                         `id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-                         `title`        VARCHAR(255)                   NULL,
-                         `filename`         varchar(255)                   NULL,
-                         `candidate_id` INT                            NULL,
-                         CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`id`)
+     `resume_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+     `title`        VARCHAR(255)                   NULL,
+     `filename`         varchar(255)                   NULL,
+     `candidate_id` INT                            NULL,
+     CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`)
 );
 
 CREATE TABLE `resume_technology`(
-                                    `ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
-                                    `resume_id`     INT                            NULL,
-                                    `technology_id` INT                            NULL
+    `resume_technology_ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
+    `resume_id`     INT                            NULL,
+    `technology_id` INT                            NULL
 );
 
 # Create index for fulltext search
@@ -175,7 +175,7 @@ VALUES ('Jean', 'Dupont', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 7);
 INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
 VALUES ('Marie', 'Martin', '0123456789', '123 rue de la République', 'Lyon', 'France',
-         'Je suis une candidate motivée et passionnée par le développement web.', 8);
+        'Je suis une candidate motivée et passionnée par le développement web.', 8);
 INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
 VALUES ('Pierre', 'Durand', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 9);
@@ -193,43 +193,42 @@ VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
 # Create data company
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'as-turing',
-        'https://upload.wikimedia.org/wikipedia/fr/9/9b/Logo-societe-generale.png', 'GroupWork2.jpg', '0123456789',1);
+        'logo.png', 'GroupWork20.jpg', '0123456789',1);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '12345678901234', 'description',
-        'Entreprise-XYZ','https://upload.wikimedia.org/wikipedia/fr/thumb/0/0a/Logo-konbini.svg/1200px-Logo-konbini
-.svg.png', 'GroupWork3.jpg', '0123456789', 2);
+        'Entreprise-XYZ','logo1.png', 'GroupWork23.jpg', '0123456789', 2);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-ABC',
-        'https://logos-marques.com/wp-content/uploads/2021/03/Conforama-Logo-1987.png', 'GroupWork4.jpg',
+        'logo2.png', 'GroupWork24.jpg',
         '0123456789', 3);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Entreprise-123',
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Ikea-logo.png/1200px-Ikea-logo.png', 'GroupWork5
+        'logo3.png', 'GroupWork5
 .jpg',
         '0123456789', 4);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-456',
-        'https://logos-marques.com/wp-content/uploads/2022/07/Fnac-Logo-1969.jpg', 'GroupWork6.jpg',
+        'logo4.png', 'GroupWork6.jpg',
         '0123456789', 5);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-789',
-        'https://assets.stickpng.com/images/580b57fcd9996e24bc43c516.png', 'GroupWork7.jpg',
+        'logo5.png', 'GroupWork7.jpg',
         '0123456789', 6);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('Company 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Company-789',
-        'https://pbs.twimg.com/media/Eoyb0g8XYAI88bD?format=jpg&name=4096x4096', 'GroupWork8.jpg',
+        'logo6.png', 'GroupWork8.jpg',
         '0123456789', 14);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
-VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789', 'https://news
-.microsoft.com/wp-content/uploads/prod/sites/113/2017/06/Microsoft-logo_rgb_c-gray.png', 'GroupWork9.jpg',
+VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789', 'logo7.jpg',
+        'GroupWork9.jpg',
         '0123456789', 15);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('entreprise 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'entreprise-789',
-        'https://www.guarani.fr/wp-content/themes/NakedWordpress/img/logoheader.png', 'GroupWork10.jpg',
+        'logo8.jpg', 'GroupWork10.jpg',
         '0123456789', 16);
 INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
 VALUES ('s2i 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 's2i-789',
-        'https://www.vtscan.fr/wp-content/uploads/2016/06/logo-citadium.png', 'GroupWork11.jpg', '0123456789', 17);
+        'logo.9.png', 'GroupWork11.jpg', '0123456789', 17);
 
 # Create data contract
 INSERT INTO contract (type)
