@@ -27,7 +27,7 @@ CREATE TABLE candidate
     `slug`        VARCHAR(255)                   NULL,
     `coverLetter` TEXT                           NULL,
     `user_id`     INT                            NULL,
-    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE company
@@ -44,7 +44,7 @@ CREATE TABLE company
     `slug`       VARCHAR(255)                NULL,
     `cover`       VARCHAR(255)               NULL,
     `user_id` INT                            NULL,
-    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE socialeMedia(
@@ -55,8 +55,8 @@ CREATE TABLE socialeMedia(
      `facebook`    VARCHAR(255)                   NULL,
      `instagram`   VARCHAR(255)                   NULL,
      `website`     VARCHAR(255)                   NULL,
-     `user_id` INT                            NULL,
-     CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+     `user_id`     INT                            NULL,
+     CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE contract
@@ -82,20 +82,12 @@ CREATE TABLE `joboffer`
     `contract_id` INT                            NULL,
     `company_id`  INT                            NULL,
     `category_id` INT                            NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`company_id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`contract_id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`) ON DELETE SET NULL
+    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`contract_id`),
+    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`)
 
-);
-
-CREATE TABLE `application`
-(
-    `application_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    `status`       VARCHAR(255)                   NULL,
-    `candidate_id` INT                            NULL,
-    `joboffer_id`  INT                            NULL,
-    CONSTRAINT `fk_application_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`),
-    CONSTRAINT `fk_application_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `technology`
@@ -111,22 +103,41 @@ CREATE TABLE `favlist`
     `favlist_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
-    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`),
+    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE ,
     CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume`(
      `resume_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-     `title`        VARCHAR(255)                   NULL,
-     `filename`         varchar(255)                   NULL,
-     `candidate_id` INT                            NULL,
-     CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`)
+     `title`               VARCHAR(255)                   NULL,
+     `filename`             VARCHAR(255)                   NULL,
+     `candidate_id`        INT                            NULL,
+     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+     CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `apply`
+(
+    `apply_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `status`       VARCHAR(255)                   NULL,
+    `message`      TEXT                           NULL,
+    `resume_id`    INT                            NULL,
+    `candidate_id` INT                            NULL,
+    `joboffer_id`  INT                            NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT `fk_apply_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`),
+    CONSTRAINT `fk_apply_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_apply_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume_technology`(
     `resume_technology_ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
     `resume_id`     INT                            NULL,
-    `technology_id` INT                            NULL
+    `technology_id` INT                            NULL,
+    CONSTRAINT `fk_resume_technology_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_resume_technology_technology_id` FOREIGN KEY (`technology_id`) REFERENCES `technology` (`technology_id`) ON DELETE CASCADE
 );
 
 # Create index for fulltext search
@@ -168,6 +179,8 @@ INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
 VALUES ('company10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
+INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+VALUES ('a.sale@outlook.fr', '$2y$13$U755YOX.VbHBuxhv4Y.UyeLj3aopPcOIm1734bKyECKfijyR/34ne', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 
 # Create data candidate
 INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
@@ -188,6 +201,9 @@ VALUES ('Thomas', 'Leroy', '0123456789', '1 rue de la Paix', 'Paris', 'France',
 INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
 VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 12);
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+VALUES ('Alexandre', 'Salé', '0783070052', '1 rue de la Paix', 'Paris', 'France',
+        'Je suis un candidat motivé et passionné par le développement web.', 18);
 
 
 # Create data company
@@ -286,7 +302,7 @@ VALUES ('Développeur Web', '<h6>À propos de nous :</h6>
     <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
     <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
         les développeurs front-end et les testeurs.</li>
-    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applys existantes.</li>
     <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
   </ul>
 
@@ -334,7 +350,7 @@ VALUES ('Développeur Front-End',
     <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
     <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
         les développeurs front-end et les testeurs.</li>
-    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applys existantes.</li>
     <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
   </ul>
 
@@ -382,7 +398,7 @@ VALUES ('Développeur Full-Stack',
     <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
     <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
         les développeurs front-end et les testeurs.</li>
-    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applys existantes.</li>
     <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
   </ul>
 
@@ -441,7 +457,7 @@ VALUES ('Analyste de données',
         1);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Mobile (iOS)',
-        'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applications mobiles. Description du poste : Vous serez responsable du développement d''applications iOS de qualité.',
+        'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applys mobiles. Description du poste : Vous serez responsable du développement d''applys iOS de qualité.',
         'Toronto',
         50000,
         65000,
@@ -483,13 +499,13 @@ VALUES ('Développeur Web',
 Présentation de l''entreprise :
 Vous travaillerez pour la société AS Turing dans le pole déveoppement
 Description du poste :
-En tant que développeur web au sein de notre entreprise, vous rejoindrez une équipe dynamique et passionnée qui se consacre à la création de solutions web exceptionnelles. Vous participerez au développement, à la maintenance et à l''amélioration de nos applications web, contribuant ainsi à la croissance de notre entreprise.
+En tant que développeur web au sein de notre entreprise, vous rejoindrez une équipe dynamique et passionnée qui se consacre à la création de solutions web exceptionnelles. Vous participerez au développement, à la maintenance et à l''amélioration de nos applys web, contribuant ainsi à la croissance de notre entreprise.
 
 Responsabilités principales :
 
-Concevoir, développer, tester et mettre en œuvre des applications web de haute qualité.
+Concevoir, développer, tester et mettre en œuvre des applys web de haute qualité.
 Collaborer avec les équipes interfonctionnelles pour comprendre les besoins et les exigences du projet.
-Résoudre les problèmes techniques et optimiser les performances des applications existantes.
+Résoudre les problèmes techniques et optimiser les performances des applys existantes.
 Suivre les meilleures pratiques en matière de développement web, y compris la sécurité et l''accessibilité.
 Exigences :
 
@@ -522,7 +538,7 @@ VALUES ('Développeur Front-End',
         1);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Full-Stack',
-        'Présentation de l''entreprise : Startup innovante dans le domaine de la santé connectée. Description du poste : En tant que développeur Full-Stack, vous participerez à la création d''une application de suivi de la santé.',
+        'Présentation de l''entreprise : Startup innovante dans le domaine de la santé connectée. Description du poste : En tant que développeur Full-Stack, vous participerez à la création d''une apply de suivi de la santé.',
         'San Francisco',
         55000,
         70000,
@@ -558,7 +574,7 @@ VALUES ('Analyste de données',
         1);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Mobile (iOS)',
-        'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applications mobiles. Description du poste : Vous serez responsable du développement d''applications iOS de qualité.',
+        'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applys mobiles. Description du poste : Vous serez responsable du développement d''applys iOS de qualité.',
         'Toronto',
         50000,
         65000,
@@ -592,80 +608,6 @@ VALUES ('Ingénieur en intelligence artificielle',
         5,
         4,
         2);
-
-# Create data application
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 1);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 2);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 3);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 4);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 5);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 1, 6);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 2, 6);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 3, 6);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 4, 6);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 5, 6);
-INSERT INTO application (status, candidate_id, joboffer_id)
-VALUES ('En attente', 6, 6);
 
 # Create data technology
 INSERT INTO technology (name, category_id)
@@ -804,6 +746,80 @@ INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Pierre Durand', 'cv_pierre_durand.pdf', 3);
 INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
+
+# Create data apply
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 1);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 2);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 3);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 4);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 5);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 1, 6);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 2, 6);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 3, 6);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 4, 6);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 5, 6);
+INSERT INTO apply (status, candidate_id, joboffer_id)
+VALUES ('En attente', 6, 6);
 
 # Create data resume_technology
 INSERT INTO resume_technology (resume_id, technology_id)
