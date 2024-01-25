@@ -34,7 +34,7 @@ class Resume
     #[Assert\Positive(message: "Candidate Id must be a positive integer")]
     protected int $candidate_id;
 
-    public function getResume_id(): ?int
+    public function getResumeId(): ?int
     {
         return $this->resume_id;
     }
