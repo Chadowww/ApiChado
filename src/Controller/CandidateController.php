@@ -124,18 +124,23 @@ class CandidateController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
+        error_log('arrived in create');
         if($this->errorService->getErrorsCandidateRequest($request) !== []){
             throw new InvalidRequestException(
                 json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
                 400
             );
         }
+        error_log('no errors');
         $candidate = $this->candidateService->createCandidate($request);
         try {
+            error_log('try create');
             $this->candidateRepository->create($candidate);
         } catch (PDOException $exception) {
+            error_log('catch create');
             throw new DatabaseException($exception->getMessage(), 500);
         }
+        error_log('return create');
         return new JsonResponse(['message' => 'Candidate created'], 201);
     }
 
@@ -450,20 +455,21 @@ class CandidateController extends AbstractController
     public function uploadAvatar(Request $request, ImageController $imageController): JsonResponse
     {
         $user = $this->getUser();
-
         if ($user instanceof User) {
-            $candidate = $this->candidateRepository->getByUserId($user->getId());
+            $candidate = $this->candidateRepository->getByUserId($user->getUser_id());
 
             if (!$candidate) {
+                error_log('candidate not found');
                 throw new resourceNotFoundException(
                     json_encode([
-                        'error' => 'The candidate with id ' . $user->getId() . ' does not exist.'
+                        'error' => 'The candidate with id ' . $user->getUser_id() . ' does not exist.'
                     ],
                         JSON_THROW_ON_ERROR),
                     404
                 );
             }
-
+            error_log('candidate found');
+            error_log(print_r($candidate, true));
             $upload = $imageController->create($request);
             $jsonDecode = json_decode($upload->getContent(), true, 512, JSON_THROW_ON_ERROR);
 

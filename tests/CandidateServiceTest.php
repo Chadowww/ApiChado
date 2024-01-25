@@ -17,7 +17,7 @@ class CandidateServiceTest extends TestCase
         $candidate = new Candidate();
         $candidate->setFirstName('John');
         $candidate->setLastName('Doe');
-        $candidate->setUserId(1);
+        $candidate->setUser_id(1);
         $candidate->setSlug('John', 'Doe');
         $candidate->setPhone('123456789');
         $candidate->setAddress('123 Main St');
@@ -40,7 +40,7 @@ class CandidateServiceTest extends TestCase
 
         $this->assertEquals($candidate->getFirstName(), $data['firstname']);
         $this->assertEquals($candidate->getLastName(), $data['lastname']);
-        $this->assertEquals($candidate->getUserId(), $data['user_id']);
+        $this->assertEquals($candidate->getUser_id(), $data['user_id']);
         $this->assertEquals($candidate->getPhone(), $data['phone']);
         $this->assertEquals($candidate->getAddress(), $data['address']);
         $this->assertEquals($candidate->getCity(), $data['city']);
@@ -68,7 +68,7 @@ class CandidateServiceTest extends TestCase
 
         $this->assertEquals($candidate->getFirstName(), $data['firstname']);
         $this->assertEquals($candidate->getLastName(), $data['lastname']);
-        $this->assertEquals($candidate->getUserId(), $data['user_id']);
+        $this->assertEquals($candidate->getUser_id(), $data['user_id']);
         $this->assertEquals($candidate->getPhone(), $data['phone']);
         $this->assertEquals($candidate->getAddress(), $data['address']);
         $this->assertEquals($candidate->getCity(), $data['city']);

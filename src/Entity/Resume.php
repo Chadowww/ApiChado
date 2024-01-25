@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Resume
 {
-    protected ?int $id = null;
+    protected ?int $resume_id = null;
 
     #[Assert\NotBlank(message: "Title is required")]
     #[Assert\Type(type: 'string', message: "Title must be a string")]
@@ -32,16 +32,16 @@ class Resume
     #[Assert\NotBlank(message: "Candidate Id is required")]
     #[Assert\Type(type: 'integer', message: "Candidate Id must be an integer")]
     #[Assert\Positive(message: "Candidate Id must be a positive integer")]
-    protected int $candidateId;
+    protected int $candidate_id;
 
-    public function getId(): ?int
+    public function getResumeId(): ?int
     {
-        return $this->id;
+        return $this->resume_id;
     }
 
-    public function setId(?int $id): void
+    public function setResume_id(?int $id): void
     {
-        $this->id = $id;
+        $this->resume_id = $id;
     }
 
     public function getTitle(): string
@@ -86,11 +86,11 @@ class Resume
 
     public function getCandidateId(): int
     {
-        return $this->candidateId;
+        return $this->candidate_id;
     }
 
-    public function setCandidateId(int $candidateId): void
+    public function setCandidate_id(int $candidate_id): void
     {
-        $this->candidateId = $candidateId;
+        $this->candidate_id = $candidate_id;
     }
 }
