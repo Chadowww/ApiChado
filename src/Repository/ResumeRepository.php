@@ -47,12 +47,12 @@ class ResumeRepository
         });
     }
 
-    public function read(int $id): Resume | bool
+    public function read(int $resume_id): Resume | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.resume WHERE id = :id';
+        $query = 'SELECT * FROM APICHADO.resume WHERE resume_id = :resume_id';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':resume_id', $resume_id, PDO::PARAM_INT);
         $statement->execute();
         $resume = $statement->fetchObject(Resume::class);
         $this->connection->commit();
@@ -67,14 +67,14 @@ class ResumeRepository
             $query = '
             UPDATE APICHADO.resume
             SET title = :title, filename = :filename, candidate_id = :candidateId
-            WHERE id = :id';
+            WHERE resume_id = :resume_id';
 
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
                 $resumeAttributes[$value] = $resume->{"get" . ucfirst($key)}();
             }
-            $resumeAttributes[':id'] = $resume->getId();
+            $resumeAttributes[':resume_id'] = $resume->getResume_id();
             $this->bindValueService->bindValuesToStatement($statement, $resumeAttributes);
             $statement->execute();
         });
@@ -115,12 +115,12 @@ class ResumeRepository
         }
     }
 
-    public function findByCandidate($id)
+    public function findByCandidate($resume_id)
     {
         $this->connection->beginTransaction();
         $query = 'SELECT * FROM APICHADO.resume WHERE candidate_id = :candidateId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidateId', $id, PDO::PARAM_INT);
+        $statement->bindValue(':candidateId', $resume_id, PDO::PARAM_INT);
         $statement->execute();
         $resumes = $statement->fetchAll(PDO::FETCH_CLASS, Resume::class);
         $this->connection->commit();

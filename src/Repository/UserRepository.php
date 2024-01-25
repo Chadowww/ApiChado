@@ -44,12 +44,12 @@ class UserRepository
         }
     }
 
-    public function read(int $id): User | bool
+    public function read(int $user_id): User | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.user WHERE id = :id';
+        $query = 'SELECT * FROM APICHADO.user WHERE user_id = :user_id';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':id', $id);
+        $statement->bindValue(':user_id', $user_id);
         $statement->execute();
         $user = $statement->fetchObject(User::class);
         $this->connection->commit();
@@ -69,9 +69,9 @@ class UserRepository
                     `password` = :password,
                     `roles` = :role
                 WHERE 
-                    `id` = :id';
+                    `user_id` = :user_id';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':id', $user->getId());
+            $statement->bindValue(':user_id', $user->getUser_id());
             $statement->bindValue(':email', $user->getEmail());
             $statement->bindValue(':password', $user->getPassword());
             $statement->bindValue(':role', $user->getRolesValue());
@@ -84,14 +84,14 @@ class UserRepository
         }
     }
 
-    public function delete(int $id): bool
+    public function delete(int $user_id): bool
     {
         $this->connection->beginTransaction();
 
         try {
-            $query = 'DELETE FROM APICHADO.user WHERE id = :id';
+            $query = 'DELETE FROM APICHADO.user WHERE user_id = :user_id';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':id', $id);
+            $statement->bindValue(':user_id', $user_id);
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -143,12 +143,12 @@ class UserRepository
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'SELECT MAX(id) FROM APICHADO.user';
+            $query = 'SELECT MAX(user_id) FROM APICHADO.user';
             $statement = $this->connection->prepare($query);
             $statement->execute();
-            $id = $statement->fetchColumn();
+            $user_id = $statement->fetchColumn();
             $this->connection->commit();
-            return $id;
+            return $user_id;
         } catch (PDOException $e) {
             $this->connection->rollBack();
             throw $e;
@@ -176,17 +176,17 @@ class UserRepository
         }
     }
 
-    public function getUserWithCandidate(int $id): array | bool
+    public function getUserWithCandidate(int $user_id): array | bool
     {
         $this->connection->beginTransaction();
         $query = '
-            SELECT u.id as userId, email, roles, created_at, updated_at, c.id as candidateId, c.firstname, c.lastname, c.phone, c.address, c.city, c.country, c.avatar, c.slug, c.coverLetter, c.user_id, sM.id as socialeMediaId, sM.linkedin, sM.github, sM.twitter, sM.facebook, sM.instagram, sM.website   
+            SELECT u.*, sM.*, c.*
             FROM APICHADO.user u
-            LEFT JOIN APICHADO.socialeMedia sM on u.id = sM.user_id
-            LEFT JOIN APICHADO.candidate c ON u.id = c.user_id WHERE u.id = :id
+            LEFT JOIN APICHADO.socialeMedia sM on u.user_id = sM.user_id
+            LEFT JOIN APICHADO.candidate c ON u.user_id = c.user_id WHERE u.user_id = :user_id
             ';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':id', $id);
+        $statement->bindValue(':user_id', $user_id);
         $statement->execute();
         $user = $statement->fetch(PDO::FETCH_ASSOC);
         $this->connection->commit();

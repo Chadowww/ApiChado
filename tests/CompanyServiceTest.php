@@ -33,7 +33,7 @@ class CompanyServiceTest extends TestCase
         $this->assertEquals($company->getCity(), $data['city']);
         $this->assertEquals($company->getCountry(), $data['country']);
         $this->assertEquals($company->getSiret(), $data['siret']);
-        $this->assertEquals($company->getUserId(), $data['user_id']);
+        $this->assertEquals($company->getUser_id(), $data['user_id']);
         $this->assertEquals($company->getSlug(), str_ireplace(' ', '-', $data['name']));
     }
 
@@ -49,7 +49,7 @@ class CompanyServiceTest extends TestCase
         $company->setCity('New York');
         $company->setCountry('USA');
         $company->setSiret('12345678901234');
-        $company->setUserId(1);
+        $company->setUser_id(1);
         $company->setSlug('Company');
 
         $data = [
@@ -72,7 +72,7 @@ class CompanyServiceTest extends TestCase
         $this->assertEquals($company->getCity(), $data['city']);
         $this->assertEquals($company->getCountry(), $data['country']);
         $this->assertEquals($company->getSiret(), $data['siret']);
-        $this->assertEquals($company->getUserId(), $data['user_id']);
+        $this->assertEquals($company->getUser_id(), $data['user_id']);
         $this->assertEquals($company->getSlug(), str_ireplace(' ', '-', $data['name']));
     }
 }
