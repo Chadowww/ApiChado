@@ -16,7 +16,7 @@ class ResumeRepository
     CONST array VALUES = [
         'title' => ':title',
         'filename' => ':filename',
-        'candidateId' => ':candidateId',
+        'candidate_id' => ':candidate_id',
     ];
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
@@ -27,6 +27,7 @@ class ResumeRepository
 
     public function create(Resume $resume): void
     {
+        error_log(print_r($resume, true));
         $resumeAttributes = [];
 
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
@@ -34,7 +35,7 @@ class ResumeRepository
             INSERT INTO APICHADO.resume
             (title, filename, candidate_id) 
             VALUES 
-            (:title, :filename, :candidateId)';
+            (:title, :filename, :candidate_id)';
 
             $statement = $this->connection->prepare($query);
 
@@ -66,7 +67,7 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             UPDATE APICHADO.resume
-            SET title = :title, filename = :filename, candidate_id = :candidateId
+            SET title = :title, filename = :filename, candidate_id = :candidate_id
             WHERE resume_id = :resume_id';
 
             $statement = $this->connection->prepare($query);
@@ -118,9 +119,9 @@ class ResumeRepository
     public function findByCandidate($resume_id)
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.resume WHERE candidate_id = :candidateId';
+        $query = 'SELECT * FROM APICHADO.resume WHERE candidate_id = :candidate_id';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidateId', $resume_id, PDO::PARAM_INT);
+        $statement->bindValue(':candidate_id', $resume_id, PDO::PARAM_INT);
         $statement->execute();
         $resumes = $statement->fetchAll(PDO::FETCH_CLASS, Resume::class);
         $this->connection->commit();
