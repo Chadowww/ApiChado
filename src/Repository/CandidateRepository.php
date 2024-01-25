@@ -14,7 +14,6 @@ class CandidateRepository
     private BindValueService $bindValueService;
 
     CONST array VALUES = [
-//        'candidate_id' => ':candidate_id',
         'firstname' => ':firstname',
         'lastname' => ':lastname',
         'phone' => ':phone',
