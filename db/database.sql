@@ -270,34 +270,46 @@ VALUES ('Autre');
 
 # Create data joboffer
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
-VALUES ('Développeur Web',
-        'Titre du poste : Développeur Web
+VALUES ('Développeur Web', '<h6>À propos de nous :</h6>
+  <p>
+    Nous sommes une entreprise dynamique et en pleine croissance spécialisée dans le développement de solutions web
+    innovantes. Notre équipe passionnée est composée de professionnels talentueux qui repoussent constamment les limites
+    de la technologie pour offrir des produits de qualité supérieure à nos clients. Nous cherchons actuellement un
+    développeur Web PHP Symfony motivé et compétent pour rejoindre notre équipe.
+  </p>
 
+  <h6>Responsabilités :</h6>
+  <ul>
+    <li>Participer activement au cycle de développement de nos projets web en utilisant le framework PHP Symfony.</li>
+    <li>Analyser les spécifications fonctionnelles et techniques,
+    et participer à la conception de solutions adaptées.</li>
+    <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
+    <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
+        les développeurs front-end et les testeurs.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
+  </ul>
 
-Présentation de l''entreprise :
-Vous travaillerez pour la société AS Turing dans le pole déveoppement
-Description du poste :
-En tant que développeur web au sein de notre entreprise, vous rejoindrez une équipe dynamique et passionnée qui se consacre à la création de solutions web exceptionnelles. Vous participerez au développement, à la maintenance et à l''amélioration de nos applications web, contribuant ainsi à la croissance de notre entreprise.
+  <h6>Exigences :</h6>
+  <ul>
+    <li>Expérience professionnelle préalable en développement web PHP avec une maîtrise de Symfony.</li>
+    <li>Solide connaissance des langages de programmation web tels que HTML, CSS et JavaScript.</li>
+    <li>Expérience avec les bases de données relationnelles, notamment MySQL ou PostgreSQL.</li>
+    <li>Compréhension des principes de développement orienté objet.</li>
+    <li>Familiarité avec les outils de gestion de versions, tels que Git.</li>
+    <li>Capacité à travailler en équipe, à communiquer efficacement
+    et à s\'adapter à un environnement en évolution rapide.</li>
+    <li>Attitude proactive et souci du détail pour fournir des solutions de haute qualité.</li>
+  </ul>
 
-Responsabilités principales :
-
-Concevoir, développer, tester et mettre en œuvre des applications web de haute qualité.
-Collaborer avec les équipes interfonctionnelles pour comprendre les besoins et les exigences du projet.
-Résoudre les problèmes techniques et optimiser les performances des applications existantes.
-Suivre les meilleures pratiques en matière de développement web, y compris la sécurité et l''accessibilité.
-Exigences :
-
-Diplôme en informatique, génie logiciel ou dans un domaine connexe.
-Solide expérience dans le développement web, y compris la maîtrise de langages comme HTML, CSS, JavaScript, et PHP (ou d''autres langages pertinents).
-Connaissance des frameworks web, des systèmes de gestion de contenu (CMS) et des outils de développement.
-Capacité à résoudre des problèmes de manière créative et à travailler de manière autonome ou en équipe.
-Excellentes compétences en communication et en résolution de problèmes.
-Avantages :
-
-Environnement de travail stimulant et innovant.
-Opportunités de formation continue pour rester à la pointe de la technologie.
-Équipe dynamique et collaborative.
-Possibilités d''évolution au sein de l''entreprise.',
+  <h6>Avantages :</h6>
+  <ul>
+    <li>Salaire compétitif correspondant à l\'expérience et aux compétences.</li>
+    <li>Environnement de travail collaboratif et innovant.</li>
+    <li>Opportunités de développement professionnel et de formation continue.</li>
+    <li>Projets stimulants et variés.</li>
+    <li>Horaires flexibles et possibilité de télétravail.</li>
+  </ul>',
         'Paris',
         30000,
         40000,
@@ -306,8 +318,46 @@ Possibilités d''évolution au sein de l''entreprise.',
         1);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Front-End',
-        'Présentation de l\'entreprise : Entreprise XYZ, leader dans le secteur de l\'e-commerce. Description du
-           poste : Nous recherchons un développeur Front-End pour rejoindre notre équipe et contribuer au développement de notre site web.',
+        '<h6>À propos de nous :</h6>
+  <p>
+    Nous sommes une entreprise dynamique et en pleine croissance spécialisée dans le développement de solutions web
+    innovantes. Notre équipe passionnée est composée de professionnels talentueux qui repoussent constamment les limites
+    de la technologie pour offrir des produits de qualité supérieure à nos clients. Nous cherchons actuellement un
+    développeur Web PHP Symfony motivé et compétent pour rejoindre notre équipe.
+  </p>
+
+  <h6>Responsabilités :</h6>
+  <ul>
+    <li>Participer activement au cycle de développement de nos projets web en utilisant le framework PHP Symfony.</li>
+    <li>Analyser les spécifications fonctionnelles et techniques,
+    et participer à la conception de solutions adaptées.</li>
+    <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
+    <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
+        les développeurs front-end et les testeurs.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
+  </ul>
+
+  <h6>Exigences :</h6>
+  <ul>
+    <li>Expérience professionnelle préalable en développement web PHP avec une maîtrise de Symfony.</li>
+    <li>Solide connaissance des langages de programmation web tels que HTML, CSS et JavaScript.</li>
+    <li>Expérience avec les bases de données relationnelles, notamment MySQL ou PostgreSQL.</li>
+    <li>Compréhension des principes de développement orienté objet.</li>
+    <li>Familiarité avec les outils de gestion de versions, tels que Git.</li>
+    <li>Capacité à travailler en équipe, à communiquer efficacement
+    et à s\'adapter à un environnement en évolution rapide.</li>
+    <li>Attitude proactive et souci du détail pour fournir des solutions de haute qualité.</li>
+  </ul>
+
+  <h6>Avantages :</h6>
+  <ul>
+    <li>Salaire compétitif correspondant à l\'expérience et aux compétences.</li>
+    <li>Environnement de travail collaboratif et innovant.</li>
+    <li>Opportunités de développement professionnel et de formation continue.</li>
+    <li>Projets stimulants et variés.</li>
+    <li>Horaires flexibles et possibilité de télétravail.</li>
+  </ul>',
         'New York',
         45000,
         60000,
@@ -316,7 +366,46 @@ VALUES ('Développeur Front-End',
         1);
 INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
 VALUES ('Développeur Full-Stack',
-        'Présentation de l''entreprise : Startup innovante dans le domaine de la santé connectée. Description du poste : En tant que développeur Full-Stack, vous participerez à la création d''une application de suivi de la santé.',
+        '''<h6>À propos de nous :</h6>
+  <p>
+    Nous sommes une entreprise dynamique et en pleine croissance spécialisée dans le développement de solutions web
+    innovantes. Notre équipe passionnée est composée de professionnels talentueux qui repoussent constamment les limites
+    de la technologie pour offrir des produits de qualité supérieure à nos clients. Nous cherchons actuellement un
+    développeur Web PHP Symfony motivé et compétent pour rejoindre notre équipe.
+  </p>
+
+  <h6>Responsabilités :</h6>
+  <ul>
+    <li>Participer activement au cycle de développement de nos projets web en utilisant le framework PHP Symfony.</li>
+    <li>Analyser les spécifications fonctionnelles et techniques,
+    et participer à la conception de solutions adaptées.</li>
+    <li>Développer, tester et déployer des fonctionnalités en respectant les normes de qualité et les délais fixés.</li>
+    <li>Collaborer étroitement avec les membres de l\'équipe, y compris les concepteurs UX/UI,
+        les développeurs front-end et les testeurs.</li>
+    <li>Résoudre les problèmes techniques et assurer la maintenance des applications existantes.</li>
+    <li>Suivre les bonnes pratiques de développement, les normes de codage et les procédures internes.</li>
+  </ul>
+
+  <h6>Exigences :</h6>
+  <ul>
+    <li>Expérience professionnelle préalable en développement web PHP avec une maîtrise de Symfony.</li>
+    <li>Solide connaissance des langages de programmation web tels que HTML, CSS et JavaScript.</li>
+    <li>Expérience avec les bases de données relationnelles, notamment MySQL ou PostgreSQL.</li>
+    <li>Compréhension des principes de développement orienté objet.</li>
+    <li>Familiarité avec les outils de gestion de versions, tels que Git.</li>
+    <li>Capacité à travailler en équipe, à communiquer efficacement
+    et à s\'adapter à un environnement en évolution rapide.</li>
+    <li>Attitude proactive et souci du détail pour fournir des solutions de haute qualité.</li>
+  </ul>
+
+  <h6>Avantages :</h6>
+  <ul>
+    <li>Salaire compétitif correspondant à l\'expérience et aux compétences.</li>
+    <li>Environnement de travail collaboratif et innovant.</li>
+    <li>Opportunités de développement professionnel et de formation continue.</li>
+    <li>Projets stimulants et variés.</li>
+    <li>Horaires flexibles et possibilité de télétravail.</li>
+  </ul>',
         'San Francisco',
         55000,
         70000,
