@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -67,6 +68,9 @@ class JobOffer
     #[Assert\Type("integer", message: "Salary max must be a number")]
     private ?int $salaryMax = null;
 
+    private DateTime $created_at;
+    private DateTime $updated_at;
+
 
     public function getJoboffer_id(): ?int
     {
@@ -122,4 +126,26 @@ class JobOffer
     {
         $this->salaryMax = $salaryMax;
     }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTime $created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(DateTime $updated_at): void
+    {
+        $this->updated_at = $updated_at;
+    }
+
+
 }
