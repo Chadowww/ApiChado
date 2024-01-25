@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Apply;
 use App\Entity\Candidate;
 use App\Entity\Company;
 use App\Entity\Contract;
@@ -385,6 +386,74 @@ class ErrorService
                     }
             }
         }
+        return $errors;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function getErrorsApplyRequest(Request $request): array
+    {
+        $errors = [];
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        if (!isset($data['status'], $data['candidate_id'],$data['resume_id'], $data['joboffer_id'])) {
+            $errors[] = [
+                'field' => 'request',
+                'message' => 'Request must contain status, candidate_id, resume_id and joboffer_id fields',
+            ];
+        }
+
+        foreach ($data as $key => $value) {
+            switch ($key) {
+                case 'status':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'status', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'status',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'status', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'message':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'message', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'message',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'message', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'candidate_id':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'candidate_id', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'candidate_id',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'candidate_id', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'resume_id':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'resume_id', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'resume_id',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'resume_id', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+                case 'joboffer_id':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'joboffer_id', $value)->count() > 0) {
+                        $errors[] = [
+                            'field' => 'joboffer_id',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'joboffer_id', $value)->get(0)->getMessage(),
+                            'passedValue' => $value
+                        ];
+                    }
+                    break;
+            }
+        }
+
         return $errors;
     }
 }
