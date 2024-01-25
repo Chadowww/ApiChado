@@ -1,0 +1,24 @@
+# nelmio_api_doc.yaml
+nelmio_api_doc:
+    documentation:
+        info:
+            title: JobItBetter API Doc
+            description: this is the api documentation for JobItBetter project
+            version: 1.0.0
+#        components:
+#            securitySchemes:
+#                Bearer:
+#                    type: http
+#                    scheme: bearer
+#                    bearerFormat: JWT
+#        security:
+#            - Bearer: []
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/user/
+            - ^/job-offer/
+            - ^/contract/
+            - ^/candidate/
+            - ^/company/
+            - ^/resume/
+            - ^/Images/
