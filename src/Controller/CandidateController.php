@@ -124,23 +124,18 @@ class CandidateController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        error_log('arrived in create');
         if($this->errorService->getErrorsCandidateRequest($request) !== []){
             throw new InvalidRequestException(
                 json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
                 400
             );
         }
-        error_log('no errors');
         $candidate = $this->candidateService->createCandidate($request);
         try {
-            error_log('try create');
             $this->candidateRepository->create($candidate);
         } catch (PDOException $exception) {
-            error_log('catch create');
             throw new DatabaseException($exception->getMessage(), 500);
         }
-        error_log('return create');
         return new JsonResponse(['message' => 'Candidate created'], 201);
     }
 
