@@ -48,15 +48,15 @@ CREATE TABLE company
 );
 
 CREATE TABLE socialeMedia(
-     `socialeMedia_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-     `linkedin`    VARCHAR(255)                   NULL,
-     `github`      VARCHAR(255)                   NULL,
-     `twitter`     VARCHAR(255)                   NULL,
-     `facebook`    VARCHAR(255)                   NULL,
-     `instagram`   VARCHAR(255)                   NULL,
-     `website`     VARCHAR(255)                   NULL,
-     `user_id`     INT                            NULL,
-     CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+                             `socialeMedia_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+                             `linkedin`    VARCHAR(255)                   NULL,
+                             `github`      VARCHAR(255)                   NULL,
+                             `twitter`     VARCHAR(255)                   NULL,
+                             `facebook`    VARCHAR(255)                   NULL,
+                             `instagram`   VARCHAR(255)                   NULL,
+                             `website`     VARCHAR(255)                   NULL,
+                             `user_id`     INT                            NULL,
+                             CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE contract
@@ -108,13 +108,13 @@ CREATE TABLE `favlist`
 );
 
 CREATE TABLE `resume`(
-     `resume_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-     `title`               VARCHAR(255)                   NULL,
-     `filename`             VARCHAR(255)                   NULL,
-     `candidate_id`        INT                            NULL,
-     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-     CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE
+                         `resume_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+                         `title`               VARCHAR(255)                   NULL,
+                         `filename`             VARCHAR(255)                   NULL,
+                         `candidate_id`        INT                            NULL,
+                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                         CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `apply`
@@ -125,19 +125,19 @@ CREATE TABLE `apply`
     `resume_id`    INT                            NULL,
     `candidate_id` INT                            NULL,
     `joboffer_id`  INT                            NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `created_at`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updated_at`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT `fk_apply_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`),
     CONSTRAINT `fk_apply_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE,
     CONSTRAINT `fk_apply_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume_technology`(
-    `resume_technology_ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
-    `resume_id`     INT                            NULL,
-    `technology_id` INT                            NULL,
-    CONSTRAINT `fk_resume_technology_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_resume_technology_technology_id` FOREIGN KEY (`technology_id`) REFERENCES `technology` (`technology_id`) ON DELETE CASCADE
+                                    `resume_technology_ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
+                                    `resume_id`     INT                            NULL,
+                                    `technology_id` INT                            NULL,
+                                    CONSTRAINT `fk_resume_technology_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`) ON DELETE CASCADE,
+                                    CONSTRAINT `fk_resume_technology_technology_id` FOREIGN KEY (`technology_id`) REFERENCES `technology` (`technology_id`) ON DELETE CASCADE
 );
 
 # Create index for fulltext search
