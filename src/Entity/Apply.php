@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Apply
@@ -39,8 +40,8 @@ class Apply
     #[Assert\Type(type: 'integer', message: "Job offer id must be an integer")]
     #[Assert\Positive(message: "Job offer id must be a positive integer")]
     protected ?int $joboffer_id;
-    protected DateTime $created_at;
-    protected DateTime $updated_at;
+    protected DateTimeImmutable | string $created_at;
+    protected DateTimeImmutable | string $updated_at;
 
     public function getApplyId(): ?int
     {
@@ -100,28 +101,27 @@ class Apply
     {
         return $this->joboffer_id;
     }
-
     public function setJobofferId(?int $joboffer_id): void
     {
         $this->joboffer_id = $joboffer_id;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): DateTimeImmutable | string
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(DateTime $created_at): void
+    public function setCreatedAt(DateTimeImmutable $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): DateTimeImmutable | string
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(DateTime $updated_at): void
+    public function setUpdatedAt(DateTimeImmutable $updated_at): void
     {
         $this->updated_at = $updated_at;
     }
