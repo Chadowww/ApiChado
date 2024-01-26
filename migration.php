@@ -16,7 +16,11 @@ try {
     $pdo->exec('USE ' . $_ENV['APP_DB_NAME']);
     if (is_file($_ENV['APP_DB_DUMP_PATH']) && is_readable($_ENV['APP_DB_DUMP_PATH'])) {
         $sql = file_get_contents($_ENV['APP_DB_DUMP_PATH']);
-        $statement = $pdo->query($sql);
+        try {
+            $statement = $pdo->query($sql);
+        } catch (PDOException $exception) {
+            echo $exception->getMessage();
+        }
     } else {
         echo $_ENV['APP_DB_DUMP_PATH'] . ' file does not exist';
     }
