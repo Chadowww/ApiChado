@@ -3,6 +3,8 @@
 namespace App\Services\EntityServices;
 
 use App\Entity\Apply;
+use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 
 class ApplyService
@@ -28,7 +30,8 @@ class ApplyService
         $apply->setCandidateId($data['candidate_id']);
         $apply->setResumeId($data['resume_id']);
         $apply->setJobofferId($data['joboffer_id']);
-
+        $apply->setCreatedAt(new DateTimeImmutable());
+        $apply->setUpdatedAt(new DateTimeImmutable());
         return $apply;
     }
 }
