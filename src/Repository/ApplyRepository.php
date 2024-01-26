@@ -6,6 +6,7 @@ use App\Entity\Apply;
 use App\Entity\Candidate;
 use App\Services\ConnectionDbService;
 use App\Services\DataBaseServices\BindValueService;
+use DateTime;
 use PDO;
 use PDOException;
 
@@ -18,20 +19,24 @@ class ApplyRepository
         'status' => ':status',
         'message' => ':message',
         'candidateId' => ':candidate_id',
+        'resumeId' => ':resume_id',
         'jobofferId' => ':joboffer_id',
     ];
+
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
     {
         $this->connection = $connection->connection();
         $this->bindValueService = $bindValueService;
+        $this->connection->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+
     }
 
     public function create(Apply $apply): bool
     {
         $applyAttributes = [];
         $this->executeTransaction(function () use ($apply, &$applyAttributes){
-            $query ='INSERT INTO APICHADO.apply (status, message, candidate_id, joboffer_id) VALUES (:status, :message, :candidate_id, :joboffer_id)';
+            $query ='INSERT INTO APICHADO.apply (status, message, candidate_id, resume_id, joboffer_id) VALUES (:status, :message, :candidate_id, :resume_id, :joboffer_id)';
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
@@ -45,6 +50,9 @@ class ApplyRepository
         return true;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function read(int $apply_id): Apply | bool
     {
         $query = 'SELECT * FROM APICHADO.apply WHERE apply_id = :apply_id';
