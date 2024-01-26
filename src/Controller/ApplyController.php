@@ -59,9 +59,22 @@ class ApplyController extends AbstractController
         return new JsonResponse(['message' => 'Apply created successfully', 'status' => '201']);
     }
 
-    public function read(): JsonResponse
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
+    public function read(int $id): JsonResponse
     {
+        try {
+            $apply = $this->applyRepository->read($id);
+        } catch (\Exception $e) {
+            throw new DatabaseException(
+                json_encode($e->getMessage(), JSON_THROW_ON_ERROR,),
+                400
+            );
+        }
 
+        return new JsonResponse($this->serializer->serialize($apply, 'json'), 200, [], true);
     }
 
     public function update(): JsonResponse
