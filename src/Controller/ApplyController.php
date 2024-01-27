@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\ApplyService;
 use App\Services\ErrorService;
@@ -60,7 +61,56 @@ class ApplyController extends AbstractController
      * @throws \JsonException
      * @throws DatabaseException
      * @throws InvalidRequestException
-     */
+     * @OA\RequestBody(
+     *      request="JobOffer",
+     *      description="Job offer to create",
+     *      required=true,
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(
+     *              property="candidate_id",
+     *              type="integer",
+     *              example=2
+     *          ),
+     *          @OA\Property(
+     *              property="resume_id",
+     *              type="integer",
+     *              example=7
+     *          ),
+     *          @OA\Property(
+     *              property="joboffer_id",
+     *              type="integer",
+     *              example=2
+     *          ),
+     *          @OA\Property(
+     *              property="status",
+     *              type="string",
+     *              example="denied | pending | accepted"
+     *          ),
+     *          @OA\Property(
+     *              property="message",
+     *              type="string",
+     *              example="Message de candidature"
+     *          )
+     *      )
+     * )
+     * @OA\Response(
+     *       response=400,
+     *       description="An error was found in request",
+     *       @OA\JsonContent(
+     *           type="string",
+     *           example="Request must contain status, candidate_id, resume_id and joboffer_id fields"
+     *       )
+     *  )
+     * @OA\Response(
+     *      response=201,
+     *      description="Apply created.",
+     *      @OA\JsonContent(
+     *          type="string",
+     *          example="Created"
+     *      )
+     * )
+     **/
     public function create(Request $request): JsonResponse
     {
         if ($this->errorService->getErrorsApplyRequest($request)) {
@@ -75,26 +125,102 @@ class ApplyController extends AbstractController
         try {
             $this->applyRepository->create($apply);
         } catch (Exception $e) {
-            throw new DatabaseException(
-                json_encode($e->getMessage(), JSON_THROW_ON_ERROR,),
-                400
-            );
+            throw new DatabaseException($e->getMessage(), $e->getCode());
         }
+
         return new JsonResponse(['message' => 'Apply created successfully', 'status' => '201']);
     }
 
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Apply found",
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="apply_id",
+     *     type="integer",
+     *     example=1
+     *     ),
+     *     @OA\Property(
+     *     property="status",
+     *     type="string",
+     *     example="denied | pending | accepted"
+     *    ),
+     *     @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="Message de candidature"
+     *   ),
+     *     @OA\Property(
+     *     property="candidate_id",
+     *     type="integer",
+     *     example=2
+     *     ),
+     *     @OA\Property(
+     *     property="resume_id",
+     *     type="integer",
+     *     example=7
+     *     ),
+     *     @OA\Property(
+     *     property="joboffer_id",
+     *     type="integer",
+     *     example=2
+     *     ),
+     *     @OA\Property(
+     *     property="created_at",
+     *     type="string",
+     *     example="2021-09-01T00:00:00+00:00"
+     *    ),
+     *     @OA\Property(
+     *     property="updated_at",
+     *     type="string",
+     *     example="2021-09-01T00:00:00+00:00"
+     *   )
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="An error occurred while retrieving the apply",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="An error occurred while retrieving the apply"
+     *    )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Apply not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply not found"
+     *   )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Apply id",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example=1
+     *     )
+     * )
      */
     public function read(int $id): JsonResponse
     {
         try {
             $apply = $this->applyRepository->read($id);
+            if (!$apply) {
+                throw new resourceNotFoundException(
+                    json_encode('the apply with id' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                    404
+                );            }
         } catch (Exception $e) {
             throw new DatabaseException(
                 json_encode($e->getMessage(), JSON_THROW_ON_ERROR,),
-                400
+                500
             );
         }
 
