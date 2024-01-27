@@ -7,6 +7,9 @@ use DateTime;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ *  Service for creating and updating Apply entity
+ */
 class ApplyService
 {
 
@@ -23,15 +26,33 @@ class ApplyService
         return $apply;
     }
 
-    private function setApplyData(Apply $apply, mixed $data): Apply
+    /**
+     * @param Apply $apply
+     * @param mixed $data
+     * @return void
+     */
+    private function setApplyData(Apply $apply, mixed $data): void
     {
         $apply->setStatus($data['status']);
         $apply->setMessage($data['message'] ?? null);
         $apply->setCandidateId($data['candidate_id']);
         $apply->setResumeId($data['resume_id']);
         $apply->setJobofferId($data['joboffer_id']);
-        $apply->setCreatedAt(new DateTimeImmutable());
+        if ($apply->getCreatedAt() === null) {
+            $apply->setCreatedAt(new DateTimeImmutable());
+        }
         $apply->setUpdatedAt(new DateTimeImmutable());
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function updateApply(Request $request, Apply $apply): Apply
+    {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->setApplyData($apply, $data);
+
         return $apply;
     }
 }
