@@ -11,7 +11,13 @@ class Apply
     CONST STATUS_DENIED = 'denied';
     CONST STATUS_PENDING = 'pending';
     CONST STATUS_ACCEPTED = 'accepted';
-    protected ?int $apply_id;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
+    }
+    protected ?int $applyId;
     #[Assert\NotBlank(message: "Status is required")]
     #[Assert\Type(type: 'string', message: "Status must be a string")]
     #[Assert\Choice(
@@ -31,26 +37,26 @@ class Apply
     #[Assert\Type(type: 'integer', message: "Candidate id must be an integer")]
     #[Assert\Positive(message: "Candidate id must be a positive integer")
     ]
-    protected ?int $candidate_id;
+    protected ?int $candidateId;
     #[Assert\NotBlank(message: "Resume id is required")]
     #[Assert\Type(type: 'integer', message: "Resume id must be an integer")]
     #[Assert\Positive(message: "Resume id must be a positive integer")]
-    protected ?int $resume_id;
+    protected ?int $resumeId;
     #[Assert\NotBlank(message: "Job offer id is required")]
     #[Assert\Type(type: 'integer', message: "Job offer id must be an integer")]
     #[Assert\Positive(message: "Job offer id must be a positive integer")]
-    protected ?int $joboffer_id;
-    protected DateTimeImmutable | string $created_at;
-    protected DateTimeImmutable | string $updated_at;
+    protected ?int $jobofferId;
+    protected DateTimeImmutable | string $createdAt;
+    protected DateTimeImmutable | string $updatedAt;
 
     public function getApplyId(): ?int
     {
-        return $this->apply_id;
+        return $this->applyId;
     }
 
-    public function setApplyId(?int $apply_id): void
+    public function setApplyId(?int $applyId): void
     {
-        $this->apply_id = $apply_id;
+        $this->applyId = $applyId;
     }
 
     public function getStatus(): ?string
@@ -79,51 +85,51 @@ class Apply
 
     public function getCandidateId(): ?int
     {
-        return $this->candidate_id;
+        return $this->candidateId;
     }
 
-    public function setCandidateId(?int $candidate_id): void
+    public function setCandidateId(?int $candidateId): void
     {
-        $this->candidate_id = $candidate_id;
+        $this->candidateId = $candidateId;
     }
 
     public function getResumeId(): ?int
     {
-        return $this->resume_id;
+        return $this->resumeId;
     }
 
-    public function setResumeId(?int $resume_id): void
+    public function setResumeId(?int $resumeId): void
     {
-        $this->resume_id = $resume_id;
+        $this->resumeId = $resumeId;
     }
 
     public function getJobofferId(): ?int
     {
-        return $this->joboffer_id;
+        return $this->jobofferId;
     }
-    public function setJobofferId(?int $joboffer_id): void
+    public function setJobofferId(?int $jobofferId): void
     {
-        $this->joboffer_id = $joboffer_id;
+        $this->jobofferId = $jobofferId;
     }
 
     public function getCreatedAt(): DateTimeImmutable | string
     {
-        return $this->created_at;
+        return $this->createdAt->format('Y-m-d H:i:s');
     }
 
-    public function setCreatedAt(DateTimeImmutable $created_at): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
     }
 
     public function getUpdatedAt(): DateTimeImmutable | string
     {
-        return $this->updated_at;
+        return $this->updatedAt->format('Y-m-d H:i:s');
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updated_at): void
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): void
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
     }
 
 }
