@@ -231,6 +231,81 @@ class ApplyController extends AbstractController
      * @throws InvalidRequestException
      * @throws JsonException
      * @throws Exception
+     * @OA\RequestBody(
+     *     request="JobOffer",
+     *     description="Job offer to update",
+     *     required=true,
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(
+     *     property="status",
+     *     type="string",
+     *     example="denied | pending | accepted"
+     *   ),
+     *     @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="Message de candidature"
+     *  ),
+     *     @OA\Property(
+     *     property="candidate_id",
+     *     type="integer",
+     *     example=2
+     *     ),
+     *     @OA\Property(
+     *     property="resume_id",
+     *     type="integer",
+     *     example=7
+     *     ),
+     *     @OA\Property(
+     *     property="joboffer_id",
+     *     type="integer",
+     *     example=2
+     *     )
+     * )
+     * )
+     * @OA\Response(
+     *     response=200,
+     *     description="Apply updated",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply updated"
+     *  )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="An error was found in request",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Request must contain status, candidate_id, resume_id and joboffer_id fields"
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="An error occurred while updating the apply",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="An error occurred while updating the apply"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Apply not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Apply id",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example=1
+     *     )
+     * )
      */
     public function update(int $id, Request $request): JsonResponse
     {
@@ -244,11 +319,56 @@ class ApplyController extends AbstractController
         $apply = $this->applyRepository->read($id);
 
         $apply = $this->applyService->updateApply($request, $apply);
+
+        try {
+            $this->applyRepository->update($apply);
+            return new JsonResponse(['message' => 'Apply updated successfully', 'status' => '200']);
+        } catch (Exception $e) {
+            throw new DatabaseException(
+                json_encode($e->getMessage(), JSON_THROW_ON_ERROR,),
+                500
+            );
+        }
     }
 
     /**
      * @throws DatabaseException
      * @throws JsonException
+     * @throws Exception
+     * @OA\Response(
+     *     response=200,
+     *     description="Apply deleted",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply deleted"
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="An error occurred while deleting the apply",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="An error occurred while deleting the apply"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Apply not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Apply id",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example=1
+     *     )
+     * )
      */
     public function delete(int $id): JsonResponse
     {
@@ -264,11 +384,85 @@ class ApplyController extends AbstractController
 
     /**
      * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @OA\Response(
+     *     response=200,
+     *     description="Apply list",
+     *     @OA\JsonContent(
+     *     type="array",
+     *     @OA\Items(
+     *     type="object",
+     *     @OA\Property(
+     *     property="apply_id",
+     *     type="integer",
+     *     example=1
+     *     ),
+     *     @OA\Property(
+     *     property="status",
+     *     type="string",
+     *     example="denied | pending | accepted"
+     *   ),
+     *     @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="Message de candidature"
+     * ),
+     *     @OA\Property(
+     *     property="candidate_id",
+     *     type="integer",
+     *     example=2
+     *     ),
+     *     @OA\Property(
+     *     property="resume_id",
+     *     type="integer",
+     *     example=7
+     *     ),
+     *     @OA\Property(
+     *     property="joboffer_id",
+     *     type="integer",
+     *     example=2
+     *     ),
+     *     @OA\Property(
+     *     property="created_at",
+     *     type="string",
+     *     example="2021-09-01T00:00:00+00:00"
+     *   ),
+     *     @OA\Property(
+     *     property="updated_at",
+     *     type="string",
+     *     example="2021-09-01T00:00:00+00:00"
+     * )
+     * )
+     * )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="An error occurred while retrieving the apply list",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="An error occurred while retrieving the apply list"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Apply list not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Apply list not found"
+     * )
+     * )
      */
     public function list(): JsonResponse
     {
-        $applies = $this->applyRepository->list();
-
+        try {
+            $applies = $this->applyRepository->list();
+        } catch (Exception $e) {
+            throw new DatabaseException(
+                json_encode($e->getMessage(), JSON_THROW_ON_ERROR,),
+                500
+            );
+        }
         return new JsonResponse($this->serializer->serialize($applies, 'json'), 200, [], true);
     }
 }
