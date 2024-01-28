@@ -3,27 +3,45 @@
 namespace App\Repository;
 
 use App\Entity\Apply;
-use App\Entity\Candidate;
+use App\Exceptions\DatabaseException;
 use App\Services\ConnectionDbService;
 use App\Services\DataBaseServices\BindValueService;
-use DateTime;
 use PDO;
 use PDOException;
 
+/**
+ * Repository for Apply entity
+ */
 class ApplyRepository
 {
+    /**
+     * @var PDO
+     */
     private PDO $connection;
+    /**
+     * @var BindValueService
+     */
     private BindValueService $bindValueService;
 
+    /**
+     * @var array
+     * list of values to be used in queries
+     */
     CONST array VALUES = [
+        'applyId' => ':applyId',
         'status' => ':status',
         'message' => ':message',
-        'candidateId' => ':candidate_id',
-        'resumeId' => ':resume_id',
-        'jobofferId' => ':joboffer_id',
+        'candidateId' => ':candidateId',
+        'resumeId' => ':resumeId',
+        'jobofferId' => ':jobofferId',
+        'updatedAt' => ':updatedAt',
     ];
 
 
+    /**
+     * @param ConnectionDbService $connection
+     * @param BindValueService $bindValueService
+     */
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
     {
         $this->connection = $connection->connection();
@@ -32,11 +50,55 @@ class ApplyRepository
 
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public function create(Apply $apply): bool
     {
         $applyAttributes = [];
         $this->executeTransaction(function () use ($apply, &$applyAttributes){
-            $query ='INSERT INTO APICHADO.apply (status, message, candidate_id, resume_id, joboffer_id) VALUES (:status, :message, :candidate_id, :resume_id, :joboffer_id)';
+            $query = 'INSERT INTO APICHADO.apply (status, message, candidateId, resumeId, jobofferId) VALUES (:status, :message, :candidateId, :resumeId, :jobofferId)';
+            $statement = $this->connection->prepare($query);
+
+            foreach (self::VALUES as $key => $value) {
+                if ($key !== 'applyId' && $key !== 'updatedAt') {
+                    $applyAttributes[$value] = $apply->{"get" . ucfirst($key)}();
+                }
+            }
+
+            $this->bindValueService->bindValuesToStatement($statement, $applyAttributes);
+            $statement->execute();
+        });
+
+        return true;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function read(int $applyId): Apply | bool
+    {
+        try {
+            $query = 'SELECT * FROM APICHADO.apply WHERE applyId = :applyId';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':applyId', $applyId);
+            $statement->execute();
+            $apply = $statement->fetchObject(Apply::class);
+
+            return $apply;
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public function update(Apply $apply): bool
+    {
+        $applyAttributes = [];
+        $this->executeTransaction(function () use ($apply, &$applyAttributes){
+            $query = 'UPDATE APICHADO.apply SET status = :status, message = :message, candidateId = :candidateId, resumeId = :resumeId, jobofferId = :jobofferId, updatedAt = :updatedAt WHERE applyId = :applyId';
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
@@ -51,59 +113,44 @@ class ApplyRepository
     }
 
     /**
-     * @throws \Exception
+     * @param int $candidate_id
+     * @return bool
+     * @throws DatabaseException
      */
-    public function read(int $apply_id): Apply | bool
+    public function delete(int $apply_id): bool
     {
-        $query = 'SELECT * FROM APICHADO.apply WHERE apply_id = :apply_id';
-        $statement = $this->connection->prepare($query);
-        $statement->bindValue(':apply_id', $apply_id);
-        $statement->execute();
-        $apply = $statement->fetchObject(Apply::class);
+        $deleted = false;
 
-        return $apply;
-    }
-
-
-    public function update(Apply $apply): bool
-    {
-        $candidateAttributes = [];
-        $this->executeTransaction(function () use ($apply, &$candidateAttributes){
-            $query = 'UPDATE APICHADO.apply SET status = :status, message = :message, candidate_id = :candidate_id, joboffer_id = :joboffer_id WHERE apply_id = :apply_id';
+        $this->executeTransaction(function () use ($apply_id) {
+            $query = 'DELETE FROM APICHADO.apply WHERE applyId = :applyId';
             $statement = $this->connection->prepare($query);
-
-            foreach (self::VALUES as $key => $value) {
-                $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
-            }
-
-            $this->bindValueService->bindValuesToStatement($statement, $candidateAttributes);
+            $statement->bindValue(':applyId', $apply_id);
             $statement->execute();
+            $deleted = $statement->rowCount() > 0;
         });
 
-        return true;
+        return $deleted;
     }
 
-    public function delete(int $candidate_id): bool
+    /**
+     * @throws DatabaseException
+     */
+    public function list(): array | bool
     {
-        $this->executeTransaction(function () use ($candidate_id){
-            $query = 'DELETE FROM APICHADO.candidate WHERE candidate_id = :candidate_id';
-            $statement = $this->connection->prepare($query);
-            $statement->bindValue(':candidate_id', $candidate_id);
-            $statement->execute();
-        });
+        try {
+            $query = 'SELECT * FROM APICHADO.apply';
+            $statement = $this->connection->query($query);
+            $applys = $statement->fetchAll(\PDO::FETCH_CLASS, Apply::class);
 
-        return true;
+            return $applys;
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(), $e->getCode());
+        }
     }
 
-    public function list(): array
-    {
-        $query = 'SELECT * FROM APICHADO.apply';
-        $statement = $this->connection->query($query);
-        $applys = $statement->fetchAll(\PDO::FETCH_CLASS, Apply::class);
-
-        return $applys;
-    }
-
+    /**
+     * @throws DatabaseException
+     */
     private function executeTransaction(callable $transaction): void
     {
         try {
@@ -112,7 +159,7 @@ class ApplyRepository
             $this->connection->commit();
         } catch (PDOException $e) {
             $this->connection->rollBack();
-            throw $e;
+            throw new DatabaseException($e->getMessage(), 500);
         }
     }
 }
