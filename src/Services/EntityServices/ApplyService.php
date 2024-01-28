@@ -27,24 +27,6 @@ class ApplyService
     }
 
     /**
-     * @param Apply $apply
-     * @param mixed $data
-     * @return void
-     */
-    private function setApplyData(Apply $apply, mixed $data): void
-    {
-        $apply->setStatus($data['status']);
-        $apply->setMessage($data['message'] ?? null);
-        $apply->setCandidateId($data['candidate_id']);
-        $apply->setResumeId($data['resume_id']);
-        $apply->setJobofferId($data['joboffer_id']);
-        if ($apply->getCreatedAt() === null) {
-            $apply->setCreatedAt(new DateTimeImmutable());
-        }
-        $apply->setUpdatedAt(new DateTimeImmutable());
-    }
-
-    /**
      * @throws \JsonException
      */
     public function updateApply(Request $request, Apply $apply): Apply
@@ -55,4 +37,23 @@ class ApplyService
 
         return $apply;
     }
+
+    /**
+     * @param Apply $apply
+     * @param mixed $data
+     * @return void
+     */
+    private function setApplyData(Apply $apply, mixed $data): void
+    {
+        $apply->setStatus($data['status']);
+        $apply->setMessage($data['message'] ?? null);
+        $apply->setCandidateId($data['candidateId']);
+        $apply->setResumeId($data['resumeId']);
+        $apply->setJobofferId($data['jobofferId']);
+        if ($apply->getCreatedAt() === null) {
+            $apply->setCreatedAt(new DateTimeImmutable());
+        }
+        $apply->setUpdatedAt(new DateTimeImmutable());
+    }
+
 }
