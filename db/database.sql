@@ -748,77 +748,77 @@ INSERT INTO resume (title, filename, candidate_id)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
 
 # Create data apply
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 1);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 2);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 3);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 4);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 5);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 1, 6);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 2, 6);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 3, 6);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 4, 6);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 5, 6);
-INSERT INTO apply (status, candidate_id, joboffer_id)
+INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 6);
 
 # Create data resume_technology
