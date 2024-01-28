@@ -9,6 +9,7 @@ use App\Entity\Contract;
 use App\Entity\JobOffer;
 use App\Entity\Resume;
 use App\Entity\User;
+use App\Exceptions\InvalidRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -391,13 +392,14 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
-    public function getErrorsApplyRequest(Request $request): array
+    public function getErrorsApplyRequest(Request $request): void
     {
         $errors = [];
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        if (!isset($data['status'], $data['candidate_id'],$data['resume_id'], $data['joboffer_id'])) {
+        if (!isset($data['status'], $data['candidateId'],$data['resumeId'], $data['jobofferId'])) {
             $errors[] = [
                 'field' => 'request',
                 'message' => 'Request must contain status, candidate_id, resume_id and joboffer_id fields',
@@ -424,29 +426,35 @@ class ErrorService
                         ];
                     }
                     break;
-                case 'candidate_id':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'candidate_id', $value)->count() > 0) {
+                case 'candidateId':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'candidateId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'candidate_id',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'candidate_id', $value)->get(0)->getMessage(),
+                            'field' => 'candidateId',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'candidateId', $value)
+                                ->get(0)
+                                ->getMessage(),
                             'passedValue' => $value
                         ];
                     }
                     break;
-                case 'resume_id':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'resume_id', $value)->count() > 0) {
+                case 'resumeId':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'resumeId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'resume_id',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'resume_id', $value)->get(0)->getMessage(),
+                            'field' => 'resumeId',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'resumeId', $value)
+                                ->get(0)
+                                ->getMessage(),
                             'passedValue' => $value
                         ];
                     }
                     break;
-                case 'joboffer_id':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'joboffer_id', $value)->count() > 0) {
+                case 'jobofferId':
+                    if ($this->validator->validatePropertyValue(Apply::class, 'jobofferId', $value)->count() > 0) {
                         $errors[] = [
-                            'field' => 'joboffer_id',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'joboffer_id', $value)->get(0)->getMessage(),
+                            'field' => 'jobofferId',
+                            'message' => $this->validator->validatePropertyValue(Apply::class, 'jobofferId', $value)
+                                ->get(0)
+                                ->getMessage(),
                             'passedValue' => $value
                         ];
                     }
@@ -454,6 +462,8 @@ class ErrorService
             }
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 }
