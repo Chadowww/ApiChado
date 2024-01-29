@@ -46,7 +46,6 @@ class CandidateRepository
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                error_log($key);
                 $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
             }
 
@@ -73,7 +72,6 @@ class CandidateRepository
     public function update(Candidate $candidate): bool
     {
         $candidateAttributes = [];
-        error_log($candidate->getUserId());
         $this->executeTransaction(function () use ($candidate, &$candidateAttributes){
             $query = '
             UPDATE APICHADO.candidate
@@ -86,7 +84,6 @@ class CandidateRepository
                 $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
             }
             $this->bindValueService->bindValuesToStatement($statement, $candidateAttributes);
-            error_log(print_r($candidateAttributes, true));
             $statement->execute();
         });
 

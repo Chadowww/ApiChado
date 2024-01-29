@@ -417,7 +417,6 @@ class UserController extends AbstractController
         $dataUser = [];
         if ($user) {
             $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getUserId());
-            error_log(print_r($dataUser, true));
 
             return new JsonResponse(
                 $this->serializer->serialize($dataUser['user'], 'json'),

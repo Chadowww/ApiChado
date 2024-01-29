@@ -454,7 +454,6 @@ class CandidateController extends AbstractController
             $candidate = $this->candidateRepository->getByUserId($user->getUserId());
 
             if (!$candidate) {
-                error_log('candidate not found');
                 throw new resourceNotFoundException(
                     json_encode([
                         'error' => 'The candidate with id ' . $user->getUserId() . ' does not exist.'
@@ -463,8 +462,6 @@ class CandidateController extends AbstractController
                     404
                 );
             }
-            error_log('candidate found');
-            error_log(print_r($candidate, true));
             $upload = $imageController->create($request);
             $jsonDecode = json_decode($upload->getContent(), true, 512, JSON_THROW_ON_ERROR);
 

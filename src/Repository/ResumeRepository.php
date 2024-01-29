@@ -27,7 +27,6 @@ class ResumeRepository
 
     public function create(Resume $resume): void
     {
-        error_log(print_r($resume, true));
         $resumeAttributes = [];
 
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
