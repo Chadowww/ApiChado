@@ -67,17 +67,17 @@ class ApplyController extends AbstractController
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(
-     *              property="candidate_id",
+     *              property="candidateId",
      *              type="integer",
      *              example=2
      *          ),
      *          @OA\Property(
-     *              property="resume_id",
+     *              property="resumeId",
      *              type="integer",
      *              example=7
      *          ),
      *          @OA\Property(
-     *              property="joboffer_id",
+     *              property="jobofferId",
      *              type="integer",
      *              example=2
      *          ),
@@ -98,7 +98,7 @@ class ApplyController extends AbstractController
      *       description="An error was found in request",
      *       @OA\JsonContent(
      *           type="string",
-     *           example="Request must contain status, candidate_id, resume_id and joboffer_id fields"
+     *           example="Request must contain status, candidateId, resumeId and jobofferId fields"
      *       )
      *  )
      * @OA\Response(
@@ -131,7 +131,7 @@ class ApplyController extends AbstractController
      *     @OA\JsonContent(
      *     type="object",
      *     @OA\Property(
-     *     property="apply_id",
+     *     property="applyId",
      *     type="integer",
      *     example=1
      *     ),
@@ -146,17 +146,17 @@ class ApplyController extends AbstractController
      *     example="Message de candidature"
      *   ),
      *     @OA\Property(
-     *     property="candidate_id",
+     *     property="candidateId",
      *     type="integer",
      *     example=2
      *     ),
      *     @OA\Property(
-     *     property="resume_id",
+     *     property="resumeId",
      *     type="integer",
      *     example=7
      *     ),
      *     @OA\Property(
-     *     property="joboffer_id",
+     *     property="jobofferId",
      *     type="integer",
      *     example=2
      *     ),
@@ -234,17 +234,17 @@ class ApplyController extends AbstractController
      *     example="Message de candidature"
      *  ),
      *     @OA\Property(
-     *     property="candidate_id",
+     *     property="candidateId",
      *     type="integer",
      *     example=2
      *     ),
      *     @OA\Property(
-     *     property="resume_id",
+     *     property="resumeId",
      *     type="integer",
      *     example=7
      *     ),
      *     @OA\Property(
-     *     property="joboffer_id",
+     *     property="jobofferId",
      *     type="integer",
      *     example=2
      *     )
@@ -263,7 +263,7 @@ class ApplyController extends AbstractController
      *     description="An error was found in request",
      *     @OA\JsonContent(
      *     type="string",
-     *     example="Request must contain status, candidate_id, resume_id and joboffer_id fields"
+     *     example="Request must contain status, candidateId, resumeId and jobofferId fields"
      * )
      * )
      * @OA\Response(
@@ -371,7 +371,7 @@ class ApplyController extends AbstractController
      *     @OA\Items(
      *     type="object",
      *     @OA\Property(
-     *     property="apply_id",
+     *     property="applyId",
      *     type="integer",
      *     example=1
      *     ),
@@ -386,17 +386,17 @@ class ApplyController extends AbstractController
      *     example="Message de candidature"
      * ),
      *     @OA\Property(
-     *     property="candidate_id",
+     *     property="candidateId",
      *     type="integer",
      *     example=2
      *     ),
      *     @OA\Property(
-     *     property="resume_id",
+     *     property="resumeId",
      *     type="integer",
      *     example=7
      *     ),
      *     @OA\Property(
-     *     property="joboffer_id",
+     *     property="jobofferId",
      *     type="integer",
      *     example=2
      *     ),

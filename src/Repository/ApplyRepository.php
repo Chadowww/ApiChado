@@ -113,18 +113,18 @@ class ApplyRepository
     }
 
     /**
-     * @param int $candidate_id
+     * @param int $candidateId
      * @return bool
      * @throws DatabaseException
      */
-    public function delete(int $apply_id): bool
+    public function delete(int $applyId): bool
     {
         $deleted = false;
 
-        $this->executeTransaction(function () use ($apply_id) {
+        $this->executeTransaction(function () use ($applyId) {
             $query = 'DELETE FROM APICHADO.apply WHERE applyId = :applyId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':applyId', $apply_id);
+            $statement->bindValue(':applyId', $applyId);
             $statement->execute();
             $deleted = $statement->rowCount() > 0;
         });
