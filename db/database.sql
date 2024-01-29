@@ -5,18 +5,18 @@ USE APICHADO;
 
 CREATE TABLE user
 (
-    `user_id`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `userId`       INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `email`    VARCHAR(255)                   NULL,
     `password` VARCHAR(255)                   NULL,
     `roles`     INT                            NULL,
     `is_verified` BOOLEAN DEFAULT FALSE       NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE candidate
 (
-    `candidate_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `candidateId`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `firstname`   VARCHAR(50)                    NULL,
     `lastname`    VARCHAR(50)                    NULL,
     `phone`       VARCHAR(10)                    NULL,
@@ -26,13 +26,13 @@ CREATE TABLE candidate
     `avatar`      VARCHAR(255)                   NULL,
     `slug`        VARCHAR(255)                   NULL,
     `coverLetter` TEXT                           NULL,
-    `user_id`     INT                            NULL,
-    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+    `userId`     INT                            NULL,
+    CONSTRAINT `fk_candidate_user_id` FOREIGN KEY (`userId`) REFERENCES `user` (userId) ON DELETE CASCADE
 );
 
 CREATE TABLE company
 (
-    `company_id`      INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `companyId`      INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name`    VARCHAR(255)                   NULL,
     `phone`   VARCHAR(10)                    NULL,
     `address` VARCHAR(255)                   NULL,
@@ -43,101 +43,101 @@ CREATE TABLE company
     `logo`        VARCHAR(255)               NULL,
     `slug`       VARCHAR(255)                NULL,
     `cover`       VARCHAR(255)               NULL,
-    `user_id` INT                            NULL,
-    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+    `userId` INT                            NULL,
+    CONSTRAINT `fk_company_user_id` FOREIGN KEY (`userId`) REFERENCES `user` (userId) ON DELETE CASCADE
 );
 
 CREATE TABLE socialeMedia(
-                             `socialeMedia_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-                             `linkedin`    VARCHAR(255)                   NULL,
-                             `github`      VARCHAR(255)                   NULL,
-                             `twitter`     VARCHAR(255)                   NULL,
-                             `facebook`    VARCHAR(255)                   NULL,
-                             `instagram`   VARCHAR(255)                   NULL,
-                             `website`     VARCHAR(255)                   NULL,
-                             `user_id`     INT                            NULL,
-                             CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+     `socialeMediaId`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+     `linkedin`    VARCHAR(255)                   NULL,
+     `github`      VARCHAR(255)                   NULL,
+     `twitter`     VARCHAR(255)                   NULL,
+     `facebook`    VARCHAR(255)                   NULL,
+     `instagram`   VARCHAR(255)                   NULL,
+     `website`     VARCHAR(255)                   NULL,
+     `userId`     INT                            NULL,
+     CONSTRAINT `fk_socialeMedia_user_id` FOREIGN KEY (`userId`) REFERENCES `user` (userId) ON DELETE CASCADE
 );
 
 CREATE TABLE contract
 (
-    `contract_id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `contractId`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `type` VARCHAR(255)                   NULL
 );
 
 CREATE TABLE `category`
 (
-    `category_id`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `categoryId`   INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name` VARCHAR(255)                   NULL
 );
 
 CREATE TABLE `joboffer`
 (
-    `joboffer_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `jobofferId`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `title`       VARCHAR(255)                   NULL,
     `description` TEXT                           NULL,
     `city`        VARCHAR(50)                    NULL,
     `salaryMin`   INT                            NULL,
     `salaryMax`   INT                            NULL,
-    `contract_id` INT                            NULL,
-    `company_id`  INT                            NULL,
-    `category_id` INT                            NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`company_id`) REFERENCES `company` (`company_id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contract_id`) REFERENCES `contract` (`contract_id`),
-    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`)
+    `contractId` INT                            NULL,
+    `companyId`  INT                            NULL,
+    `categoryId` INT                            NULL,
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT `fk_joboffer_company_id` FOREIGN KEY (`companyId`) REFERENCES `company` (companyId) ON DELETE SET NULL,
+    CONSTRAINT `fk_joboffer_contract_id` FOREIGN KEY (`contractId`) REFERENCES `contract` (contractId),
+    CONSTRAINT `fk_joboffer_category_id` FOREIGN KEY (`categoryId`) REFERENCES `category` (categoryId)
 
 );
 
 CREATE TABLE `technology`
 (
-    `technology_id`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `technologyId`          INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `name`        VARCHAR(255)                   NULL,
-    `category_id` INT                            NULL,
-    CONSTRAINT `fk_technology_category_id` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`)
+    `categoryId` INT                            NULL,
+    CONSTRAINT `fk_technology_category_id` FOREIGN KEY (`categoryId`) REFERENCES `category` (categoryId)
 );
 
 CREATE TABLE `favlist`
 (
-    `favlist_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    `candidate_id` INT                            NULL,
-    `joboffer_id`  INT                            NULL,
-    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE ,
-    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
+    `favlistId`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `candidateId` INT                            NULL,
+    `jobofferId`  INT                            NULL,
+    CONSTRAINT `fk_favlist_candidate_id` FOREIGN KEY (`candidateId`) REFERENCES `candidate` (candidateId) ON DELETE CASCADE ,
+    CONSTRAINT `fk_favlist_joboffer_id` FOREIGN KEY (`jobofferId`) REFERENCES `joboffer` (jobofferId) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume`(
-                         `resume_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-                         `title`               VARCHAR(255)                   NULL,
-                         `filename`             VARCHAR(255)                   NULL,
-                         `candidate_id`        INT                            NULL,
-                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                         CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE
+     `resumeId`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+     `title`               VARCHAR(255)                   NULL,
+     `filename`             VARCHAR(255)                   NULL,
+     `candidateId`        INT                            NULL,
+     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+     CONSTRAINT `fk_resume_candidate_id` FOREIGN KEY (`candidateId`) REFERENCES `candidate` (candidateId) ON DELETE CASCADE
 );
 
 CREATE TABLE `apply`
 (
-    `apply_id`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `applyId`           INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `status`       VARCHAR(255)                   NULL,
     `message`      TEXT                           NULL,
-    `resume_id`    INT                            NULL,
-    `candidate_id` INT                            NULL,
-    `joboffer_id`  INT                            NULL,
-    `created_at`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    `updated_at`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT `fk_apply_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`),
-    CONSTRAINT `fk_apply_candidate_id` FOREIGN KEY (`candidate_id`) REFERENCES `candidate` (`candidate_id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_apply_joboffer_id` FOREIGN KEY (`joboffer_id`) REFERENCES `joboffer` (`joboffer_id`) ON DELETE CASCADE
+    `resumeId`    INT                            NULL,
+    `candidateId` INT                            NULL,
+    `jobofferId`  INT                            NULL,
+    `createdAt`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    `updatedAt`   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT `fk_apply_resume_id` FOREIGN KEY (`resumeId`) REFERENCES `resume` (resumeId),
+    CONSTRAINT `fk_apply_candidate_id` FOREIGN KEY (`candidateId`) REFERENCES `candidate` (candidateId) ON DELETE CASCADE,
+    CONSTRAINT `fk_apply_joboffer_id` FOREIGN KEY (`jobofferId`) REFERENCES `joboffer` (jobofferId) ON DELETE CASCADE
 );
 
 CREATE TABLE `resume_technology`(
                                     `resume_technology_ìd`            INT PRIMARY KEY AUTO_INCREMENT NOT NULL ,
-                                    `resume_id`     INT                            NULL,
-                                    `technology_id` INT                            NULL,
-                                    CONSTRAINT `fk_resume_technology_resume_id` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`resume_id`) ON DELETE CASCADE,
-                                    CONSTRAINT `fk_resume_technology_technology_id` FOREIGN KEY (`technology_id`) REFERENCES `technology` (`technology_id`) ON DELETE CASCADE
+                                    `resumeId`     INT                            NULL,
+                                    `technologyId` INT                            NULL,
+                                    CONSTRAINT `fk_resume_technology_resume_id` FOREIGN KEY (`resumeId`) REFERENCES `resume` (resumeId) ON DELETE CASCADE,
+                                    CONSTRAINT `fk_resume_technology_technology_id` FOREIGN KEY (`technologyId`) REFERENCES `technology` (technologyId) ON DELETE CASCADE
 );
 
 # Create index for fulltext search
@@ -145,104 +145,104 @@ CREATE FULLTEXT INDEX `idx_joboffer_title_description` ON `joboffer` (`title`, `
 CREATE FULLTEXT INDEX `idx_candidate_firstname_lastname_description` ON `candidate` (`firstname`, `lastname`);
 
 # Create data user
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company1@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company2@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company3@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company4@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company5@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company6@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate11@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('candidate12@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('admin@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 9, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company7@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company8@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company9@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('company10@hotmail.fr', '$2y$13$3vm8QvCTBKu/ZAI0NHpIE.tYjFgaijYCrKtxCHZnNpWqLdAxIn63i', 5, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
-INSERT INTO user (email, password, roles, is_verified, created_at, updated_at)
+INSERT INTO user (email, password, roles, is_verified, createdAt, updatedAt)
 VALUES ('a.sale@outlook.fr', '$2y$13$U755YOX.VbHBuxhv4Y.UyeLj3aopPcOIm1734bKyECKfijyR/34ne', 3, 1, '2021-05-01 00:00:00', '2021-05-01 00:00:00');
 
 # Create data candidate
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Jean', 'Dupont', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 7);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Marie', 'Martin', '0123456789', '123 rue de la République', 'Lyon', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 8);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Pierre', 'Durand', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 9);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Julie', 'Dufour', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 10);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Thomas', 'Leroy', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 11);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Sophie', 'Moreau', '0123456789', '1 rue de la Paix', 'Paris', 'France',
         'Je suis une candidate motivée et passionnée par le développement web.', 12);
-INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, user_id)
+INSERT INTO candidate (firstname, lastname, phone, address, city, country, coverLetter, userId)
 VALUES ('Alexandre', 'Salé', '0783070052', '1 rue de la Paix', 'Paris', 'France',
         'Je suis un candidat motivé et passionné par le développement web.', 18);
 
 
 # Create data company
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('AS Turing', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'as-turing',
         'logo.png', 'GroupWork20.jpg', '0123456789',1);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Entreprise XYZ', '123 rue de la République', 'Lyon', 'France', '12345678901234', 'description',
         'Entreprise-XYZ','logo1.png', 'GroupWork23.jpg', '0123456789', 2);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Startup ABC', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-ABC',
         'logo2.png', 'GroupWork24.jpg',
         '0123456789', 3);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Entreprise 123', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Entreprise-123',
         'logo3.png', 'GroupWork5
 .jpg',
         '0123456789', 4);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Startup 456', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-456',
         'logo4.png', 'GroupWork6.jpg',
         '0123456789', 5);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Startup 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Startup-789',
         'logo5.png', 'GroupWork7.jpg',
         '0123456789', 6);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('Company 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'Company-789',
         'logo6.png', 'GroupWork8.jpg',
         '0123456789', 14);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('sas 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'sas-789', 'logo7.jpg',
         'GroupWork9.jpg',
         '0123456789', 15);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('entreprise 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 'entreprise-789',
         'logo8.jpg', 'GroupWork10.jpg',
         '0123456789', 16);
-INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, user_id)
+INSERT INTO company (name, address, city, country, siret, description, slug, logo, cover, phone, userId)
 VALUES ('s2i 789', '1 rue de la Paix', 'Paris', 'France', '12345678901234', 'description', 's2i-789',
         'logo.9.png', 'GroupWork11.jpg', '0123456789', 17);
 
@@ -285,7 +285,7 @@ INSERT INTO category (name)
 VALUES ('Autre');
 
 # Create data joboffer
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Web', '<h6>À propos de nous :</h6>
   <p>
     Nous sommes une entreprise dynamique et en pleine croissance spécialisée dans le développement de solutions web
@@ -332,7 +332,7 @@ VALUES ('Développeur Web', '<h6>À propos de nous :</h6>
         1,
         1,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Front-End',
         '<h6>À propos de nous :</h6>
   <p>
@@ -380,7 +380,7 @@ VALUES ('Développeur Front-End',
         2,
         2,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Full-Stack',
         '''<h6>À propos de nous :</h6>
   <p>
@@ -428,7 +428,7 @@ VALUES ('Développeur Full-Stack',
         3,
         3,
         6);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur DevOps',
         'Présentation de l''entreprise : Entreprise de technologie spécialisée dans le cloud computing. Description du poste : Nous cherchons un ingénieur DevOps pour optimiser notre infrastructure cloud.',
         'Seattle',
@@ -437,7 +437,7 @@ VALUES ('Ingénieur DevOps',
         4,
         4,
         4);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Designer UX/UI',
         'Présentation de l''entreprise : Agence de design renommée. Description du poste : Nous recrutons un designer UX/UI pour créer des interfaces utilisateur intuitives et esthétiques.',
         'Londres',
@@ -446,7 +446,7 @@ VALUES ('Designer UX/UI',
         5,
         5,
         2);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Analyste de données',
         'Présentation de l''entreprise : Géant de la finance. Description du poste : Rejoignez notre équipe d''analystes de données pour analyser les tendances financières.',
         'Francfort',
@@ -455,7 +455,7 @@ VALUES ('Analyste de données',
         1,
         6,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Mobile (iOS)',
         'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applys mobiles. Description du poste : Vous serez responsable du développement d''applys iOS de qualité.',
         'Toronto',
@@ -464,7 +464,7 @@ VALUES ('Développeur Mobile (iOS)',
         2,
         1,
         5);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur en cybersécurité',
         'Présentation de l''entreprise : Leader de la sécurité informatique. Description du poste : Protégez nos systèmes contre les menaces en tant qu''ingénieur en cybersécurité.',
         'Singapour',
@@ -473,7 +473,7 @@ VALUES ('Ingénieur en cybersécurité',
         3,
         2,
         4);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Chef de Projet Agile',
         'Présentation de l''entreprise : Entreprise de conseil en gestion. Description du poste : Dirigez des projets agiles et collaborez avec nos clients pour atteindre leurs objectifs.',
         'Paris',
@@ -482,7 +482,7 @@ VALUES ('Chef de Projet Agile',
         4,
         3,
         3);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur en intelligence artificielle',
         'Présentation de l''entreprise : Société technologique axée sur l''IA. Description du poste : Vous travaillerez sur des projets d''intelligence artificielle passionnants.',
         'Pékin',
@@ -491,7 +491,7 @@ VALUES ('Ingénieur en intelligence artificielle',
         5,
         4,
         2);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Web',
         'Titre du poste : Développeur Web
 
@@ -526,7 +526,7 @@ Possibilités d''évolution au sein de l''entreprise.',
         1,
         1,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Front-End',
         'Présentation de l\'entreprise : Entreprise XYZ, leader dans le secteur de l\'e-commerce. Description du
            poste : Nous recherchons un développeur Front-End pour rejoindre notre équipe et contribuer au développement de notre site web.',
@@ -536,7 +536,7 @@ VALUES ('Développeur Front-End',
         2,
         2,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Full-Stack',
         'Présentation de l''entreprise : Startup innovante dans le domaine de la santé connectée. Description du poste : En tant que développeur Full-Stack, vous participerez à la création d''une apply de suivi de la santé.',
         'San Francisco',
@@ -545,7 +545,7 @@ VALUES ('Développeur Full-Stack',
         3,
         3,
         6);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur DevOps',
         'Présentation de l''entreprise : Entreprise de technologie spécialisée dans le cloud computing. Description du poste : Nous cherchons un ingénieur DevOps pour optimiser notre infrastructure cloud.',
         'Seattle',
@@ -554,7 +554,7 @@ VALUES ('Ingénieur DevOps',
         4,
         4,
         4);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Designer UX/UI',
         'Présentation de l''entreprise : Agence de design renommée. Description du poste : Nous recrutons un designer UX/UI pour créer des interfaces utilisateur intuitives et esthétiques.',
         'Londres',
@@ -563,7 +563,7 @@ VALUES ('Designer UX/UI',
         5,
         5,
         2);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Analyste de données',
         'Présentation de l''entreprise : Géant de la finance. Description du poste : Rejoignez notre équipe d''analystes de données pour analyser les tendances financières.',
         'Francfort',
@@ -572,7 +572,7 @@ VALUES ('Analyste de données',
         1,
         6,
         1);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Développeur Mobile (iOS)',
         'Présentation de l''entreprise : Startup en pleine croissance dans le domaine des applys mobiles. Description du poste : Vous serez responsable du développement d''applys iOS de qualité.',
         'Toronto',
@@ -581,7 +581,7 @@ VALUES ('Développeur Mobile (iOS)',
         2,
         1,
         5);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur en cybersécurité',
         'Présentation de l''entreprise : Leader de la sécurité informatique. Description du poste : Protégez nos systèmes contre les menaces en tant qu''ingénieur en cybersécurité.',
         'Singapour',
@@ -590,7 +590,7 @@ VALUES ('Ingénieur en cybersécurité',
         3,
         2,
         4);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Chef de Projet Agile',
         'Présentation de l''entreprise : Entreprise de conseil en gestion. Description du poste : Dirigez des projets agiles et collaborez avec nos clients pour atteindre leurs objectifs.',
         'Paris',
@@ -599,7 +599,7 @@ VALUES ('Chef de Projet Agile',
         4,
         3,
         3);
-INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contract_id, company_id, category_id)
+INSERT INTO joboffer (title, description, city, salaryMin, salaryMax, contractId, companyId, categoryId)
 VALUES ('Ingénieur en intelligence artificielle',
         'Présentation de l''entreprise : Société technologique axée sur l''IA. Description du poste : Vous travaillerez sur des projets d''intelligence artificielle passionnants.',
         'Pékin',
@@ -610,141 +610,141 @@ VALUES ('Ingénieur en intelligence artificielle',
         2);
 
 # Create data technology
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('HTML', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('CSS', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('JavaScript', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('PHP', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Python', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Java', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('C#', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('C++', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Ruby', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('SQL', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('NoSQL', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('MongoDB', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Node.js', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('React', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Angular', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Vue.js', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Symfony', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Laravel', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Spring', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Django', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Flask', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Bootstrap', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('jQuery', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('WordPress', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Magento', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Shopify', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('PrestaShop', 1);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('iOS', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Android', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Swift', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Kotlin', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Objective-C', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Java', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('React Native', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Ionic', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Xamarin', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Flutter', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Cordova', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('PhoneGap', 2);
-INSERT INTO technology (name, category_id)
+INSERT INTO technology (name, categoryId)
 VALUES ('Ionic', 2);
 
 # Create data favlist
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (1, 1);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (2, 2);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (4, 3);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (1, 4);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (6, 5);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (1, 6);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (2, 1);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (3, 2);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (2, 3);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (4, 4);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (2, 5);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (5, 6);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (6, 1);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (3, 2);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (3, 3);
-INSERT INTO favlist (candidate_id, joboffer_id)
+INSERT INTO favlist (candidateId, jobofferId)
 VALUES (3, 4);
 
 # Create data resume
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Jean Dupont', 'cv_jean_dupont.pdf', 1);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Marie Martin', 'cv_marie_martin.pdf', 2);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Pierre Durand', 'cv_pierre_durand.pdf', 3);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Thomas Leroy', 'cv_thomas_leroy.pdf', 5);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Sophie Moreau', 'cv_sophie_moreau.pdf', 6);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Jean Dupont', 'cv_jean_dupont.pdf', 1);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Marie Martin', 'cv_marie_martin.pdf', 2);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Pierre Durand', 'cv_pierre_durand.pdf', 3);
-INSERT INTO resume (title, filename, candidate_id)
+INSERT INTO resume (title, filename, candidateId)
 VALUES ('CV Julie Dufour', 'cv_julie_dufour.pdf', 4);
 
 # Create data apply
@@ -822,23 +822,23 @@ INSERT INTO apply (status, candidateId, jobofferId)
 VALUES ('En attente', 6, 6);
 
 # Create data resume_technology
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 1);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 2);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 3);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 4);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 5);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 6);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 7);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 8);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 9);
-INSERT INTO resume_technology (resume_id, technology_id)
+INSERT INTO resume_technology (resumeId, technologyId)
 VALUES (1, 10);
