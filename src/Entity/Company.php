@@ -13,7 +13,7 @@ class Company
         $this->socialMedia = new SocialMedia();
     }
 
-    protected ?int $company_id = null;
+    protected ?int $companyId = null;
 
     #[Assert\NotBlank(message: "Name is required")]
     #[Assert\Length(
@@ -88,16 +88,16 @@ class Company
     #[Assert\NotBlank(message: "User id is required")]
     #[Assert\Positive(message: "User id must be a positive number")]
     #[Assert\Type("integer", message: "User id must be a number")]
-    protected ?int $user_id = null;
+    protected ?int $userId = null;
 
-    public function getCompany_id(): ?int
+    public function getCompanyId(): ?int
     {
-        return $this->company_id;
+        return $this->companyId;
     }
 
-    public function setCompany_id(?int $company_id): void
+    public function setCompanyId(?int $companyId): void
     {
-        $this->company_id = $company_id;
+        $this->companyId = $companyId;
     }
 
     public function getName(): ?string
@@ -200,14 +200,14 @@ class Company
         $this->cover = $cover;
     }
 
-    public function getUser_id(): ?int
+    public function getUserId(): ?int
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
-    public function setUser_id(?int $user_id): void
+    public function setUserId(?int $userId): void
     {
-        $this->user_id = $user_id;
+        $this->userId = $userId;
     }
 
     public function getSocialMedia(): SocialMedia
