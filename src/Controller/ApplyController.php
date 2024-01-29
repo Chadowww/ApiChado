@@ -349,14 +349,14 @@ class ApplyController extends AbstractController
     {
         if (!$this->applyRepository->read($id)) {
             throw new resourceNotFoundException(
-                json_encode('the apply with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                 404
             );
         }
 
         if (!$this->applyRepository->delete($id)) {
             throw new DatabaseException(
-                json_encode('An error occurred while deleting the apply', JSON_THROW_ON_ERROR),
+                json_encode(['error' => 'An error occurred while deleting the apply'], JSON_THROW_ON_ERROR),
                 500
             );
         }
