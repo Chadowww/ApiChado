@@ -185,19 +185,19 @@ class ErrorServiceTest extends KernelTestCase
             'address' => '19 rue de la paix',
             'city' => 'Paris',
             'country' => 'France',
-            'user_id' => 1
+            'userId' => 1
         ];
 
         $badData = [
             'firstname' => [
-                [null, 'Request must contain firstname, lastname, user_id fields'],
+                [null, 'Request must contain firstname, lastname, userId fields'],
                 ['', 'Firstname is required'],
                 [ true, 'Firstname must be a string'],
                 ['az', 'Firstname must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Firstname must be at least 50 characters long'],
             ],
             'lastname' => [
-                [null, 'Request must contain firstname, lastname, user_id fields'],
+                [null, 'Request must contain firstname, lastname, userId fields'],
                 ['', 'Lastname is required'],
                 [ true, 'Lastname must be a string'],
                 ['az', 'Lastname must be at least 3 characters long'],
@@ -226,8 +226,8 @@ class ErrorServiceTest extends KernelTestCase
                 ['az', 'Country must be at least 5 characters long'],
                 ['Royaume-Uni de Grande-Bretagne et d\'Irlande du Nord', 'Country must be at least 50 characters long'],
             ],
-            'user_id' => [
-                [null, 'Request must contain firstname, lastname, user_id fields'],
+            'userId' => [
+                [null, 'Request must contain firstname, lastname, userId fields'],
                 ['', 'User id is required'],
                 [ true, 'User id must be an integer'],
                 [-1, 'User id must be a positive integer'],
@@ -264,12 +264,12 @@ class ErrorServiceTest extends KernelTestCase
             'city' => 'Paris',
             'country' => 'France',
             'siret' =>  '12345678901234',
-            'user_id' => 1,
+            'userId' => 1,
         ];
 
         $badData = [
             'name' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'Name is required'],
                 [true, 'Name must be at least 3 characters long'],
                 ['az', 'Name must be at least 3 characters long'],
@@ -277,7 +277,7 @@ class ErrorServiceTest extends KernelTestCase
                     'Name must be at least 50 characters long'],
             ],
             'phone' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'Phone is required'],
                 [true, 'This value should have exactly 10 characters.'],
                 ['az', 'This value should have exactly 10 characters.'],
@@ -285,32 +285,32 @@ class ErrorServiceTest extends KernelTestCase
                 ['12345678901', 'This value should have exactly 10 characters.'],
             ],
             'address' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'Address is required'],
                 [true, 'Address must be at least 3 characters long'],
                 ['az', 'Address must be at least 3 characters long'],
             ],
             'city' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'City is required'],
                 [true, 'City must be at least 3 characters long'],
                 ['az', 'City must be at least 3 characters long'],
             ],
             'country' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'Country is required'],
                 [true, 'Country must be at least 3 characters long'],
                 ['az', 'Country must be at least 3 characters long'],
             ],
             'siret' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'This value should have exactly 14 characters.'],
                 [true, 'This value should have exactly 14 characters.'],
                 ['1234567891234', 'This value should have exactly 14 characters.'],
                 ['123456789012345', 'This value should have exactly 14 characters.'],
             ],
-            'user_id' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and user_id fields'],
+            'userId' => [
+                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
                 ['', 'User id is required'],
                 [true, 'User id must be a number'],
                 [-1, 'User id must be a positive number'],
@@ -339,20 +339,20 @@ class ErrorServiceTest extends KernelTestCase
 
         $goodData = [
             'title' => 'test',
-            'candidate_id' => 1,
+            'candidateId' => 1,
         ];
 
         $badData = [
             'title' => [
-                [null, 'Request must contain title and candidate_id fields'],
+                [null, 'Request must contain title and candidateId fields'],
                 ['', 'Title is required'],
                 [true, 'Title must be a string'],
                 ['az', 'Title must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn',
                     'Title must be at least 50 characters long'],
             ],
-            'candidate_id' => [
-                [null, 'Request must contain title and candidate_id fields'],
+            'candidateId' => [
+                [null, 'Request must contain title and candidateId fields'],
                 ['', 'Candidate Id is required'],
                 [true, 'Candidate Id must be an integer'],
                 [-1, 'Candidate Id must be a positive integer'],
