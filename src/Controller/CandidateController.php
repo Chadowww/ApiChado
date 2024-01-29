@@ -451,13 +451,13 @@ class CandidateController extends AbstractController
     {
         $user = $this->getUser();
         if ($user instanceof User) {
-            $candidate = $this->candidateRepository->getByUserId($user->getUser_id());
+            $candidate = $this->candidateRepository->getByUserId($user->getUserId());
 
             if (!$candidate) {
                 error_log('candidate not found');
                 throw new resourceNotFoundException(
                     json_encode([
-                        'error' => 'The candidate with id ' . $user->getUser_id() . ' does not exist.'
+                        'error' => 'The candidate with id ' . $user->getUserId() . ' does not exist.'
                     ],
                         JSON_THROW_ON_ERROR),
                     404

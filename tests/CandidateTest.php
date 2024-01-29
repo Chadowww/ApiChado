@@ -51,7 +51,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
@@ -73,7 +73,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
@@ -109,7 +109,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
@@ -147,7 +147,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ]);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('GET');
@@ -229,7 +229,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $candidate = new Candidate($data);
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
@@ -266,7 +266,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $candidate = new Candidate($data);
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
@@ -301,7 +301,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $request = new Request([], [], [], [], [], [], json_encode($data));
         $request->setMethod('PUT');
@@ -335,7 +335,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ];
         $candidate = new Candidate($data);
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
@@ -374,7 +374,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ]);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('DELETE');
@@ -434,7 +434,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ]);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('DELETE');
@@ -471,7 +471,7 @@ class CandidateTest extends TestCase
             'address' => '123 Main St',
             'city' => 'New York',
             'country' => 'USA',
-            'user_id' => '1',
+            'userId' => '1',
         ]);
         $request = new Request([], [], [], [], [], [], null);
         $request->setMethod('GET');
