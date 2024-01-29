@@ -191,13 +191,13 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferUpdate(): void
     {
-        $data = new JobOffer([
+        $data =[
             'title' => 'test21',
             'description' => 'test',
             'city' => 'test',
             'salaryMin' => 40000,
             'salaryMax' => 45000,
-        ]);
+        ];
         $jobOffer = new JobOffer($data);
 
         $request = new Request([],[], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));

@@ -9,9 +9,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class JobOffer
 {
     /**
-     * @SerializedName("joboffer_id")
+     * @SerializedName("jobofferId")
      */
-    private ?int $joboffer_id = null;
+    private ?int $jobofferId = null;
 
     /**
      * @SerializedName("title")
@@ -72,9 +72,9 @@ class JobOffer
     private DateTime $updated_at;
 
 
-    public function getJoboffer_id(): ?int
+    public function getJobofferId(): ?int
     {
-        return $this->joboffer_id;
+        return $this->jobofferId;
     }
 
     public function getTitle(): ?string
