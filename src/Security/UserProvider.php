@@ -54,10 +54,10 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
             throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
         }
 
-        $loadedUser = $this->userRepository->read($user->getUser_id());
+        $loadedUser = $this->userRepository->read($user->getUserId());
 
         if (null === $loadedUser) {
-            throw new UserNotFoundException(sprintf('User with id "%s" not found.', $user->getUser_id()));
+            throw new UserNotFoundException(sprintf('User with id "%s" not found.', $user->getUserId()));
         }
 
         return $loadedUser;
