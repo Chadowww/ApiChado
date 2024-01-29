@@ -347,14 +347,20 @@ class ApplyController extends AbstractController
      */
     public function delete(int $id): JsonResponse
     {
-        $this->applyRepository->delete($id);
-        $apply = $this->applyRepository->read($id);
-        if (!$apply) {
+        if (!$this->applyRepository->read($id)) {
             throw new resourceNotFoundException(
                 json_encode('the apply with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
                 404
             );
         }
+
+        if (!$this->applyRepository->delete($id)) {
+            throw new DatabaseException(
+                json_encode('An error occurred while deleting the apply', JSON_THROW_ON_ERROR),
+                500
+            );
+        }
+
         return new JsonResponse(['message' => 'Apply deleted successfully', 'status' => '200']);
     }
 
