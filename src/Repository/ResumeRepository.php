@@ -16,7 +16,7 @@ class ResumeRepository
     CONST array VALUES = [
         'title' => ':title',
         'filename' => ':filename',
-        'candidate_id' => ':candidate_id',
+        'candidateId' => ':candidateId',
     ];
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
@@ -33,9 +33,9 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             INSERT INTO APICHADO.resume
-            (title, filename, candidate_id) 
+            (title, filename, candidateId) 
             VALUES 
-            (:title, :filename, :candidate_id)';
+            (:title, :filename, :candidateId)';
 
             $statement = $this->connection->prepare($query);
 
@@ -48,12 +48,12 @@ class ResumeRepository
         });
     }
 
-    public function read(int $resume_id): Resume | bool
+    public function read(int $resumeId): Resume | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.resume WHERE resume_id = :resume_id';
+        $query = 'SELECT * FROM APICHADO.resume WHERE resumeId = :resumeId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':resume_id', $resume_id, PDO::PARAM_INT);
+        $statement->bindValue(':resumeId', $resumeId, PDO::PARAM_INT);
         $statement->execute();
         $resume = $statement->fetchObject(Resume::class);
         $this->connection->commit();
@@ -67,15 +67,15 @@ class ResumeRepository
         $this->executeTransaction(function () use ($resume, &$resumeAttributes) {
             $query = '
             UPDATE APICHADO.resume
-            SET title = :title, filename = :filename, candidate_id = :candidate_id
-            WHERE resume_id = :resume_id';
+            SET title = :title, filename = :filename, candidateId = :candidateId
+            WHERE resumeId = :resumeId';
 
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
                 $resumeAttributes[$value] = $resume->{"get" . ucfirst($key)}();
             }
-            $resumeAttributes[':resume_id'] = $resume->getResume_id();
+            $resumeAttributes[':resumeId'] = $resume->getResumeId();
             $this->bindValueService->bindValuesToStatement($statement, $resumeAttributes);
             $statement->execute();
         });
@@ -116,12 +116,12 @@ class ResumeRepository
         }
     }
 
-    public function findByCandidate($resume_id)
+    public function findByCandidate($resumeId)
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.resume WHERE candidate_id = :candidate_id';
+        $query = 'SELECT * FROM APICHADO.resume WHERE candidateId = :candidateId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidate_id', $resume_id, PDO::PARAM_INT);
+        $statement->bindValue(':candidateId', $resumeId, PDO::PARAM_INT);
         $statement->execute();
         $resumes = $statement->fetchAll(PDO::FETCH_CLASS, Resume::class);
         $this->connection->commit();
