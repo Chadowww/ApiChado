@@ -128,11 +128,14 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
-    public function getErrorsUserRequest(Request $request): array
+    public function getErrorsUserRequest(Request $request): void
     {
         $errors = [];
+        $user = new User();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
         if (!isset($data['email'], $data['password'], $data['roles']) && !preg_match('/\/user\/update\/\d+/',
                 $request->getPathInfo())) {
             $errors[] = [
@@ -140,40 +143,24 @@ class ErrorService
                 'message' => 'Request must contain email, password and roles fields',
             ];
         }
+
         foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'email':
-                    if ($this->validator->validatePropertyValue(User::class, 'email', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'email',
-                            'message' => $this->validator->validatePropertyValue(User::class, 'email', $value)->get(0)
-                                ->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'password':
-                    if ($this->validator->validatePropertyValue(User::class, 'password', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'password',
-                            'message' => $this->validator->validatePropertyValue(User::class, 'password', $value)->get
-                            (0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'roles':
-                    if ($this->validator->validatePropertyValue(User::class, 'roles', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'roles',
-                            'message' => $this->validator->validatePropertyValue(User::class, 'roles', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($user, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(User::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
-        return $errors;
+
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 
     /**
@@ -206,6 +193,7 @@ class ErrorService
             }
 
         }
+
         if (count($errors) > 0) {
             throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
