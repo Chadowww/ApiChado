@@ -70,15 +70,8 @@ class ResumeController extends AbstractController
      */
     public function create(Request $request, ImageController $imageController): JsonResponse
     {
+        $this->errorService->getErrorsResumeRequest($request);
 
-        if ($this->errorService->getErrorsResumeRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode(
-                    $this->errorService->getErrorsResumeRequest($request),
-                    JSON_THROW_ON_ERROR),
-                400
-            );
-        }
         $fileName = $imageController->create($request);
         $resume = $this->resumeService->createResume(
             $request,
@@ -213,14 +206,8 @@ class ResumeController extends AbstractController
      */
     public function update(int $id, Request $request, ImageController $imageController): JsonResponse
     {
-        if ($this->errorService->getErrorsResumeRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode(
-                    $this->errorService->getErrorsResumeRequest($request),
-                    JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsResumeRequest($request);
+
         try {
             $resume = $this->resumeRepository->read($id);
             if (!$resume) {
