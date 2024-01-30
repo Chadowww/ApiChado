@@ -406,6 +406,7 @@ class ErrorService
     public function getErrorsApplyRequest(Request $request): void
     {
         $errors = [];
+        $apply = new Apply();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['status'], $data['candidateId'],$data['resumeId'], $data['jobofferId'])) {
@@ -416,58 +417,16 @@ class ErrorService
         }
 
         foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'status':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'status', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'status',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'status', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'message':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'message', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'message',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'message', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'candidateId':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'candidateId', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'candidateId',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'candidateId', $value)
-                                ->get(0)
-                                ->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'resumeId':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'resumeId', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'resumeId',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'resumeId', $value)
-                                ->get(0)
-                                ->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'jobofferId':
-                    if ($this->validator->validatePropertyValue(Apply::class, 'jobofferId', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'jobofferId',
-                            'message' => $this->validator->validatePropertyValue(Apply::class, 'jobofferId', $value)
-                                ->get(0)
-                                ->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($apply, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(Apply::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
 
