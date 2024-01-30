@@ -101,12 +101,8 @@ class CompanyController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        if($this->errorService->getErrorsCompanyRequest($request) !== []) {
-           throw new InvalidRequestException(
-               json_encode($this->errorService->getErrorsCompanyRequest($request), JSON_THROW_ON_ERROR),
-               400
-           );
-        }
+        $this->errorService->getErrorsCompanyRequest($request);
+
         $company = $this->companyService->buildCompany($request);
 
         try {
@@ -237,12 +233,7 @@ class CompanyController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        if ($this->errorService->getErrorsCompanyRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsCompanyRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsCompanyRequest($request);
 
         $company = $this->companyRepository->read($id);
 
