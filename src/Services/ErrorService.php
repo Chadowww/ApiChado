@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- *
+ * Service to handle errors in requests before they are processed
  */
 class ErrorService
 {
@@ -348,55 +348,38 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
-    public function getErrorsResumeRequest(Request $request): array {
+    public function getErrorsResumeRequest(Request $request): void
+    {
         $errors = [];
+        $resume = new Resume();
         $data = $request->request->all();
+
         if (!isset($data['title'], $data['candidateId'])) {
             $errors[] = [
                 'field' => 'request',
                 'message' => 'Request must contain title and candidateId fields',
             ];
         }
+
         foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'title':
-                    if ($this->validator->validatePropertyValue(
-                        Resume::class,
-                        'title',
-                        $value)->count() > 0
-                    ) {
-                        $errors[] = [
-                            'field' => 'title',
-                            'message' => $this->validator->validatePropertyValue(
-                                Resume::class,
-                                'title',
-                                $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'candidateId':
-                    if ($request->getPathInfo() === '/resume/create') {
-                        $value = (int)$value;
-                    }
-                    if ($this->validator->validatePropertyValue(
-                        Resume::class,
-                        'candidateId',
-                        $value)->count() > 0
-                    ) {
-                        $errors[] = [
-                            'field' => 'candidateId',
-                            'message' => $this->validator->validatePropertyValue(
-                                Resume::class,
-                                'candidateId',
-                                $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($resume, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(Resume::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
-        return $errors;
+
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 
     /**
