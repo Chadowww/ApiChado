@@ -33,6 +33,7 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
     public function getErrorsJobOfferRequest(Request $request): void
     {
@@ -45,24 +46,13 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain title, description, city, salaryMin and salaryMax fields',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value) {
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($jobOffer, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(JobOffer::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-        }
+        $errors = $this->verifyDataAgainstObject($data, $jobOffer);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -81,24 +71,13 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain type field',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value) {
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($contract, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(Contract::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-        }
+        $errors = $this->verifyDataAgainstObject($data, $contract);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -118,24 +97,13 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain email, password and roles fields',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value) {
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($user, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(User::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-        }
+        $errors = $this->verifyDataAgainstObject($data, $user);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -148,30 +116,19 @@ class ErrorService
         $errors = [];
         $candidate = new Candidate();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
         if (!isset($data['firstname'], $data['lastname'], $data['userId'])) {
             $errors[] = [
                 'field' => 'request',
                 'message' => 'Request must contain firstname, lastname, userId fields',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value){
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($candidate, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(Candidate::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-
-        }
+        $errors = $this->verifyDataAgainstObject($data, $candidate);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -189,24 +146,13 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain name, phone, address, city, country, siret and userId fields',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value) {
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($company, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(Company::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-        }
+        $errors = $this->verifyDataAgainstObject($data, $company);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -225,24 +171,13 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain title and candidateId fields',
             ];
+            $this->showErrors($errors);
         }
 
-        foreach ($data as $key => $value) {
-            $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($resume, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(Resume::class, $key, $value);
-                if ($validationErrors->count() > 0) {
-                    $errors[] = [
-                        'field' => $key,
-                        'message' => $validationErrors->get(0)->getMessage(),
-                        'passedValue' => $value
-                    ];
-                }
-            }
-        }
+        $errors = $this->verifyDataAgainstObject($data, $resume);
 
         if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+            $this->showErrors($errors);
         }
     }
 
@@ -261,12 +196,36 @@ class ErrorService
                 'field' => 'request',
                 'message' => 'Request must contain status, candidateId, resumeId and jobofferId fields',
             ];
+            $this->showErrors($errors);
         }
+
+        $errors = $this->verifyDataAgainstObject($data, $apply);
+
+        if (count($errors) > 0) {
+            $this->showErrors($errors);
+        }
+    }
+
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
+    private function showErrors(array $errors,): void
+    {
+        throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+    }
+
+    private function verifyDataAgainstObject(
+        array $data,
+        JobOffer | Contract | User | Candidate | Company | Resume | Apply $object
+    ): array
+    {
+        $errors = [];
 
         foreach ($data as $key => $value) {
             $setterMethod = 'set' . ucfirst($key);
-            if (method_exists($apply, $setterMethod)) {
-                $validationErrors = $this->validator->validatePropertyValue(Apply::class, $key, $value);
+            if (method_exists($object, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(get_class($object), $key, $value);
                 if ($validationErrors->count() > 0) {
                     $errors[] = [
                         'field' => $key,
@@ -276,9 +235,7 @@ class ErrorService
                 }
             }
         }
-
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        return $errors;
     }
+
 }
