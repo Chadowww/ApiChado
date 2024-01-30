@@ -68,12 +68,7 @@ class ContractController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        if($this->errorService->getErrorsContractRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsContractRequest($request);
 
         $contract = new Contract();
         $contract->setType($request->get('type'));
@@ -196,12 +191,7 @@ class ContractController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-       if ($this->errorService->getErrorsContractRequest($request) !== []) {
-           throw new InvalidRequestException(
-               json_encode($this->errorService->getErrorsContractRequest($request), JSON_THROW_ON_ERROR),
-               400
-           );
-       }
+        $this->errorService->getErrorsContractRequest($request);
 
        $contract = $this->contractRepository->read($id);
 
