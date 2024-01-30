@@ -34,9 +34,10 @@ class ErrorService
     /**
      * @throws \JsonException
      */
-    public function getErrorsJobOfferRequest(Request $request): array
+    public function getErrorsJobOfferRequest(Request $request): void
     {
         $errors = [];
+        $jobOffer = new JobOffer();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['title'], $data['description'], $data['city'], $data['salaryMin'], $data['salaryMax'])) {
@@ -47,58 +48,22 @@ class ErrorService
         }
 
         foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'title':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'title', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'title',
-                            'message' => $this->validator->validatePropertyValue(JobOffer::class, 'title', $value)
-                                ->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'description':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'description', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'description',
-                            'message' => $this->validator->validatePropertyValue(JobOffer::class, 'description', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'city':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'city', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'city',
-                            'message' => $this->validator->validatePropertyValue(JobOffer::class, 'city', $value)->get
-                            (0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'salaryMin':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMin', $value)->count() > 0 || !is_numeric($value)){
-                        $errors[] = [
-                            'field' => 'salaryMin',
-                            'message' => $this->validator->validatePropertyValue(JobOffer::class, 'salaryMin', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case 'salaryMax':
-                    if ($this->validator->validatePropertyValue(JobOffer::class, 'salaryMax', $value)->count() > 0 ||
-                        !is_numeric($value)){
-                        $errors[] = [
-                            'field' => 'salaryMax',
-                            'message' => $this->validator->validatePropertyValue(JobOffer::class, 'salaryMax', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($jobOffer, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(JobOffer::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
-        return $errors;
+
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 
     /**
