@@ -14,7 +14,6 @@ class CandidateRepository
     private BindValueService $bindValueService;
 
     CONST array VALUES = [
-//        'candidate_id' => ':candidate_id',
         'firstname' => ':firstname',
         'lastname' => ':lastname',
         'phone' => ':phone',
@@ -24,7 +23,7 @@ class CandidateRepository
         'avatar' => ':avatar',
         'slug' => ':slug',
         'coverLetter' => ':coverLetter',
-        'user_id' => ':user_id',
+        'userId' => ':userId',
     ];
 
     public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
@@ -40,14 +39,13 @@ class CandidateRepository
         $this->executeTransaction(function () use ($candidate, &$candidateAttributes) {
             $query = '
             INSERT INTO APICHADO.candidate
-            (firstname, lastname, phone, address, city, country, avatar, slug, coverLetter, user_id) 
+            (firstname, lastname, phone, address, city, country, avatar, slug, coverLetter, userId) 
             VALUES 
-            (:firstname, :lastname, :phone, :address, :city, :country, :avatar, :slug, :coverLetter, :user_id)';
+            (:firstname, :lastname, :phone, :address, :city, :country, :avatar, :slug, :coverLetter, :userId)';
 
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                error_log($key);
                 $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
             }
 
@@ -58,12 +56,12 @@ class CandidateRepository
         return true;
     }
 
-    public function read(int $candidate_id) : Candidate | bool
+    public function read(int $candidateId) : Candidate | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.user_id WHERE c.candidate_id = :candidate_id';
+        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId WHERE c.candidateId = :candidateId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidate_id', $candidate_id);
+        $statement->bindValue(':candidateId', $candidateId);
         $statement->execute();
         $candidate = $statement->fetchObject(Candidate::class);
         $this->connection->commit();
@@ -74,12 +72,11 @@ class CandidateRepository
     public function update(Candidate $candidate): bool
     {
         $candidateAttributes = [];
-        error_log($candidate->getUser_id());
         $this->executeTransaction(function () use ($candidate, &$candidateAttributes){
             $query = '
             UPDATE APICHADO.candidate
-            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, user_id = :user_id
-            WHERE user_id = :user_id';
+            SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, userId = :userId
+            WHERE userId = :userId';
 
             $statement = $this->connection->prepare($query);
 
@@ -87,19 +84,18 @@ class CandidateRepository
                 $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
             }
             $this->bindValueService->bindValuesToStatement($statement, $candidateAttributes);
-            error_log(print_r($candidateAttributes, true));
             $statement->execute();
         });
 
         return true;
     }
 
-    public function delete(int $candidate_id): bool
+    public function delete(int $candidateId): bool
     {
-        $this->executeTransaction(function () use ($candidate_id) {
-            $query = 'DELETE FROM APICHADO.candidate WHERE candidate_id = :candidate_id';
+        $this->executeTransaction(function () use ($candidateId) {
+            $query = 'DELETE FROM APICHADO.candidate WHERE candidateId = :candidateId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':candidate_id', $candidate_id);
+            $statement->bindValue(':candidateId', $candidateId);
             $statement->execute();
         });
         return true;
@@ -108,19 +104,19 @@ class CandidateRepository
     public function list(): array
     {
         $this->executeTransaction(function () use (&$candidates) {
-            $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.user_id';
+            $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId';
             $statement = $this->connection->query($query);
             $candidates = $statement->fetchAll(PDO::FETCH_CLASS, Candidate::class);
         });
         return $candidates;
     }
 
-    public function getByUserId($candidate_id):Candidate | bool
+    public function getByUserId($candidateId):Candidate | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.user_id = u.user_id WHERE c.user_id = :candidate_id';
+        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId WHERE c.userId = :candidateId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidate_id', $candidate_id);
+        $statement->bindValue(':candidateId', $candidateId);
         $statement->execute();
         $candidate = $statement->fetchObject(Candidate::class);
         $this->connection->commit();

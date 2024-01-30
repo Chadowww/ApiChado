@@ -21,7 +21,7 @@ class CompanyServiceTest extends TestCase
             'city' => 'New York',
             'country' => 'USA',
             'siret' => '123456789',
-            'user_id' => 1
+            'userId' => 1
         ];
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
 
@@ -33,7 +33,7 @@ class CompanyServiceTest extends TestCase
         $this->assertEquals($company->getCity(), $data['city']);
         $this->assertEquals($company->getCountry(), $data['country']);
         $this->assertEquals($company->getSiret(), $data['siret']);
-        $this->assertEquals($company->getUser_id(), $data['user_id']);
+        $this->assertEquals($company->getUserId(), $data['userId']);
         $this->assertEquals($company->getSlug(), str_ireplace(' ', '-', $data['name']));
     }
 
@@ -49,7 +49,7 @@ class CompanyServiceTest extends TestCase
         $company->setCity('New York');
         $company->setCountry('USA');
         $company->setSiret('12345678901234');
-        $company->setUser_id(1);
+        $company->setUserId(1);
         $company->setSlug('Company');
 
         $data = [
@@ -59,7 +59,7 @@ class CompanyServiceTest extends TestCase
             'city' => 'Paris',
             'country' => 'France',
             'siret' => '12345678901234',
-            'user_id' => 1,
+            'userId' => 1,
             'slug' => 'Entreprise',
         ];
 
@@ -72,7 +72,7 @@ class CompanyServiceTest extends TestCase
         $this->assertEquals($company->getCity(), $data['city']);
         $this->assertEquals($company->getCountry(), $data['country']);
         $this->assertEquals($company->getSiret(), $data['siret']);
-        $this->assertEquals($company->getUser_id(), $data['user_id']);
+        $this->assertEquals($company->getUserId(), $data['userId']);
         $this->assertEquals($company->getSlug(), str_ireplace(' ', '-', $data['name']));
     }
 }

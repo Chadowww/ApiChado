@@ -4,7 +4,7 @@ namespace App\Entity;
 
 class SocialMedia
 {
-    protected int $socialeMedia_id;
+    protected int $socialeMediaId;
     protected ?string $linkedin = null;
 
     protected ?string $github = null;

@@ -10,7 +10,7 @@ class Contract
     /**
      * @SerializedName("id")
      */
-    private ?int $contract_id = null;
+    private ?int $contractId = null;
 
     /**
      * @SerializedName("type")
@@ -29,9 +29,9 @@ class Contract
     )]
     private ?string $type = null;
 
-    public function getContract_id(): ?int
+    public function getContractId(): ?int
     {
-        return $this->contract_id;
+        return $this->contractId;
     }
 
     public function getType(): ?string

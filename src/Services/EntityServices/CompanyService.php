@@ -22,7 +22,7 @@ class CompanyService
         $company->setCountry($data['country']);
         $company->setSiret($data['siret']);
         $company->setSlug(str_ireplace(' ', '-', $data['name']));
-        $company->setUser_id($data['user_id']);
+        $company->setUserId($data['userId']);
 
         return $company;
     }
@@ -35,7 +35,7 @@ class CompanyService
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($data as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (method_exists($company, $method) && $method !== 'setCompany_id') {
+            if (method_exists($company, $method) && $method !== 'setCompanyId') {
                 $company->$method($value);
             }
         }

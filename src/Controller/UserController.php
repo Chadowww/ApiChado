@@ -117,7 +117,7 @@ class UserController extends AbstractController
         $lastId = $this->userRepository->getLastId();
         return new JsonResponse([
             '201' => 'new user created',
-            'user_id' => $lastId,
+            'userId' => $lastId,
             ],
         201
         );
@@ -382,7 +382,7 @@ class UserController extends AbstractController
      *          @OA\Property(property="avatar", type="string", example="659e5ecc4d5217.08563480.jpg"),
      *          @OA\Property(property="slug", type="string", example="edward-email"),
      *          @OA\Property(property="coverLetter", type="string", example=null),
-     *          @OA\Property(property="user_id", type="integer", example=18),
+     *          @OA\Property(property="userId", type="integer", example=18),
      *          @OA\Property(property="linkedin", type="string", example="https://www.linkedin.com/in/edward-email/"),
      *          @OA\Property(property="github", type="string", example="https://github.com/edward-email"),
      *          @OA\Property(property="twitter", type="string", example=null),
@@ -416,8 +416,7 @@ class UserController extends AbstractController
         $user = $token->getUser();
         $dataUser = [];
         if ($user) {
-            $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getUser_id());
-            error_log(print_r($dataUser, true));
+            $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getUserId());
 
             return new JsonResponse(
                 $this->serializer->serialize($dataUser['user'], 'json'),

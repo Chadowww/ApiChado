@@ -198,7 +198,33 @@ ResumeList:
     path: /resume/list
     controller: App\Controller\ResumeController::list
     methods: GET
+
 ResumeByCandidate:
     path: /resume/by-candidate/{id}
     controller: App\Controller\ResumeController::getResumesByCandidate
+    methods: GET
+
+ApplyCreate:
+    path: /apply/create
+    controller: App\Controller\ApplyController::create
+    methods: POST
+
+ApplyRead:
+    path: /apply/read/{id}
+    controller: App\Controller\ApplyController::read
+    methods: GET
+
+ApplyUpdate:
+    path: /apply/update/{id}
+    controller: App\Controller\ApplyController::update
+    methods: PUT
+
+ApplyDelete:
+    path: /apply/delete/{id}
+    controller: App\Controller\ApplyController::delete
+    methods: DELETE
+
+ApplyList:
+    path: /apply/list
+    controller: App\Controller\ApplyController::list
     methods: GET

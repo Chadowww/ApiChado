@@ -94,7 +94,7 @@ class CompanyController extends AbstractController
      *     example="Company siret code"
      * ),
      *     @OA\Property(
-     *     property="user_id",
+     *     property="userId",
      *     type="integer",
      *     example="Company user id"
      * )))
@@ -230,7 +230,7 @@ class CompanyController extends AbstractController
      *     example="Company siret code"
      * ),
      *     @OA\Property(
-     *     property="user_id",
+     *     property="userId",
      *     type="integer",
      *     example="Company user id"
      * )))

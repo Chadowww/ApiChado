@@ -48,17 +48,17 @@ class JobOfferRepository
 
     }
 
-    public function read(int $joboffer_id): Array | bool
+    public function read(int $jobofferId): Array | bool
     {
         $this->connection->beginTransaction();
         $query = '
             SELECT joboffer.*, c.*, co.name, co.city, co.cover, co.description AS company_description, co.logo, ct.* FROM APICHADO.joboffer
-            LEFT JOIN APICHADO.category AS c ON c.category_id = joboffer.category_id
-            LEFT JOIN APICHADO.company AS co ON co.company_id = joboffer.company_id
-            LEFT JOIN APICHADO.contract AS ct ON ct.contract_id = joboffer.contract_id
-            WHERE joboffer.joboffer_id = :joboffer_id';
+            LEFT JOIN APICHADO.category AS c ON c.categoryId = joboffer.categoryId
+            LEFT JOIN APICHADO.company AS co ON co.companyId = joboffer.companyId
+            LEFT JOIN APICHADO.contract AS ct ON ct.contractId = joboffer.contractId
+            WHERE joboffer.jobofferId = :jobofferId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':joboffer_id', $joboffer_id);
+        $statement->bindValue(':jobofferId', $jobofferId);
         $statement->execute();
         $jobOffer = $statement->fetch(PDO::FETCH_ASSOC);
         $this->connection->commit();
@@ -82,7 +82,7 @@ class JobOfferRepository
                 `city` = :city,
                 `salaryMin` = :salaryMin,
                 `salaryMax` = :salaryMax
-            WHERE joboffer_id = :joboffer_id
+            WHERE jobofferId = :jobofferId
         ';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':title', $jobOffer->getTitle());
@@ -90,7 +90,7 @@ class JobOfferRepository
             $statement->bindValue(':city', $jobOffer->getCity());
             $statement->bindValue(':salaryMin', $jobOffer->getSalaryMin());
             $statement->bindValue(':salaryMax', $jobOffer->getSalaryMax());
-            $statement->bindValue(':joboffer_id', $jobOffer->getJoboffer_id());
+            $statement->bindValue(':jobofferId', $jobOffer->getJobofferId());
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -104,9 +104,9 @@ class JobOfferRepository
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'DELETE FROM APICHADO.joboffer WHERE joboffer_id = :joboffer_id';
+            $query = 'DELETE FROM APICHADO.joboffer WHERE jobofferId = :jobofferId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':joboffer_id', $jobOffer->getJoboffer_id());
+            $statement->bindValue(':jobofferId', $jobOffer->getJobofferId());
             $statement->execute();
             $this->connection->commit();
             return true;

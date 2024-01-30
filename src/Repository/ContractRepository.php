@@ -31,12 +31,12 @@ class ContractRepository
         }
     }
 
-    public function read(int $contract_id): Contract | bool
+    public function read(int $contractId): Contract | bool
     {
         $this->connection->beginTransaction();
-        $query = 'SELECT * FROM APICHADO.contract WHERE contract_id = :contract_id';
+        $query = 'SELECT * FROM APICHADO.contract WHERE contractId = :contractId';
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':contract_id', $contract_id);
+        $statement->bindValue(':contractId', $contractId);
         $statement->execute();
         $contract = $statement->fetchObject(Contract::class);
         $this->connection->commit();
@@ -52,10 +52,10 @@ class ContractRepository
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'UPDATE APICHADO.contract SET type = :type WHERE contract_id = :contract_id';
+            $query = 'UPDATE APICHADO.contract SET type = :type WHERE contractId = :contractId';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':type', $contract->getType());
-            $statement->bindValue(':contract_id', $contract->getContract_id());
+            $statement->bindValue(':contractId', $contract->getContractId());
             $statement->execute();
             $this->connection->commit();
             return true;
@@ -69,9 +69,9 @@ class ContractRepository
     {
         try {
             $this->connection->beginTransaction();
-            $query = 'DELETE FROM APICHADO.contract WHERE contract_id = :contract_id';
+            $query = 'DELETE FROM APICHADO.contract WHERE contractId = :contractId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':contract_id', $contract->getContract_id());
+            $statement->bindValue(':contractId', $contract->getContractId());
             $statement->execute();
             $this->connection->commit();
             return true;
