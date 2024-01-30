@@ -102,19 +102,19 @@ class UserController extends AbstractController
                 400
             );
         }
-        if ($this->errorService->getErrorsUserRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+
+        $this->errorService->getErrorsUserRequest($request);
+
         $user = $this->UserService->buildUser($request);
+
         try {
             $this->userRepository->create($user);
         } catch (PDOException $e) {
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
+
         $lastId = $this->userRepository->getLastId();
+
         return new JsonResponse([
             '201' => 'new user created',
             'userId' => $lastId,
@@ -246,12 +246,8 @@ class UserController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        if ($this->errorService->getErrorsUserRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsUserRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsUserRequest($request);
+
         $user = $this->userRepository->read($id);
         if (!$user) {
             throw new resourceNotFoundException(
