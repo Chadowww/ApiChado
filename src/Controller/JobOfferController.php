@@ -92,12 +92,7 @@ class JobOfferController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsJobOfferRequest($request);
 
         $jobOffer = $this->jobOfferService->buildJobOffer($request);
 
@@ -242,12 +237,8 @@ class JobOfferController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        if ($this->errorService->getErrorsJobOfferRequest($request) !== []) {
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsJobOfferRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsJobOfferRequest($request);
+
         $jobOffer = $this->jobOfferRepository->read($id);
 
         if ($jobOffer === false) {
