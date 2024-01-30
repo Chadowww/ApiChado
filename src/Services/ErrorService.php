@@ -263,10 +263,12 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
-    public function getErrorsCompanyRequest(Request $request): array
+    public function getErrorsCompanyRequest(Request $request): void
     {
         $errors = [];
+        $company = new Company();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['userId'])) {
             $errors[] = [
@@ -276,74 +278,22 @@ class ErrorService
         }
 
         foreach ($data as $key => $value) {
-            switch ($key) {
-                case  'name':
-                    if ($this->validator->validatePropertyValue(Company::class, 'name', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'name',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'name', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'phone':
-                    if ($this->validator->validatePropertyValue(Company::class, 'phone', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'phone',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'phone', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'address':
-                    if ($this->validator->validatePropertyValue(Company::class, 'address', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'address',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'address', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'city':
-                    if ($this->validator->validatePropertyValue(Company::class, 'city', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'city',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'city', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'country':
-                    if ($this->validator->validatePropertyValue(Company::class, 'country', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'country',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'country', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'siret':
-                    if ($this->validator->validatePropertyValue(Company::class, 'siret', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'siret',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'siret', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
-                case  'userId':
-                    if ($this->validator->validatePropertyValue(Company::class, 'userId', $value)->count() > 0) {
-                        $errors[] = [
-                            'field' => 'userId',
-                            'message' => $this->validator->validatePropertyValue(Company::class, 'userId', $value)->get(0)->getMessage(),
-                            'passedValue' => $value
-                        ];
-                    }
-                    break;
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($company, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(Company::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
 
-        return $errors;
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 
     /**
