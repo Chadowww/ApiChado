@@ -124,18 +124,16 @@ class CandidateController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        if($this->errorService->getErrorsCandidateRequest($request) !== []){
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsCandidateRequest($request);
+
         $candidate = $this->candidateService->createCandidate($request);
+
         try {
             $this->candidateRepository->create($candidate);
         } catch (PDOException $exception) {
             throw new DatabaseException($exception->getMessage(), 500);
         }
+
         return new JsonResponse(['message' => 'Candidate created'], 201);
     }
 
@@ -293,12 +291,7 @@ class CandidateController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        if($this->errorService->getErrorsCandidateRequest($request) !== []){
-            throw new InvalidRequestException(
-                json_encode($this->errorService->getErrorsCandidateRequest($request), JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $this->errorService->getErrorsCandidateRequest($request);
 
         $candidate = $this->candidateRepository->read($id);
 
