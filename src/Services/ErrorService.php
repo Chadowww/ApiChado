@@ -23,17 +23,16 @@ class ErrorService
      */
     private ValidatorInterface $validator;
 
-    /**
-     * @param ValidatorInterface $validator
-     */
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsJobOfferRequest(Request $request): void
     {
@@ -57,8 +56,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     Public function getErrorsContractRequest(Request $request): void
     {
@@ -82,8 +83,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsUserRequest(Request $request): void
     {
@@ -108,8 +111,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsCandidateRequest(Request $request): void
     {
@@ -133,8 +138,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsCompanyRequest(Request $request): void
     {
@@ -157,8 +164,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsResumeRequest(Request $request): void
     {
@@ -182,8 +191,10 @@ class ErrorService
     }
 
     /**
-     * @throws \JsonException
+     * @param Request $request
+     * @return void
      * @throws InvalidRequestException
+     * @throws \JsonException
      */
     public function getErrorsApplyRequest(Request $request): void
     {
@@ -207,6 +218,8 @@ class ErrorService
     }
 
     /**
+     * @param array $errors
+     * @return void
      * @throws InvalidRequestException
      * @throws \JsonException
      */
@@ -215,6 +228,11 @@ class ErrorService
         throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
     }
 
+    /**
+     * @param array $data
+     * @param JobOffer|Contract|User|Candidate|Company|Resume|Apply $object
+     * @return array
+     */
     private function verifyDataAgainstObject(
         array $data,
         JobOffer | Contract | User | Candidate | Company | Resume | Apply $object
