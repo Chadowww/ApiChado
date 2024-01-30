@@ -103,27 +103,38 @@ class ErrorService
 
     /**
      * @throws \JsonException
+     * @throws InvalidRequestException
      */
-    Public function getErrorsContractRequest(Request $request): array
+    Public function getErrorsContractRequest(Request $request): void
     {
         $errors = [];
+        $contract = new Contract();
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
         if (!isset($data['type'])) {
             $errors[] = [
                 'field' => 'request',
                 'message' => 'Request must contain type field',
             ];
         }
+
         foreach ($data as $key => $value) {
-            if (($key === 'type') && $this->validator->validatePropertyValue(Contract::class, 'type', $value)->count() > 0) {
-                $errors[] = [
-                    'field' => 'type',
-                    'message' => $this->validator->validatePropertyValue(Contract::class, 'type', $value)->get(0)->getMessage(),
-                    'passedValue' => $value
-                ];
+            $setterMethod = 'set' . ucfirst($key);
+            if (method_exists($contract, $setterMethod)) {
+                $validationErrors = $this->validator->validatePropertyValue(Contract::class, $key, $value);
+                if ($validationErrors->count() > 0) {
+                    $errors[] = [
+                        'field' => $key,
+                        'message' => $validationErrors->get(0)->getMessage(),
+                        'passedValue' => $value
+                    ];
+                }
             }
         }
-        return $errors;
+
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
     }
 
     /**
