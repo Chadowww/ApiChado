@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Exceptions\InvalidRequestException;
 use App\Kernel;
 use App\Services\ErrorService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -9,6 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ErrorServiceTest extends KernelTestCase
 {
+    /**
+     * @return string
+     */
     protected static function getKernelClass() : string
     {
         return Kernel::class;
@@ -18,7 +22,7 @@ class ErrorServiceTest extends KernelTestCase
      * @throws \JsonException
      * @throws \Exception
      */
-    public function testGetErrorsJobOfferRequest(): void
+    public function testGetErrorsJobOfferRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
@@ -67,26 +71,18 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-
-        foreach ($goodData as $key => $value) {
-            foreach ($badData[$key] as $invalidValue) {
-                $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
-                $errors = $errorService->getErrorsJobOfferRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
-            }
-        }
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsJobOfferRequest');
     }
 
     /**
+     * @return void
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function testGetErrorsContractRequest(): void
+    public function testGetErrorsContractRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
+        $errorService = $container->get(ErrorService::class);
 
         $goodData = [
             'type' => 'CDI',
@@ -102,28 +98,23 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        foreach ($goodData as $key => $value) {
-            foreach ($badData[$key] as $invalidValue) {
-                $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
-                $errors = $container->get(ErrorService::class)->getErrorsContractRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
-            }
-        }
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsContractRequest');
     }
 
-    public function testGetErrorsUserRequest(): void
+    /**
+     * @return void
+     * @throws \JsonException
+     */
+    public function testGetErrorsUserRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
-
         $errorService = $container->get(ErrorService::class);
 
         $goodData = [
             'email' => 'fake@email.df',
             'password' => 'Du6oalfy4!',
-            'roles' => '3', // choice [1, 3, 5, 9]
+            'roles' => 3, // choice [1, 3, 5, 9]
         ];
 
         $badData =[
@@ -156,22 +147,14 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        foreach ($goodData as $key => $value) {
-            foreach ($badData[$key] as $invalidValue) {
-                $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
-                $errors = $errorService->getErrorsUserRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
-            }
-        }
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsUserRequest');
     }
 
     /**
+     * @return void
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function testGetErrorsCandidateRequest(): void
+    public function testGetErrorsCandidateRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
@@ -235,22 +218,14 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        foreach ($goodData as $key => $value) {
-            foreach ($badData[$key] as $invalidValue) {
-                $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
-                $errors = $errorService->getErrorsCandidateRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
-            }
-        }
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsCandidateRequest');
     }
 
     /**
+     * @return void
      * @throws \JsonException
-     * @throws \Exception
      */
-    public function testGetErrorsCompanyRequest(): void
+    public function testGetErrorsCompanyRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
@@ -317,20 +292,14 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        foreach ($goodData as $key => $value) {
-            foreach ($badData[$key] as $invalidValue) {
-                $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
-                $errors = $errorService->getErrorsCompanyRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
-            }
-        }    }
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsCompanyRequest');
+    }
 
     /**
+     * @return void
      * @throws \JsonException
      */
-    public function testGetErrorsResumeRequest(): void
+    public function testGetErrorsResumeRequestThrowsExceptionForInvalidData(): void
     {
         self::bootKernel();
         $container = self::getContainer();
@@ -348,8 +317,7 @@ class ErrorServiceTest extends KernelTestCase
                 ['', 'Title is required'],
                 [true, 'Title must be a string'],
                 ['az', 'Title must be at least 3 characters long'],
-                ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn',
-                    'Title must be at least 50 characters long'],
+                ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Title must be at least 50 characters long'],
             ],
             'candidateId' => [
                 [null, 'Request must contain title and candidateId fields'],
@@ -360,13 +328,61 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsResumeRequest');
+    }
+
+    /**
+     * @param array $goodData
+     * Array of data valid for the service method being tested, to be modified with invalid parameters from the $badData.
+     *
+     * @param array $badData
+     * Array of various sets of invalid data. Each set will replace the corresponding key in $goodData to create invalid test cases
+     *
+     * @param mixed $errorService
+     * Instance of the service containing the method being tested. This should be an instance of ErrorService.
+     *
+     * @param string $method
+     * The name of the method on the ErrorService to test. This method should take a Request object as an argument and throw an InvalidRequestException.
+     *
+     * @return void
+     *
+     * @throws \JsonException
+     */
+    private function testInvalidDataTriggersExceptions(
+        array $goodData,
+        array $badData,
+        mixed $errorService,
+        string $method
+    ): void
+    {
         foreach ($goodData as $key => $value) {
             foreach ($badData[$key] as $invalidValue) {
                 $newData = $goodData;
                 $newData[$key] = $invalidValue[0];
-                $request = new Request([], $newData, [], [], [], [], []);
-                $errors = $errorService->getErrorsResumeRequest($request);
-                $this->assertEquals($invalidValue[1], $errors[0]['message']);
+                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
+                try {
+                    $errorService->$method($request);
+                    $this->fail("Expected InvalidRequestException was not thrown for key: $key");
+                } catch (InvalidRequestException $exception) {
+                    /*S’il manque un champ obligatoire dans la requête on vérifie que le message d’erreur est celui attendu*/
+                    if ($invalidValue[0] === null) {
+                        $field = 'request';
+                        $this->assertEquals("[{\"field\":\"$field\",\"message\":\"{$invalidValue[1]}\"}]", $exception->getMessage());
+                        /*Sinon, on vérifie que les erreurs sont bien celles attendues par rapport au champ invalide */
+                    } else {
+                        $passedValue = $invalidValue[0];
+                        $field = $key;
+                        $expected = [
+                            [
+                                "field" => $field,
+                                "message" => $invalidValue[1],
+                                "passedValue" => $passedValue
+                            ]
+                        ];
+                        $actual = json_decode($exception->getMessage(), true, 512, JSON_THROW_ON_ERROR);
+                        $this->assertEquals($expected, $actual);
+                    }
+                }
             }
         }
     }
