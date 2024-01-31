@@ -332,6 +332,58 @@ class ErrorServiceTest extends KernelTestCase
     }
 
     /**
+     * @throws \JsonException
+     */
+    public function testGetErrorsApplyRequestThrowsExceptionForInvalidData(): void
+    {
+        self::bootKernel();
+        $container = self::getContainer();
+
+        $errorService = $container->get(ErrorService::class);
+
+        $goodData = [
+            'status' => 'pending',
+            'candidateId' => 1,
+            'resumeId' => 1,
+            'jobofferId' => 1,
+        ];
+
+        $badData = [
+            'status' => [
+                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                ['', 'Status is required'],
+                [true, 'Status must be a string'],
+                ['az', 'Status must be one of the following: \'accepted\', \'denied\', \'pending\''],
+                ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn',
+                    'Status must be one of the following: \'accepted\', \'denied\', \'pending\''],
+            ],
+            'candidateId' => [
+                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                ['', 'Candidate id is required'],
+                [true, 'Candidate id must be an integer'],
+                [-1, 'Candidate id must be a positive integer'],
+                ['1a', 'Candidate id must be an integer'],
+            ],
+            'resumeId' => [
+                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                ['', 'Resume id is required'],
+                [true, 'Resume id must be an integer'],
+                [-1, 'Resume id must be a positive integer'],
+                ['1a', 'Resume id must be an integer'],
+            ],
+            'jobofferId' => [
+                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                ['', 'Job offer id is required'],
+                [true, 'Job offer id must be an integer'],
+                [-1, 'Job offer id must be a positive integer'],
+                ['1a', 'Job offer id must be an integer'],
+            ],
+        ];
+
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsApplyRequest');
+    }
+
+    /**
      * @param array $goodData
      * Array of data valid for the service method being tested, to be modified with invalid parameters from the $badData.
      *
