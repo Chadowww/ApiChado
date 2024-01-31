@@ -79,9 +79,10 @@ class CandidateTest extends TestCase
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
-            ->willReturn(['This value should not be blank.']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->mockController = new CandidateController(
             $this->errorService,
@@ -272,9 +273,12 @@ class CandidateTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
-            ->willReturn(['This value should not be blank.']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+
         $this->mockController = new CandidateController(
             $this->errorService,
             $this->candidateService,
