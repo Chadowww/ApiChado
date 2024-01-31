@@ -26,9 +26,8 @@ class JobOfferTest extends TestCase
     private JobOfferController $mockController;
     private JobOfferService $jobOfferService;
 
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->errorService = $this->createMock(ErrorService::class);
         $this->mockRepository = $this->createMock(JobOfferRepository::class);

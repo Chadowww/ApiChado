@@ -22,9 +22,10 @@ class CandidateTest extends TestCase
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUp();
+
         $this->candidateService = $this->createMock(CandidateService::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->errorService = $this->createMock(ErrorService::class);

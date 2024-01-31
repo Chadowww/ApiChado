@@ -143,7 +143,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         $this->updated_at = $updated_at;
     }
 
-    #[\Override] public function eraseCredentials()
+    #[\Override] public function eraseCredentials(): void
     {
 
     }
