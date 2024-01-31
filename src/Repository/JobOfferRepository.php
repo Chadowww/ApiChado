@@ -48,19 +48,15 @@ class JobOfferRepository
 
     }
 
-    public function read(int $jobofferId): Array | bool
+    public function read(int $jobofferId): JobOffer | bool
     {
         $this->connection->beginTransaction();
         $query = '
-            SELECT joboffer.*, c.*, co.name, co.city, co.cover, co.description AS company_description, co.logo, ct.* FROM APICHADO.joboffer
-            LEFT JOIN APICHADO.category AS c ON c.categoryId = joboffer.categoryId
-            LEFT JOIN APICHADO.company AS co ON co.companyId = joboffer.companyId
-            LEFT JOIN APICHADO.contract AS ct ON ct.contractId = joboffer.contractId
-            WHERE joboffer.jobofferId = :jobofferId';
+            SELECT * FROM APICHADO.joboffer WHERE jobofferId = :jobofferId';
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':jobofferId', $jobofferId);
         $statement->execute();
-        $jobOffer = $statement->fetch(PDO::FETCH_ASSOC);
+        $jobOffer = $statement->fetch(PDO::FETCH_CLASS, JobOffer::class);
         $this->connection->commit();
 
         if($jobOffer === false){
@@ -130,4 +126,25 @@ class JobOfferRepository
             throw $e;
         }
     }
-}
+
+    public function getJobOfferWithAllData(int $jobofferId): Array | bool
+    {
+        $this->connection->beginTransaction();
+        $query = '
+            SELECT joboffer.*, c.*, co.name, co.city, co.cover, co.description AS company_description, co.logo, ct.* FROM APICHADO.joboffer
+            LEFT JOIN APICHADO.category AS c ON c.categoryId = joboffer.categoryId
+            LEFT JOIN APICHADO.company AS co ON co.companyId = joboffer.companyId
+            LEFT JOIN APICHADO.contract AS ct ON ct.contractId = joboffer.contractId
+            WHERE joboffer.jobofferId = :jobofferId';
+        $statement = $this->connection->prepare($query);
+        $statement->bindValue(':jobofferId', $jobofferId);
+        $statement->execute();
+        $jobOffer = $statement->fetch(PDO::FETCH_ASSOC);
+        $this->connection->commit();
+
+        if($jobOffer === false){
+            return false;
+        }
+
+        return $jobOffer;
+    }}
