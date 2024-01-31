@@ -79,9 +79,10 @@ class JobOfferTest extends TestCase
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsJobOfferRequest')
-            ->willReturn(['title' => 'Le titre est obligatoire']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
@@ -224,9 +225,12 @@ class JobOfferTest extends TestCase
             'salaryMin' => 'test',
             'salaryMax' => 45000,
         ]);
+
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsJobOfferRequest')
-            ->willReturn(['title' => 'Le titre est obligatoire']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
 
