@@ -11,6 +11,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserServiceTest extends TestCase
 {
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function testBuildUser(): void
     {
         $mockUserRepository = $this->createMock(UserRepository::class);
@@ -32,6 +36,10 @@ class UserServiceTest extends TestCase
         $this->assertNotNull($user->getPassword());
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function testUpdateUser(): void
     {
         $mockUserRepository = $this->createMock(UserRepository::class);
