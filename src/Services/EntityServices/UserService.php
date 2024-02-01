@@ -11,9 +11,19 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
 {
+    /**
+     * @var UserRepository
+     */
     private UserRepository $userRepository;
+    /**
+     * @var UserPasswordHasherInterface
+     */
     private UserPasswordHasherInterface $passwordHasher;
 
+    /**
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $passwordHasher
+     */
     public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
     {
         $this->userRepository = $userRepository;
@@ -21,6 +31,8 @@ class UserService
     }
 
     /**
+     * @param Request $request
+     * @return User
      * @throws \JsonException
      */
     public function buildUser(Request $request): User
@@ -41,9 +53,12 @@ class UserService
     }
 
     /**
+     * @param Request $request
+     * @param User $user
+     * @return User
      * @throws \JsonException
      */
-    public function UpdateUser(Request $request, User $user)
+    public function UpdateUser(Request $request, User $user): User
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 

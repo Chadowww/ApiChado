@@ -38,7 +38,7 @@ class ErrorService
     {
         $errors = [];
         $jobOffer = new JobOffer();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['title'], $data['description'], $data['city'], $data['salaryMin'], $data['salaryMax'])) {
             $errors[] = [
@@ -50,9 +50,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $jobOffer);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -65,7 +63,7 @@ class ErrorService
     {
         $errors = [];
         $contract = new Contract();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['type'])) {
             $errors[] = [
@@ -77,9 +75,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $contract);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -92,7 +88,7 @@ class ErrorService
     {
         $errors = [];
         $user = new User();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['email'], $data['password'], $data['roles']) && !preg_match('/\/user\/update\/\d+/',
                 $request->getPathInfo())) {
@@ -105,9 +101,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $user);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -120,7 +114,7 @@ class ErrorService
     {
         $errors = [];
         $candidate = new Candidate();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['firstname'], $data['lastname'], $data['userId'])) {
             $errors[] = [
@@ -132,9 +126,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $candidate);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -147,7 +139,8 @@ class ErrorService
     {
         $errors = [];
         $company = new Company();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
+
         if (!isset($data['name'], $data['phone'], $data['address'], $data['city'], $data['country'], $data['siret'], $data['userId'])) {
             $errors[] = [
                 'field' => 'request',
@@ -158,9 +151,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $company);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -173,7 +164,7 @@ class ErrorService
     {
         $errors = [];
         $resume = new Resume();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['title'], $data['candidateId'])) {
             $errors[] = [
@@ -185,9 +176,7 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $resume);
 
-        if (count($errors) > 0) {
-            $this->showErrors($errors);
-        }
+        $this->checkErrorsAndThrow($errors);
     }
 
     /**
@@ -200,7 +189,7 @@ class ErrorService
     {
         $errors = [];
         $apply = new Apply();
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $data = $this->decodeRequestContent($request);
 
         if (!isset($data['status'], $data['candidateId'],$data['resumeId'], $data['jobofferId'])) {
             $errors[] = [
@@ -212,6 +201,29 @@ class ErrorService
 
         $errors = $this->verifyDataAgainstObject($data, $apply);
 
+        $this->checkErrorsAndThrow($errors);
+    }
+
+    /**
+     * Decode request content
+     * @param Request $request
+     * @return array
+     * @throws \JsonException
+     */
+    private function decodeRequestContent(Request $request): array
+    {
+        return json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * show errors if there are any
+     * @param array $errors
+     * @return void
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
+    private function checkErrorsAndThrow(array $errors): void
+    {
         if (count($errors) > 0) {
             $this->showErrors($errors);
         }
