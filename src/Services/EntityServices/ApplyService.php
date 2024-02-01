@@ -29,7 +29,7 @@ class ApplyService
     /**
      * @throws \JsonException
      */
-    public function updateApply(Request $request, Apply $apply): Apply
+    public function updateApply(Apply $apply, Request $request): Apply
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
