@@ -59,7 +59,7 @@ class ApplyServiceTest extends TestCase
 
        $applyService = new ApplyService();
 
-       $apply = $applyService->createApply($request);
+       $apply = $applyService->buildApply($request);
 
        $this->assertEquals($apply->getCandidateId(), $data['candidateId']);
        $this->assertEquals($apply->getJobofferId(), $data['jobofferId']);
