@@ -416,11 +416,11 @@ class ErrorServiceTest extends KernelTestCase
                     $errorService->$method($request);
                     $this->fail("Expected InvalidRequestException was not thrown for key: $key");
                 } catch (InvalidRequestException $exception) {
-                    /*S’il manque un champ obligatoire dans la requête on vérifie que le message d’erreur est celui attendu*/
+                    /* if an invalid value is null, we check that the error is the one expected for a missing field */
                     if ($invalidValue[0] === null) {
                         $field = 'request';
                         $this->assertEquals("[{\"field\":\"$field\",\"message\":\"{$invalidValue[1]}\"}]", $exception->getMessage());
-                        /*Sinon, on vérifie que les erreurs sont bien celles attendues par rapport au champ invalide */
+                    /* else we check that the error is the one expected for the invalid value */
                     } else {
                         $passedValue = $invalidValue[0];
                         $field = $key;
