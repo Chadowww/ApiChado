@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ResumeService
 {
 
-    public function createResume(Request $request, string $fileName): Resume
+    public function buildResume(Request $request, string $fileName): Resume
     {
         $uploadedFile = $request->files->get('file');
         $resume = new Resume();
