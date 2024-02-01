@@ -16,7 +16,7 @@ class ApplyService
     /**
      * @throws \JsonException
      */
-    public function createApply(Request $request): Apply
+    public function buildApply(Request $request): Apply
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $apply = new Apply();
