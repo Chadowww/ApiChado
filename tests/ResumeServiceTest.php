@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ResumeServiceTest extends TestCase
 {
+    /**
+     * @return void
+     */
     public function testUpdateResume(): void
     {
         $resume = new Resume();
@@ -32,6 +35,9 @@ class ResumeServiceTest extends TestCase
         $this->assertEquals($resume->getCandidateId(), $data['candidateId']);
     }
 
+    /**
+     * @return void
+     */
     public function testBuildResume(): void
     {
         $data = [
