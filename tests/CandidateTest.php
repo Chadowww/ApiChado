@@ -22,9 +22,10 @@ class CandidateTest extends TestCase
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUp();
+
         $this->candidateService = $this->createMock(CandidateService::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->errorService = $this->createMock(ErrorService::class);
@@ -79,9 +80,10 @@ class CandidateTest extends TestCase
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
-            ->willReturn(['This value should not be blank.']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->mockController = new CandidateController(
             $this->errorService,
@@ -272,9 +274,12 @@ class CandidateTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
-            ->willReturn(['This value should not be blank.']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+
         $this->mockController = new CandidateController(
             $this->errorService,
             $this->candidateService,

@@ -173,7 +173,7 @@ class ErrorService
     {
         $errors = [];
         $resume = new Resume();
-        $data = $request->request->all();
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['title'], $data['candidateId'])) {
             $errors[] = [

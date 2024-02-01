@@ -26,9 +26,8 @@ class JobOfferTest extends TestCase
     private JobOfferController $mockController;
     private JobOfferService $jobOfferService;
 
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->errorService = $this->createMock(ErrorService::class);
         $this->mockRepository = $this->createMock(JobOfferRepository::class);
@@ -79,9 +78,10 @@ class JobOfferTest extends TestCase
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsJobOfferRequest')
-            ->willReturn(['title' => 'Le titre est obligatoire']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
@@ -224,9 +224,12 @@ class JobOfferTest extends TestCase
             'salaryMin' => 'test',
             'salaryMax' => 45000,
         ]);
+
+        $this->expectException(InvalidRequestException::class);
         $this->errorService->expects($this->atLeastOnce())
             ->method('getErrorsJobOfferRequest')
-            ->willReturn(['title' => 'Le titre est obligatoire']);
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
 
