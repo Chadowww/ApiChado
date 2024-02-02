@@ -8,6 +8,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\ApplyService;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
 use Exception;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +22,7 @@ use OpenApi\Annotations as OA;
  */
 class ApplyController extends AbstractController
 {
+    private ApplyRequestValidator $applyRequestValidator;
     /**
      * @var ErrorService
      */
@@ -39,18 +41,18 @@ class ApplyController extends AbstractController
     private SerializerInterface $serializer;
 
     /**
-     * @param ErrorService $errorService
+     * @param ApplyRequestValidator $applyRequestValidator
      * @param ApplyService $applyService
      * @param ApplyRepository $applyRepository
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        ErrorService $errorService,
+        ApplyRequestValidator $applyRequestValidator,
         ApplyService $applyService,
         ApplyRepository $applyRepository,
         SerializerInterface $serializer
     ) {
-        $this->errorService = $errorService;
+        $this->applyRequestValidator = $applyRequestValidator;
         $this->applyService = $applyService;
         $this->applyRepository = $applyRepository;
         $this->serializer = $serializer;
@@ -112,9 +114,9 @@ class ApplyController extends AbstractController
      **/
     public function create(Request $request): JsonResponse
     {
-        $this->errorService->getErrorsApplyRequest($request);
+        $this->applyRequestValidator->getErrorsApplyRequest($request);
 
-        $apply = $this->applyService->createApply($request);
+        $apply = $this->applyService->buildApply($request);
 
         $this->applyRepository->create($apply);
 
@@ -295,11 +297,11 @@ class ApplyController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsApplyRequest($request);
+        $this->applyRequestValidator->getErrorsApplyRequest($request);
 
         $apply = $this->applyRepository->read($id);
 
-        $apply = $this->applyService->updateApply($request, $apply);
+        $apply = $this->applyService->updateApply($apply, $request);
 
         $this->applyRepository->update($apply);
 
