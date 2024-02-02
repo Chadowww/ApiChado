@@ -50,7 +50,7 @@ class CandidateServiceTest extends TestCase
     /**
      * @throws \JsonException
      */
-    public function testCreateCandidate(): void
+    public function testBuildCandidate(): void
     {
         $data = [
             'firstname' => 'John',
@@ -64,7 +64,7 @@ class CandidateServiceTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
 
         $candidateService = new CandidateService();
-        $candidate = $candidateService->createCandidate($request);
+        $candidate = $candidateService->BuildCandidate($request);
 
         $this->assertEquals($candidate->getFirstName(), $data['firstname']);
         $this->assertEquals($candidate->getLastName(), $data['lastname']);
