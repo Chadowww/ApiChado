@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Contract;
+use App\Services\RequestValidator\RequestEntityValidators\ContractRequestValidator;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ContractRepository;
 use App\Services\ErrorService;
@@ -17,19 +18,19 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ContractController extends AbstractController
 {
+    private ContractRequestValidator $contractRequestValidator;
     private ContractRepository $contractRepository;
     private SerializerInterface $serializer;
-    private ErrorService $errorService;
 
     public function __construct(
+        ContractRequestValidator $contractRequestValidator,
         ContractRepository $contractRepository,
         SerializerInterface $serializer,
-        ErrorService $errorService,
     )
     {
+        $this->contractRequestValidator = $contractRequestValidator;
         $this->contractRepository = $contractRepository;
         $this->serializer = $serializer;
-        $this->errorService = $errorService;
     }
 
     /**
@@ -68,7 +69,7 @@ class ContractController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->errorService->getErrorsContractRequest($request);
+        $this->contractRequestValidator->getErrorsContractRequest($request);
 
         $contract = new Contract();
         $contract->setType($request->get('type'));
@@ -191,7 +192,7 @@ class ContractController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsContractRequest($request);
+        $this->contractRequestValidator->getErrorsContractRequest($request);
 
        $contract = $this->contractRepository->read($id);
 
