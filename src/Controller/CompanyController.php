@@ -8,6 +8,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CompanyRepository;
 use App\Services\EntityServices\CompanyService;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\CompanyRequestValidator;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,19 +21,19 @@ use OpenApi\Annotations as OA;
  */
 class CompanyController extends AbstractController
 {
-    private ErrorService $errorService;
+    private CompanyRequestValidator $companyRequestValidator;
     private CompanyService $companyService;
     private CompanyRepository $companyRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ErrorService $errorService,
+        CompanyRequestValidator $companyRequestValidator,
         CompanyService $companyService,
         CompanyRepository $companyRepository,
         SerializerInterface $serializer
     )
     {
-        $this->errorService = $errorService;
+        $this->companyRequestValidator = $companyRequestValidator;
         $this->companyService = $companyService;
         $this->companyRepository = $companyRepository;
         $this->serializer = $serializer;
@@ -101,7 +102,7 @@ class CompanyController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->errorService->getErrorsCompanyRequest($request);
+        $this->companyRequestValidator->getErrorsCompanyRequest($request);
 
         $company = $this->companyService->buildCompany($request);
 
@@ -233,7 +234,7 @@ class CompanyController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsCompanyRequest($request);
+        $this->companyRequestValidator->getErrorsCompanyRequest($request);
 
         $company = $this->companyRepository->read($id);
 

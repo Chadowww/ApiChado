@@ -4,7 +4,13 @@ namespace App\Tests;
 
 use App\Exceptions\InvalidRequestException;
 use App\Kernel;
-use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\CompanyRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\ContractRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\JobOfferRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\ResumeRequestValidator;
+use App\Services\RequestValidator\RequestEntityValidators\UserRequestValidator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,7 +32,7 @@ class ErrorServiceTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $errorService = $container->get(ErrorService::class);
+        $JobOfferRequestValidator = $container->get(JobOfferRequestValidator::class);
 
         $goodData = [
             'title' => 'test',
@@ -71,7 +77,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsJobOfferRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $JobOfferRequestValidator, 'getErrorsJobOfferRequest');
     }
 
     /**
@@ -82,7 +88,7 @@ class ErrorServiceTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $errorService = $container->get(ErrorService::class);
+        $contractRequestValidator = $container->get(ContractRequestValidator::class);
 
         $goodData = [
             'type' => 'CDI',
@@ -98,7 +104,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsContractRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $contractRequestValidator, 'getErrorsContractRequest');
     }
 
     /**
@@ -109,7 +115,7 @@ class ErrorServiceTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $errorService = $container->get(ErrorService::class);
+        $userRequestValidator = $container->get(UserRequestValidator::class);
 
         $goodData = [
             'email' => 'fake@email.df',
@@ -147,7 +153,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsUserRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $userRequestValidator, 'getErrorsUserRequest');
     }
 
     /**
@@ -159,7 +165,7 @@ class ErrorServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        $errorService = $container->get(ErrorService::class);
+        $candidateRequestValidator = $container->get(CandidateRequestValidator::class);
 
         $goodData = [
             'firstname' => 'John',
@@ -218,7 +224,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsCandidateRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $candidateRequestValidator, 'getErrorsCandidateRequest');
     }
 
     /**
@@ -230,7 +236,7 @@ class ErrorServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        $errorService = $container->get(ErrorService::class);
+        $CompanyRequestValidator = $container->get(CompanyRequestValidator::class);
 
         $goodData = [
             'name' => 'AS-Turing',
@@ -292,7 +298,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsCompanyRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $CompanyRequestValidator, 'getErrorsCompanyRequest');
     }
 
     /**
@@ -304,7 +310,7 @@ class ErrorServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        $errorService = $container->get(ErrorService::class);
+        $ResumeRequestValidator = $container->get(ResumeRequestValidator::class);
 
         $goodData = [
             'title' => 'test',
@@ -328,7 +334,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsResumeRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $ResumeRequestValidator, 'getErrorsResumeRequest');
     }
 
     /**
@@ -339,7 +345,7 @@ class ErrorServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        $errorService = $container->get(ErrorService::class);
+        $ApplyRequestValidator = $container->get(ApplyRequestValidator::class);
 
         $goodData = [
             'status' => 'pending',
@@ -380,7 +386,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $errorService, 'getErrorsApplyRequest');
+        $this->testInvalidDataTriggersExceptions($goodData, $badData, $ApplyRequestValidator, 'getErrorsApplyRequest');
     }
 
     /**

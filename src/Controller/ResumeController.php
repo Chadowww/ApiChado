@@ -8,6 +8,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ResumeRepository;
 use App\Services\EntityServices\ResumeService;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\ResumeRequestValidator;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,18 +20,17 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ResumeController extends AbstractController
 {
-    private ErrorService $errorService;
+    private ResumeRequestValidator $resumeRequestValidator;
     private ResumeRepository $resumeRepository;
     private ResumeService $resumeService;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ErrorService $errorService,
+        ResumeRequestValidator $resumeRequestValidator,
         ResumeRepository $resumeRepository,
         ResumeService $resumeService,
         SerializerInterface $serializer
     ) {
-        $this->errorService = $errorService;
         $this->resumeRepository = $resumeRepository;
         $this->resumeService = $resumeService;
         $this->serializer = $serializer;
@@ -70,10 +70,10 @@ class ResumeController extends AbstractController
      */
     public function create(Request $request, ImageController $imageController): JsonResponse
     {
-        $this->errorService->getErrorsResumeRequest($request);
+        $this->resumeRequestValidator->getErrorsResumeRequest($request);
 
         $fileName = $imageController->create($request);
-        $resume = $this->resumeService->createResume(
+        $resume = $this->resumeService->buildResume(
             $request,
             json_decode($fileName->getContent(), true, 512, JSON_THROW_ON_ERROR)['name']
         );
@@ -206,7 +206,7 @@ class ResumeController extends AbstractController
      */
     public function update(int $id, Request $request, ImageController $imageController): JsonResponse
     {
-        $this->errorService->getErrorsResumeRequest($request);
+        $this->resumeRequestValidator->getErrorsResumeRequest($request);
 
         try {
             $resume = $this->resumeRepository->read($id);

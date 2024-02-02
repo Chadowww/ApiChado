@@ -8,6 +8,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,20 +22,19 @@ use OpenApi\Annotations as OA;
  */
 class CandidateController extends AbstractController
 {
-
-    private ErrorService $errorService;
+    private CandidateRequestValidator $candidateRequestValidator;
     private CandidateService $candidateService;
     private CandidateRepository $candidateRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ErrorService $errorService,
+        CandidateRequestValidator $candidateRequestValidator,
         CandidateService $candidateService,
         CandidateRepository $candidateRepository,
         SerializerInterface $serializer,
     )
     {
-        $this->errorService = $errorService;
+        $this->candidateRequestValidator = $candidateRequestValidator;
         $this->candidateService = $candidateService;
         $this->candidateRepository = $candidateRepository;
         $this->serializer = $serializer;
@@ -124,9 +124,9 @@ class CandidateController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->errorService->getErrorsCandidateRequest($request);
+        $this->candidateRequestValidator->getErrorsCandidateRequest($request);
 
-        $candidate = $this->candidateService->createCandidate($request);
+        $candidate = $this->candidateService->buildCandidate($request);
 
         try {
             $this->candidateRepository->create($candidate);
@@ -291,7 +291,7 @@ class CandidateController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsCandidateRequest($request);
+        $this->candidateRequestValidator->getErrorsCandidateRequest($request);
 
         $candidate = $this->candidateRepository->read($id);
 

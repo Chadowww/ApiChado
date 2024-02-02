@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Services\EntityServices\JobOfferService;
+use App\Services\RequestValidator\RequestEntityValidators\JobOfferRequestValidator;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use App\Services\ErrorService;
@@ -18,21 +19,21 @@ use OpenApi\Annotations as OA;
  */
 class JobOfferController extends AbstractController
 {
+    private JobOfferRequestValidator $jobOfferRequestValidator;
     private JobOfferRepository $jobOfferRepository;
     private SerializerInterface $serializer;
-    private ErrorService $errorService;
     private JobOfferService $jobOfferService;
 
     public function __construct(
+        JobOfferRequestValidator $jobOfferRequestValidator,
         JobOfferRepository $jobOfferRepository,
         SerializerInterface $serializer,
-        ErrorService $errorService,
         JobOfferService $jobOfferService
     )
     {
+        $this->jobOfferRequestValidator = $jobOfferRequestValidator;
         $this->jobOfferRepository = $jobOfferRepository;
         $this->serializer = $serializer;
-        $this->errorService = $errorService;
         $this->jobOfferService = $jobOfferService;
     }
 
@@ -92,7 +93,7 @@ class JobOfferController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->errorService->getErrorsJobOfferRequest($request);
+        $this->jobOfferRequestValidator->getErrorsJobOfferRequest($request);
 
         $jobOffer = $this->jobOfferService->buildJobOffer($request);
 
@@ -237,7 +238,7 @@ class JobOfferController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsJobOfferRequest($request);
+        $this->jobOfferRequestValidator->getErrorsJobOfferRequest($request);
 
         $jobOffer = $this->jobOfferRepository->read($id);
 
