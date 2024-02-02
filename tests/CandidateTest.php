@@ -10,6 +10,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\CandidateService;
 use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
+use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -119,7 +120,7 @@ class CandidateTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('create')
-            ->willThrowException(new \PDOException());
+            ->willThrowException(new PDOException());
 
         $this->mockController = new CandidateController(
             $this->candidateRequestValidator,
