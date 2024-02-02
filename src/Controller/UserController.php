@@ -9,6 +9,7 @@ use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Services\EntityServices\UserService;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\UserRequestValidator;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,20 +24,20 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class UserController extends AbstractController
 {
-    private ErrorService $errorService;
+    private UserRequestValidator $userRequestValidator;
     private UserService $UserService;
     private UserRepository $userRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ErrorService $errorService,
+        UserRequestValidator $userRequestValidator,
         UserService $UserService,
         UserRepository $userRepository,
         SerializerInterface $serializer,
 
     )
     {
-        $this->errorService = $errorService;
+        $this->userRequestValidator = $userRequestValidator;
         $this->UserService = $UserService;
         $this->userRepository = $userRepository;
         $this->serializer = $serializer;
@@ -103,7 +104,7 @@ class UserController extends AbstractController
             );
         }
 
-        $this->errorService->getErrorsUserRequest($request);
+        $this->userRequestValidator->getErrorsUserRequest($request);
 
         $user = $this->UserService->buildUser($request);
 
@@ -246,7 +247,7 @@ class UserController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->errorService->getErrorsUserRequest($request);
+        $this->userRequestValidator->getErrorsUserRequest($request);
 
         $user = $this->userRepository->read($id);
         if (!$user) {
