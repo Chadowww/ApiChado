@@ -31,6 +31,7 @@ class JobOfferController extends AbstractController
         JobOfferService $jobOfferService
     )
     {
+        $this->jobOfferRequestValidator = $jobOfferRequestValidator;
         $this->jobOfferRepository = $jobOfferRepository;
         $this->serializer = $serializer;
         $this->jobOfferService = $jobOfferService;
