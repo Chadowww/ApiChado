@@ -120,7 +120,7 @@ class ApplyController extends AbstractController
 
         $this->applyRepository->create($apply);
 
-        return new JsonResponse(['message' => 'Apply created successfully', 'status' => '201']);
+        return new JsonResponse(['message' => 'Apply created successfully', 'status' => '201'], 201);
     }
 
     /**
@@ -301,6 +301,12 @@ class ApplyController extends AbstractController
 
         $apply = $this->applyRepository->read($id);
 
+        if (!$apply) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
+        }
         $apply = $this->applyService->updateApply($apply, $request);
 
         $this->applyRepository->update($apply);
