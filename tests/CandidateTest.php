@@ -10,6 +10,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\CandidateService;
 use App\Services\ErrorService;
+use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,7 +19,7 @@ class CandidateTest extends TestCase
 {
     private CandidateService $candidateService;
     private SerializerInterface $serializer;
-    private ErrorService $errorService;
+    private CandidateRequestValidator $CandidateRequestValidator;
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
 
@@ -28,10 +29,10 @@ class CandidateTest extends TestCase
 
         $this->candidateService = $this->createMock(CandidateService::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->errorService = $this->createMock(ErrorService::class);
+        $this->CandidateRequestValidator = $this->createMock(CandidateRequestValidator::class);
         $this->mockRepository = $this->createMock(CandidateRepository::class);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -81,12 +82,12 @@ class CandidateTest extends TestCase
         $request->headers->set('Content-Type', 'application/json');
 
         $this->expectException(InvalidRequestException::class);
-        $this->errorService->expects($this->atLeastOnce())
+        $this->CandidateRequestValidator->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
             ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -122,7 +123,7 @@ class CandidateTest extends TestCase
             ->willThrowException(new \PDOException());
 
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -158,7 +159,7 @@ class CandidateTest extends TestCase
             ->method('read')
             ->willReturn($candidate);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -181,7 +182,7 @@ class CandidateTest extends TestCase
             ->method('read')
             ->willReturn(false);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -205,7 +206,7 @@ class CandidateTest extends TestCase
             ->method('read')
             ->willThrowException(new \PDOException());
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -244,7 +245,7 @@ class CandidateTest extends TestCase
             ->method('update')
             ->willReturn(true);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -276,12 +277,12 @@ class CandidateTest extends TestCase
         $request->headers->set('Content-Type', 'application/json');
 
         $this->expectException(InvalidRequestException::class);
-        $this->errorService->expects($this->atLeastOnce())
+        $this->CandidateRequestValidator->expects($this->atLeastOnce())
             ->method('getErrorsCandidateRequest')
             ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -315,7 +316,7 @@ class CandidateTest extends TestCase
             ->method('read')
             ->willReturn(false);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -353,7 +354,7 @@ class CandidateTest extends TestCase
             ->method('update')
             ->willThrowException(new \PDOException());
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer,
@@ -391,7 +392,7 @@ class CandidateTest extends TestCase
             ->method('delete')
             ->willReturn(true);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer
@@ -414,7 +415,7 @@ class CandidateTest extends TestCase
             ->method('read')
             ->willReturn(false);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer
@@ -451,7 +452,7 @@ class CandidateTest extends TestCase
             ->method('delete')
             ->willThrowException(new \PDOException());
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer
@@ -485,7 +486,7 @@ class CandidateTest extends TestCase
             ->method('list')
             ->willReturn([$candidate]);
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer
@@ -507,7 +508,7 @@ class CandidateTest extends TestCase
             ->method('list')
             ->willThrowException(new \PDOException());
         $this->mockController = new CandidateController(
-            $this->errorService,
+            $this->CandidateRequestValidator,
             $this->candidateService,
             $this->mockRepository,
             $this->serializer
