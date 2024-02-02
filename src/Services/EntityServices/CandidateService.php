@@ -10,7 +10,7 @@ class CandidateService
     /**
      * @throws \JsonException
      */
-    public function createCandidate(Request $request): Candidate
+    public function buildCandidate(Request $request): Candidate
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
