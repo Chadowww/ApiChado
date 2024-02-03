@@ -10,7 +10,6 @@ class ResumeService
 
     public function buildResume(Request $request, string $fileName): Resume
     {
-        $uploadedFile = $request->files->get('file');
         $resume = new Resume();
         $resume->setTitle($request->request->get('title'));
         $resume->setFilename($fileName);

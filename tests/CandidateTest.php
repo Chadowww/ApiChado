@@ -259,6 +259,7 @@ class CandidateTest extends TestCase
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @throws \JsonException
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testCandidateUpdateError400(): void
     {

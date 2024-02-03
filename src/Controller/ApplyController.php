@@ -24,10 +24,6 @@ class ApplyController extends AbstractController
 {
     private ApplyRequestValidator $applyRequestValidator;
     /**
-     * @var ErrorService
-     */
-    private ErrorService $errorService;
-    /**
      * @var ApplyService
      */
     private ApplyService $applyService;

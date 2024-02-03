@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 
