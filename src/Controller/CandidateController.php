@@ -2,39 +2,35 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Exceptions\DatabaseException;
-use App\Exceptions\InvalidRequestException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Entity\{Candidate, User};
+use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\CandidateRepository;
-use App\Services\ErrorService;
-use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
+use App\Services\EntityServices\CandidateService;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use OpenApi\Annotations as OA;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
-use App\Services\EntityServices\CandidateService;
-use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(name="Candidate")
  */
 class CandidateController extends AbstractController
 {
-    private CandidateRequestValidator $candidateRequestValidator;
+    private RequestValidatorService $requestValidatorService;
     private CandidateService $candidateService;
     private CandidateRepository $candidateRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
-        CandidateRequestValidator $candidateRequestValidator,
+        RequestValidatorService $requestValidatorService,
         CandidateService $candidateService,
         CandidateRepository $candidateRepository,
         SerializerInterface $serializer,
     )
     {
-        $this->candidateRequestValidator = $candidateRequestValidator;
+        $this->requestValidatorService = $requestValidatorService;
         $this->candidateService = $candidateService;
         $this->candidateRepository = $candidateRepository;
         $this->serializer = $serializer;
@@ -124,9 +120,15 @@ class CandidateController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->candidateRequestValidator->getErrorsCandidateRequest($request);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $candidate = new Candidate();
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $candidate);
 
-        $candidate = $this->candidateService->buildCandidate($request);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
+
+        $candidate = $this->candidateService->buildCandidate($candidate, $data);
 
         try {
             $this->candidateRepository->create($candidate);
@@ -134,7 +136,7 @@ class CandidateController extends AbstractController
             throw new DatabaseException($exception->getMessage(), 500);
         }
 
-        return new JsonResponse(['message' => 'Candidate created'], 201);
+        return new JsonResponse(['message' => 'Candidate created successfully', 'status' => '201'], 201);
     }
 
     /**
@@ -170,21 +172,15 @@ class CandidateController extends AbstractController
      */
     public function read(int $id): JsonResponse
     {
-        try {
-            $candidate = $this->candidateRepository->read($id);
-            if (!$candidate) {
-                throw new resourceNotFoundException(
-                    json_encode([
-                        'error' => 'The candidate with id ' . $id . ' does not exist.'
-                    ],
-                        JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
-        } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage(), 500);
+        $candidate = $this->candidateRepository->read($id);
 
+        if (!$candidate) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The candidate with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
         }
+
         return new JsonResponse($this->serializer->serialize($candidate, 'json'), 200, [], true);
     }
 
@@ -291,28 +287,30 @@ class CandidateController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->candidateRequestValidator->getErrorsCandidateRequest($request);
-
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $candidate = $this->candidateRepository->read($id);
 
-        if (!$candidate){
+        if (!$candidate) {
             throw new resourceNotFoundException(
-                json_encode([
-                    'error' => 'The candidate with id ' . $id . ' does not exist.'
-                ],
-                    JSON_THROW_ON_ERROR),
+                json_encode(['error' => 'The candidate with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                 404
             );
         }
 
-        try {
-            $this->candidateService->updateCandidate($candidate, $request);
-            $this->candidateRepository->update($candidate);
-        } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage(), 500);
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $candidate);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
-        return new JsonResponse(['message' => 'Candidate updated'], 200);
+        $candidate = $this->candidateService->buildCandidate($candidate, $data);
+
+        try {
+            $this->candidateRepository->update($candidate);
+        } catch (PDOException $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
+        }
+
+        return new JsonResponse(['message' => 'Candidate updated successfully'], 200);
     }
 
     /**
@@ -348,30 +346,26 @@ class CandidateController extends AbstractController
      */
     public function delete(int $id): JsonResponse
     {
+       if (!$this->candidateRepository->read($id)) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The candidate with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
         try {
-            $candidate = $this->candidateRepository->read($id);
-            if (!$candidate) {
-                throw new resourceNotFoundException(
-                    json_encode([
-                        'error' => 'The candidate with id ' . $id . ' does not exist.'
-                    ],
-                        JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
             $this->candidateRepository->delete($id);
-
-            return new JsonResponse(['message' => 'Candidate deleted'], 200);
-
         } catch (PDOException $exception) {
             throw new DatabaseException($exception->getMessage(), 500);
         }
 
+        return new JsonResponse(['message' => 'Candidate deleted successfully'], 200);
     }
 
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="List of candidates",
@@ -405,6 +399,12 @@ class CandidateController extends AbstractController
             $candidates = $this->candidateRepository->list();
         } catch (PDOException $exception) {
             throw new DatabaseException($exception->getMessage(), 500);
+        }
+        if (!$candidates) {
+            throw new resourceNotFoundException(
+                json_encode('Candidates not found in database', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         return new JsonResponse($this->serializer->serialize($candidates, 'json'), 200, [], true);
@@ -458,7 +458,7 @@ class CandidateController extends AbstractController
             $upload = $imageController->create($request);
             $jsonDecode = json_decode($upload->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-            if ($jsonDecode['code'] === '201') {
+            if ($jsonDecode->get['code'] === '201') {
                 try {
                     $candidate->setAvatar($jsonDecode['name']);
                     $this->candidateRepository->update($candidate);
