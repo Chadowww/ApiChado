@@ -9,7 +9,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\CandidateService;
-use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,9 +17,16 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class CandidateTest extends TestCase
 {
-    private CandidateService $candidateService;
-    private SerializerInterface $serializer;
-    private CandidateRequestValidator $candidateRequestValidator;
+    CONST array CANDIDATE_DATA = [
+        'firstname' => 'John',
+        'lastname' => 'Doe',
+        'phone' => '1234567890',
+        'address' => '123 Main St',
+        'city' => 'New York',
+        'country' => 'USA',
+        'userId' => 1,
+    ];
+    private RequestValidatorService $requestValidatorService;
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
 
@@ -27,15 +34,15 @@ class CandidateTest extends TestCase
     {
         parent::setUp();
 
-        $this->candidateService = $this->createMock(CandidateService::class);
-        $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->candidateRequestValidator = $this->createMock(CandidateRequestValidator::class);
+        $candidateService = $this->createMock(CandidateService::class);
+        $serializer = $this->createMock(SerializerInterface::class);
+        $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
         $this->mockRepository = $this->createMock(CandidateRepository::class);
         $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
+            $this->requestValidatorService,
+            $candidateService,
             $this->mockRepository,
-            $this->serializer,
+            $serializer,
         );
     }
 
@@ -46,52 +53,29 @@ class CandidateTest extends TestCase
      */
     public function testCandidateCreate(): void
     {
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
         $response = $this->mockController->create($request);
+
         $this->assertEquals(201, $response->getStatusCode());
     }
 
     /**
      * @throws InvalidRequestException
      * @throws \JsonException
+     * @throws DatabaseException
      */
     public function testCandidateCreateError400(): void
     {
-        $data = [
-            'firstname' => '',
-            'lastname' => '',
-            'phone' => 'a',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
         $this->expectException(InvalidRequestException::class);
-        $this->candidateRequestValidator->expects($this->atLeastOnce())
-            ->method('getErrorsCandidateRequest')
-            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
-
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+        $this->requestValidatorService->expects($this->atLeastOnce())
+            ->method('getErrorsFromObject')
+            ->willReturn(['error' => 'error message']);
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
@@ -105,29 +89,13 @@ class CandidateTest extends TestCase
      */
     public function testCandidateCreateError500(): void
     {
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('create')
             ->willThrowException(new PDOException());
-
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -142,30 +110,16 @@ class CandidateTest extends TestCase
      */
     public function  testCandidateRead(): void
     {
-        $candidate = new Candidate([
-            'id' => 18,
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ]);
+        $candidate = new Candidate(self::CANDIDATE_DATA);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('GET');
         $request->headers->set('Content-Type', 'application/json');
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
 
         $response = $this->mockController->read($request->get('id'));
+
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -178,15 +132,11 @@ class CandidateTest extends TestCase
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('GET');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn(false);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+
         $this->expectException(ResourceNotFoundException::class);
         $this->expectExceptionCode(404);
 
@@ -202,15 +152,11 @@ class CandidateTest extends TestCase
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('GET');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
-            ->willThrowException(new \PDOException());
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+            ->willThrowException(new DatabaseException('message d\'erreur', 500));
+
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
 
@@ -225,31 +171,19 @@ class CandidateTest extends TestCase
      */
     public function testCandidateUpdate(): void
     {
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+
+        $candidate = new Candidate(self::CANDIDATE_DATA);
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('update')
             ->willReturn(true);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
 
         $response = $this->mockController->update(18, $request);
         $this->assertEquals(200, $response->getStatusCode());
@@ -259,39 +193,26 @@ class CandidateTest extends TestCase
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @throws \JsonException
-     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testCandidateUpdateError400(): void
     {
-        $data = [
-            'firstname' => '',
-            'lastname' => '',
-            'phone' => 'a',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $candidate = new Candidate(self::CANDIDATE_DATA);
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
 
-        $this->expectException(InvalidRequestException::class);
-        $this->candidateRequestValidator->expects($this->atLeastOnce())
-            ->method('getErrorsCandidateRequest')
-            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+        $this->mockRepository->expects($this->atLeastOnce())
+            ->method('read')
+            ->willReturn($candidate);
 
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+        $this->requestValidatorService->expects($this->atLeastOnce())
+            ->method('getErrorsFromObject')
+            ->willReturn(['error' => 'error message']);
+
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
 
-        $this->mockController->update(18, $request);
+        $this->mockController->update(1, $request);
     }
 
     /**
@@ -301,27 +222,14 @@ class CandidateTest extends TestCase
      */
     public function testCandidateUpdateError404(): void
     {
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn(false);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+
         $this->expectException(ResourceNotFoundException::class);
         $this->expectExceptionCode(404);
 
@@ -335,31 +243,19 @@ class CandidateTest extends TestCase
      */
     public function testCandidateUpdateError500(): void
     {
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ];
-        $candidate = new Candidate($data);
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $candidate = new Candidate(self::CANDIDATE_DATA);
+        $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('update')
-            ->willThrowException(new \PDOException());
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer,
-        );
+            ->willThrowException(new PDOException());
+
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
 
@@ -373,31 +269,19 @@ class CandidateTest extends TestCase
      */
     public function testCandidateDelete(): void
     {
-        $candidate = new Candidate([
-            'id' => 18,
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ]);
+        $candidate = new Candidate(self::CANDIDATE_DATA);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('DELETE');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('delete')
             ->willReturn(true);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer
-        );
+
 
         $response = $this->mockController->delete($request->get('id'));
         $this->assertEquals(200, $response->getStatusCode());
@@ -412,15 +296,11 @@ class CandidateTest extends TestCase
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('DELETE');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn(false);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer
-        );
+
         $this->expectException(ResourceNotFoundException::class);
         $this->expectExceptionCode(404);
 
@@ -433,31 +313,19 @@ class CandidateTest extends TestCase
      */
     public function testCandidateDeleteError500(): void
     {
-        $candidate = new Candidate([
-            'id' => 18,
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ]);
+        $candidate = new Candidate(self::CANDIDATE_DATA);
         $request = new Request(['id' => 18], [], [], [], [], [], null);
         $request->setMethod('DELETE');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('delete')
             ->willThrowException(new \PDOException());
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer
-        );
+
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
 
@@ -467,31 +335,17 @@ class CandidateTest extends TestCase
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * @throws ResourceNotFoundException
      */
     public function testCandidateList(): void
     {
-        $candidate = new Candidate([
-            'id' => 18,
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'phone' => '1234567890',
-            'address' => '123 Main St',
-            'city' => 'New York',
-            'country' => 'USA',
-            'userId' => '1',
-        ]);
+        $candidate = new Candidate(self::CANDIDATE_DATA);
         $request = new Request([], [], [], [], [], [], null);
         $request->setMethod('GET');
         $request->headers->set('Content-Type', 'application/json');
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('list')
             ->willReturn([$candidate]);
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer
-        );
 
         $response = $this->mockController->list();
         $this->assertEquals(200, $response->getStatusCode());
@@ -499,21 +353,18 @@ class CandidateTest extends TestCase
 
     /**
      * @throws \JsonException
+     * @throws ResourceNotFoundException
      */
     public function testCandidateListError500(): void
     {
         $request = new Request([], [], [], [], [], [], null);
         $request->setMethod('GET');
         $request->headers->set('Content-Type', 'application/json');
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('list')
-            ->willThrowException(new \PDOException());
-        $this->mockController = new CandidateController(
-            $this->candidateRequestValidator,
-            $this->candidateService,
-            $this->mockRepository,
-            $this->serializer
-        );
+            ->willThrowException(new PDOException());
+
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
 
