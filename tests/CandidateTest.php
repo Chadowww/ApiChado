@@ -8,7 +8,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
-use App\Services\EntityServices\CandidateService;
+use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use PDOException;
 use PHPUnit\Framework\TestCase;
@@ -34,13 +34,13 @@ class CandidateTest extends TestCase
     {
         parent::setUp();
 
-        $candidateService = $this->createMock(CandidateService::class);
+        $this->entityBuilder = $this->createMock(EntityBuilder::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
         $this->mockRepository = $this->createMock(CandidateRepository::class);
         $this->mockController = new CandidateController(
             $this->requestValidatorService,
-            $candidateService,
+            $this->entityBuilder,
             $this->mockRepository,
             $serializer,
         );
@@ -56,6 +56,11 @@ class CandidateTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Candidate(self::CANDIDATE_DATA));
+
         $response = $this->mockController->create($request);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -92,6 +97,10 @@ class CandidateTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Candidate(self::CANDIDATE_DATA));
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('create')
@@ -177,6 +186,10 @@ class CandidateTest extends TestCase
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
 
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Candidate(self::CANDIDATE_DATA));
+
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
             ->willReturn($candidate);
@@ -247,6 +260,10 @@ class CandidateTest extends TestCase
         $request = new Request([], [], [], [], [], [], json_encode(self::CANDIDATE_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Candidate(self::CANDIDATE_DATA));
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('read')
