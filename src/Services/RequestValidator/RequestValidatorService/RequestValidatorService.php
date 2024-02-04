@@ -2,13 +2,7 @@
 
 namespace App\Services\RequestValidator\RequestValidatorService;
 
-use App\Entity\Apply;
-use App\Entity\Candidate;
-use App\Entity\Company;
-use App\Entity\Contract;
-use App\Entity\JobOffer;
-use App\Entity\Resume;
-use App\Entity\User;
+use App\Entity\{Apply,Candidate, Company, Contract, JobOffer, Resume, User};
 use App\Exceptions\InvalidRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
