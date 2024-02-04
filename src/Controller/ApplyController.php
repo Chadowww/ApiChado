@@ -6,10 +6,10 @@ use App\Entity\Apply;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\ApplyService;
-use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
 use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use Exception;
 use JsonException;
+use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
@@ -118,9 +118,13 @@ class ApplyController extends AbstractController
 
         $this->applyService->buildApply($apply, $data);
 
-        $this->applyRepository->create($apply);
+        try {
+            $this->applyRepository->create($apply);
+        } catch (Exception $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
+        }
 
-        return new JsonResponse(['message' => 'Apply created successfully', 'status' => '201'], 201);
+        return new JsonResponse(['message' => 'Apply created successfully'], 201);
     }
 
     /**
@@ -207,7 +211,7 @@ class ApplyController extends AbstractController
 
         if (!$apply) {
             throw new resourceNotFoundException(
-                json_encode('the apply with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                 404
             );
         }
@@ -314,9 +318,13 @@ class ApplyController extends AbstractController
 
         $apply = $this->applyService->buildApply($apply, $data);
 
-        $this->applyRepository->update($apply);
+        try {
+            $this->applyRepository->update($apply);
+        } catch (Exception $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
+        }
 
-        return new JsonResponse(['message' => 'Apply updated successfully', 'status' => '200']);
+        return new JsonResponse(['message' => 'Apply updated successfully'], 200);
     }
 
     /**
@@ -367,14 +375,13 @@ class ApplyController extends AbstractController
             );
         }
 
-        if (!$this->applyRepository->delete($id)) {
-            throw new DatabaseException(
-                json_encode(['error' => 'An error occurred while deleting the apply'], JSON_THROW_ON_ERROR),
-                500
-            );
+        try {
+            $this->applyRepository->delete($id);
+        } catch (PDOException $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
 
-        return new JsonResponse(['message' => 'Apply deleted successfully', 'status' => '200']);
+        return new JsonResponse(['message' => 'Apply deleted successfully'], 200);
     }
 
     /**
@@ -455,7 +462,7 @@ class ApplyController extends AbstractController
 
         if (!$applies) {
             throw new resourceNotFoundException(
-                json_encode('the apply list was not found', JSON_THROW_ON_ERROR),
+                json_encode('Applies list was not found', JSON_THROW_ON_ERROR),
                 404
             );
         }
