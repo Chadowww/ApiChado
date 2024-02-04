@@ -8,7 +8,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ApplyRepository;
-use App\Services\EntityServices\ApplyService;
+use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +16,16 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ApplyTest extends TestCase
 {
+    CONST array APPLY_DATA = [
+        'applyId' => 1,
+        'status' => 'pending',
+        'message' => 'message',
+        'candidateId' => 1,
+        'resumeId' => 1,
+        'jobofferId' => 1,
+        'createdAt' => '2021-08-01T00:00:00+00:00',
+        'updatedAt' => '2021-08-01T00:00:00+00:00'
+    ];
     private RequestValidatorService $requestValidatorService;
     private ApplyRepository $repository;
     private ApplyController $controller;
@@ -24,13 +34,13 @@ class ApplyTest extends TestCase
     {
         parent::setUp();
 
-        $applyService = $this->createMock(ApplyService::class);
+        $this->entityBuilder = $this->createMock(EntityBuilder::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
         $this->repository = $this->createMock(ApplyRepository::class);
         $this->controller = new ApplyController(
             $this->requestValidatorService,
-            $applyService,
+            $this->entityBuilder,
             $this->repository,
             $serializer
         );
@@ -38,20 +48,13 @@ class ApplyTest extends TestCase
 
     public function testApplyCreate(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Apply(self::APPLY_DATA));
 
         $response = $this->controller->create($request);
         $this->assertEquals(201, $response->getStatusCode());
@@ -59,18 +62,7 @@ class ApplyTest extends TestCase
 
     public function testApplyCreateError400(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
@@ -88,20 +80,13 @@ class ApplyTest extends TestCase
 
     public function testApplyCreateError500(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Apply(self::APPLY_DATA));
 
         $this->repository
             ->expects($this->once())
@@ -116,18 +101,7 @@ class ApplyTest extends TestCase
 
     public function testApplyRead(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
-
-        $apply = new Apply($data);
+        $apply = new Apply(self::APPLY_DATA);
 
         $request = new Request(['id' => 1], [], [], [], [], [], null);
         $request->setMethod('GET');
@@ -175,22 +149,15 @@ class ApplyTest extends TestCase
 
     public function testApplyUpdate(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
+        $apply = new Apply(self::APPLY_DATA);
 
-        $apply = new Apply($data);
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Apply(self::APPLY_DATA));
 
         $this->repository
             ->expects($this->once())
@@ -208,18 +175,7 @@ class ApplyTest extends TestCase
 
     public function testApplyUpdateError404(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
 
@@ -236,22 +192,15 @@ class ApplyTest extends TestCase
 
     public function testApplyUpdateError500(): void
     {
-        $data = [
-            'applyId' => 1,
-            'status' => 'pending',
-            'message' => 'message',
-            'candidateId' => 1,
-            'resumeId' => 1,
-            'jobofferId' => 1,
-            'createdAt' => '2021-08-01T00:00:00+00:00',
-            'updatedAt' => '2021-08-01T00:00:00+00:00'
-        ];
+        $apply = new Apply(self::APPLY_DATA);
 
-        $apply = new Apply($data);
-
-        $request = new Request([], [], [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        $request = new Request([], [], [], [], [], [], json_encode(self::APPLY_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('PUT');
         $request->headers->set('Content-Type', 'application/json');
+
+        $this->entityBuilder->expects($this->once())
+            ->method('buildEntity')
+            ->willReturn(new Apply(self::APPLY_DATA));
 
         $this->repository
             ->expects($this->once())

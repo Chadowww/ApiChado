@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Apply;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ApplyRepository;
-use App\Services\EntityServices\ApplyService;
+use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use Exception;
 use JsonException;
@@ -22,9 +22,9 @@ class ApplyController extends AbstractController
 {
     private RequestValidatorService $requestValidatorService;
     /**
-     * @var ApplyService
+     * @var EntityBuilder
      */
-    private ApplyService $applyService;
+    private EntityBuilder $entityBuilder;
     /**
      * @var ApplyRepository
      */
@@ -36,18 +36,18 @@ class ApplyController extends AbstractController
 
     /**
      * @param RequestValidatorService $requestValidatorService
-     * @param ApplyService $applyService
+     * @param EntityBuilder $entityBuilder,
      * @param ApplyRepository $applyRepository
      * @param SerializerInterface $serializer
      */
     public function __construct(
         RequestValidatorService $requestValidatorService,
-        ApplyService $applyService,
+        EntityBuilder $entityBuilder,
         ApplyRepository $applyRepository,
         SerializerInterface $serializer
     ) {
         $this->requestValidatorService = $requestValidatorService;
-        $this->applyService = $applyService;
+        $this->entityBuilder = $entityBuilder;
         $this->applyRepository = $applyRepository;
         $this->serializer = $serializer;
     }
@@ -116,7 +116,7 @@ class ApplyController extends AbstractController
             throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
-        $this->applyService->buildApply($apply, $data);
+        $this->entityBuilder->buildEntity($apply, $data);
 
         try {
             $this->applyRepository->create($apply);
@@ -316,7 +316,7 @@ class ApplyController extends AbstractController
             throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
-        $apply = $this->applyService->buildApply($apply, $data);
+        $apply = $this->entityBuilder->buildEntity($apply, $data);
 
         try {
             $this->applyRepository->update($apply);

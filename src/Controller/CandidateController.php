@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\{Candidate, User};
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\CandidateRepository;
-use App\Services\EntityServices\CandidateService;
+use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use OpenApi\Annotations as OA;
 use PDOException;
@@ -19,19 +19,19 @@ use Symfony\Component\Serializer\SerializerInterface;
 class CandidateController extends AbstractController
 {
     private RequestValidatorService $requestValidatorService;
-    private CandidateService $candidateService;
+    private EntityBuilder $entityBuilder;
     private CandidateRepository $candidateRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
         RequestValidatorService $requestValidatorService,
-        CandidateService $candidateService,
+        EntityBuilder $entityBuilder,
         CandidateRepository $candidateRepository,
         SerializerInterface $serializer,
     )
     {
         $this->requestValidatorService = $requestValidatorService;
-        $this->candidateService = $candidateService;
+        $this->entityBuilder = $entityBuilder;
         $this->candidateRepository = $candidateRepository;
         $this->serializer = $serializer;
     }
@@ -128,7 +128,7 @@ class CandidateController extends AbstractController
             throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
-        $candidate = $this->candidateService->buildCandidate($candidate, $data);
+        $candidate = $this->entityBuilder->buildEntity($candidate, $data);
 
         try {
             $this->candidateRepository->create($candidate);
@@ -136,7 +136,7 @@ class CandidateController extends AbstractController
             throw new DatabaseException($exception->getMessage(), 500);
         }
 
-        return new JsonResponse(['message' => 'Candidate created successfully', 'status' => '201'], 201);
+        return new JsonResponse(['message' => 'Candidate created successfully'], 201);
     }
 
     /**
@@ -291,7 +291,7 @@ class CandidateController extends AbstractController
         $candidate = $this->candidateRepository->read($id);
 
         if (!$candidate) {
-            throw new resourceNotFoundException(
+            throw new ResourceNotFoundException(
                 json_encode(['error' => 'The candidate with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                 404
             );
@@ -302,7 +302,7 @@ class CandidateController extends AbstractController
             throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
-        $candidate = $this->candidateService->buildCandidate($candidate, $data);
+        $candidate = $this->entityBuilder->buildEntity($candidate, $data);
 
         try {
             $this->candidateRepository->update($candidate);
@@ -401,7 +401,7 @@ class CandidateController extends AbstractController
             throw new DatabaseException($exception->getMessage(), 500);
         }
         if (!$candidates) {
-            throw new resourceNotFoundException(
+            throw new ResourceNotFoundException(
                 json_encode('Candidates not found in database', JSON_THROW_ON_ERROR),
                 404
             );
