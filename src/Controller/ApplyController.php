@@ -2,18 +2,16 @@
 
 namespace App\Controller;
 
-use App\Exceptions\DatabaseException;
-use App\Exceptions\InvalidRequestException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Entity\Apply;
+use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\ApplyService;
-use App\Services\ErrorService;
 use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use Exception;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Annotations as OA;
 
@@ -22,7 +20,7 @@ use OpenApi\Annotations as OA;
  */
 class ApplyController extends AbstractController
 {
-    private ApplyRequestValidator $applyRequestValidator;
+    private RequestValidatorService $requestValidatorService;
     /**
      * @var ApplyService
      */
@@ -37,18 +35,18 @@ class ApplyController extends AbstractController
     private SerializerInterface $serializer;
 
     /**
-     * @param ApplyRequestValidator $applyRequestValidator
+     * @param RequestValidatorService $requestValidatorService
      * @param ApplyService $applyService
      * @param ApplyRepository $applyRepository
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        ApplyRequestValidator $applyRequestValidator,
+        RequestValidatorService $requestValidatorService,
         ApplyService $applyService,
         ApplyRepository $applyRepository,
         SerializerInterface $serializer
     ) {
-        $this->applyRequestValidator = $applyRequestValidator;
+        $this->requestValidatorService = $requestValidatorService;
         $this->applyService = $applyService;
         $this->applyRepository = $applyRepository;
         $this->serializer = $serializer;
@@ -110,9 +108,15 @@ class ApplyController extends AbstractController
      **/
     public function create(Request $request): JsonResponse
     {
-        $this->applyRequestValidator->getErrorsApplyRequest($request);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $apply = new Apply();
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $apply);
 
-        $apply = $this->applyService->buildApply($request);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
+
+        $this->applyService->buildApply($apply, $data);
 
         $this->applyRepository->create($apply);
 
@@ -293,8 +297,7 @@ class ApplyController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->applyRequestValidator->getErrorsApplyRequest($request);
-
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $apply = $this->applyRepository->read($id);
 
         if (!$apply) {
@@ -303,7 +306,13 @@ class ApplyController extends AbstractController
                 404
             );
         }
-        $apply = $this->applyService->updateApply($apply, $request);
+
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $apply);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
+
+        $apply = $this->applyService->buildApply($apply, $data);
 
         $this->applyRepository->update($apply);
 

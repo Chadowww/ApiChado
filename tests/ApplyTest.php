@@ -9,14 +9,14 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\ApplyService;
-use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ApplyTest extends TestCase
 {
-    private ApplyRequestValidator $applyRequestValidator;
+    private RequestValidatorService $requestValidatorService;
     private ApplyRepository $repository;
     private ApplyController $controller;
 
@@ -26,10 +26,10 @@ class ApplyTest extends TestCase
 
         $applyService = $this->createMock(ApplyService::class);
         $serializer = $this->createMock(SerializerInterface::class);
-        $this->applyRequestValidator = $this->createMock(ApplyRequestValidator::class);
+        $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
         $this->repository = $this->createMock(ApplyRepository::class);
         $this->controller = new ApplyController(
-            $this->applyRequestValidator,
+            $this->requestValidatorService,
             $applyService,
             $this->repository,
             $serializer
@@ -75,10 +75,10 @@ class ApplyTest extends TestCase
         $request->headers->set('Content-Type', 'application/json');
 
         $this->expectException(InvalidRequestException::class);
-        $this->applyRequestValidator
+        $this->requestValidatorService
             ->expects($this->once())
-            ->method('getErrorsApplyRequest')
-            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
+            ->method('getErrorsFromObject')
+            ->willReturn(['error']);
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
@@ -342,6 +342,7 @@ class ApplyTest extends TestCase
         $response = $this->controller->list();
         $this->assertEquals(200, $response->getStatusCode());
     }
+
     public function testApplyListError404(): void
     {
         $request = new Request([], [], [], [], [], [], null);

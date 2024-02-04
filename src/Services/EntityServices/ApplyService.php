@@ -15,44 +15,14 @@ class ApplyService
     /**
      * @throws \JsonException
      */
-    public function buildApply(Request $request): Apply
+    public function buildApply(Apply $apply, array $data): Apply
     {
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $apply = new Apply();
-
-        $this->setApplyData($apply, $data);
-
-        return $apply;
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    public function updateApply(Apply $apply, Request $request): Apply
-    {
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        $this->setApplyData($apply, $data);
-
-        return $apply;
-    }
-
-    /**
-     * @param Apply $apply
-     * @param mixed $data
-     * @return void
-     */
-    private function setApplyData(Apply $apply, mixed $data): void
-    {
-        $apply->setStatus($data['status']);
-        $apply->setMessage($data['message'] ?? null);
-        $apply->setCandidateId($data['candidateId']);
-        $apply->setResumeId($data['resumeId']);
-        $apply->setJobofferId($data['jobofferId']);
-        if ($apply->getCreatedAt() === null) {
-            $apply->setCreatedAt(new DateTimeImmutable());
+        foreach ($data as $key => $value) {
+            $method = 'set' . ucwords($key);
+            if (method_exists($apply, $method)) {
+                $apply->$method($value);
+            }
         }
-        $apply->setUpdatedAt(new DateTimeImmutable());
+        return $apply;
     }
-
 }

@@ -57,7 +57,7 @@ class RequestValidatorService
      * @throws InvalidRequestException
      * @throws \JsonException
      */
-    protected function showErrors(array $errors,): void
+    public function showErrors(array $errors,): void
     {
         throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
     }
@@ -69,7 +69,7 @@ class RequestValidatorService
      * object to verify against
      * @return array
      */
-    protected function verifyDataAgainstObject(
+    public function getErrorsFromObject(
         array $data,
         JobOffer | Contract | User | Candidate | Company | Resume | Apply $object
     ): array
