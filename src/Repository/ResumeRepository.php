@@ -81,12 +81,12 @@ class ResumeRepository
 
         return true;
     }
-    public function delete(string $filename): bool
+    public function delete(int $id): bool
     {
-        $this->executeTransaction(function () use ($filename) {
-            $query = 'DELETE FROM APICHADO.resume WHERE filename = :filename';
+        $this->executeTransaction(function () use ($id) {
+            $query = 'DELETE FROM APICHADO.resume WHERE resumeId = :id';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':filename', $filename, PDO::PARAM_STR);
+            $statement->bindValue(':id', $id, PDO::PARAM_STR);
             $statement->execute();
         });
         return true;
