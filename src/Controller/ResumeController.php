@@ -2,14 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Resume;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ResumeRepository;
-use App\Services\EntityServices\ResumeService;
-use App\Services\ErrorService;
-use App\Services\RequestValidator\RequestEntityValidators\ResumeRequestValidator;
+use App\Services\EntityServices\EntityBuilder;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use Exception;
 use OpenApi\Annotations as OA;
+use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,19 +22,20 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ResumeController extends AbstractController
 {
-    private ResumeRequestValidator $resumeRequestValidator;
+    private RequestValidatorService $requestValidatorService;
+    private EntityBuilder $entityBuilder;
     private ResumeRepository $resumeRepository;
-    private ResumeService $resumeService;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ResumeRequestValidator $resumeRequestValidator,
+        RequestValidatorService $requestValidatorService,
+        EntityBuilder $entityBuilder,
         ResumeRepository $resumeRepository,
-        ResumeService $resumeService,
         SerializerInterface $serializer
     ) {
+        $this->requestValidatorService = $requestValidatorService;
+        $this->entityBuilder = $entityBuilder;
         $this->resumeRepository = $resumeRepository;
-        $this->resumeService = $resumeService;
         $this->serializer = $serializer;
     }
 
@@ -70,30 +73,31 @@ class ResumeController extends AbstractController
      */
     public function create(Request $request, ImageController $imageController): JsonResponse
     {
-        $this->resumeRequestValidator->getErrorsResumeRequest($request);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $resume = new Resume();
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $resume);
 
-        $fileName = $imageController->create($request);
-        $resume = $this->resumeService->buildResume(
-            $request,
-            json_decode($fileName->getContent(), true, 512, JSON_THROW_ON_ERROR)['name']
-        );
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
+
+        $imageController->create($request);
+
+        $resume = $this->entityBuilder->buildEntity($resume, $data);
 
         try {
             $this->resumeRepository->create($resume);
-        } catch (\Exception $e) {
-            throw new DatabaseException(
-                json_encode(
-                    $e->getMessage(),
-                    JSON_THROW_ON_ERROR),
-                500
-            );
+        } catch (Exception $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
+
         return new JsonResponse('Resume created with success!', 201, [], true);
     }
 
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Resume read",
@@ -128,14 +132,15 @@ class ResumeController extends AbstractController
      */
     public function read(int $id): JsonResponse
     {
-        try {
-            $resume = $this->resumeRepository->read($id);
-            if (!$resume) {
-                throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
-            }
-        } catch (\Exception $e) {
-            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        $resume = $this->resumeRepository->read($id);
+
+        if (!$resume) {
+            throw new ResourceNotFoundException(
+                json_encode(['error' => 'The resume with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
         }
+
         return new JsonResponse($this->serializer->serialize($resume, 'json'), 200, [], true);
     }
 
@@ -206,25 +211,32 @@ class ResumeController extends AbstractController
      */
     public function update(int $id, Request $request, ImageController $imageController): JsonResponse
     {
-        $this->resumeRequestValidator->getErrorsResumeRequest($request);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $resume  = $this->resumeRepository->read($id);
 
-        try {
-            $resume = $this->resumeRepository->read($id);
-            if (!$resume) {
-                throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
-            }
-        } catch (\Exception $e) {
-            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        if (!$resume) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The resume with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $resume);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
         }
 
         $fileName = json_decode($imageController->create($request)->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->resumeService->updateResume($resume, $request, $fileName['name']);
+        $data['filename'] = $fileName;
+
+        $resume = $this->entityBuilder->buildEntity($resume, $data);
 
         try {
             $this->resumeRepository->update($resume);
         } catch (\Exception $e) {
-            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
+
         return new JsonResponse('Resume updated with success!', 200, [], true);
     }
 
@@ -256,22 +268,39 @@ class ResumeController extends AbstractController
      *     @OA\Schema(type="string", example="659d3e252779b4.10678192.pdf")
      * )
      */
-    public function delete(string $filename): JsonResponse
+    public function delete(int $id): JsonResponse
     {
+        $resume = $this->resumeRepository->read($id);
+
+        if (!$resume) {
+            throw new ResourceNotFoundException(
+                json_encode(['error' => 'The resume with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
         $directory = $this->getParameter('cv.directory');
 
-        $filePath = $directory . $filename;
+        $filePath = $directory . $resume->getFilename();
         if (!file_exists($filePath)) {
             throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
         }
 
         unlink($filePath);
         try {
-            $this->resumeRepository->delete($filename);
-        } catch (\Exception $e) {
-            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+            $resumeDeleted = $this->resumeRepository->delete($id);
 
+
+            if ($resumeDeleted === false) {
+                throw new resourceNotFoundException(
+                    json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                    404
+                );
+            }
+        } catch (\PDOException $e) {
+            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
+
         return new JsonResponse('Resume deleted with success!', 200, [], true);
     }
 
@@ -279,6 +308,7 @@ class ResumeController extends AbstractController
     /**
      * @throws DatabaseException
      * @throws \JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Resume list",
@@ -315,17 +345,33 @@ class ResumeController extends AbstractController
      */
     public function list(): JsonResponse
     {
-        try {
-            $resumes = $this->resumeRepository->list();
-        } catch (\Exception $e) {
-            throw new DatabaseException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 500);
+        $resumes = $this->resumeRepository->list();
+
+        if (!$resumes) {
+            throw new resourceNotFoundException(
+                json_encode('Resumes list was not found', JSON_THROW_ON_ERROR),
+                404
+            );
         }
+
         return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function getResumesByCandidate($id): JsonResponse
     {
         $resumes = $this->resumeRepository->findByCandidate($id);
+
+        if (!$resumes) {
+            throw new resourceNotFoundException(
+                json_encode('Resumes list was not found', JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
         return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
     }
 }
