@@ -96,13 +96,13 @@ class JobOfferRepository
         }
     }
 
-    public function delete(JobOffer $jobOffer): bool
+    public function delete($id): bool
     {
         try {
             $this->connection->beginTransaction();
             $query = 'DELETE FROM APICHADO.joboffer WHERE jobofferId = :jobofferId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':jobofferId', $jobOffer->getJobofferId());
+            $statement->bindValue(':jobofferId', $id);
             $statement->execute();
             $this->connection->commit();
             return true;
