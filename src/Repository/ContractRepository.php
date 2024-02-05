@@ -65,17 +65,17 @@ class ContractRepository
         }
     }
 
-    public function delete(Contract $contract):bool
+    public function delete(int $id):bool
     {
         try {
             $this->connection->beginTransaction();
             $query = 'DELETE FROM APICHADO.contract WHERE contractId = :contractId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':contractId', $contract->getContractId());
+            $statement->bindValue(':contractId', $id);
             $statement->execute();
             $this->connection->commit();
             return true;
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             $this->connection->rollBack();
             return false;
         }

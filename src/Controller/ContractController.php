@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Contract;
 use App\Services\RequestValidator\RequestEntityValidators\ContractRequestValidator;
+use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ContractRepository;
-use App\Services\ErrorService;
 use OpenApi\Annotations as OA;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,17 +18,17 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ContractController extends AbstractController
 {
-    private ContractRequestValidator $contractRequestValidator;
+    private RequestValidatorService $requestValidatorService;
     private ContractRepository $contractRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
-        ContractRequestValidator $contractRequestValidator,
+        RequestValidatorService $requestValidatorService,
         ContractRepository $contractRepository,
         SerializerInterface $serializer,
     )
     {
-        $this->contractRequestValidator = $contractRequestValidator;
+        $this->requestValidatorService = $requestValidatorService;
         $this->contractRepository = $contractRepository;
         $this->serializer = $serializer;
     }
@@ -69,9 +69,14 @@ class ContractController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        $this->contractRequestValidator->getErrorsContractRequest($request);
-
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $contract = new Contract();
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $contract);
+
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
+
         $contract->setType($request->get('type'));
 
         try {
@@ -80,7 +85,7 @@ class ContractController extends AbstractController
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-        return new JsonResponse('Created', 201);
+        return new JsonResponse(['message' => 'Contract created successfully'], 201);
     }
 
     /**
@@ -119,16 +124,13 @@ class ContractController extends AbstractController
      */
     public function read(int $id): JsonResponse
     {
-        try {
-            $contract = $this->contractRepository->read($id);
-            if (!$contract) {
-                throw new resourceNotFoundException(
-                    json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
-        } catch (PDOException $e) {
-            throw new databaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), $e->getCode());
+        $contract = $this->contractRepository->read($id);
+
+        if (!$contract) {
+            throw new ResourceNotFoundException(
+                json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         return new JsonResponse($this->serializer->serialize($contract, 'json'), 200, [], true);
@@ -192,16 +194,20 @@ class ContractController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->contractRequestValidator->getErrorsContractRequest($request);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $contract = $this->contractRepository->read($id);
 
-       $contract = $this->contractRepository->read($id);
-
-       if (!$contract) {
+        if (!$contract) {
            throw new ResourceNotFoundException(
                json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
                404
            );
-       }
+        }
+
+        $errors = $this->requestValidatorService->getErrorsFromObject($data, $contract);
+        if (count($errors) > 0) {
+            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
+        }
 
         try {
             $contract->setType($request->get('type'));
@@ -210,7 +216,7 @@ class ContractController extends AbstractController
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-       return new JsonResponse('Updated', 204);
+        return new JsonResponse(['response' => 'contract updated'], 200);
     }
 
     /**
@@ -248,17 +254,15 @@ class ContractController extends AbstractController
      */
     public function delete(int $id): JsonResponse
     {
-        $contract = $this->contractRepository->read($id);
-
-        if(!$contract) {
-            throw new ResourceNotFoundException(
-                json_encode('the contract with id ' . $id . ' was not found', JSON_THROW_ON_ERROR),
+        if (!$this->contractRepository->read($id)) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The candidate with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                 404
             );
         }
 
         try {
-            $this->contractRepository->delete($contract);
+            $this->contractRepository->delete($id);
         } catch (PDOException $e) {
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
@@ -304,8 +308,9 @@ class ContractController extends AbstractController
             throw new DatabaseException($e->getMessage(), $e->getCode());
         }
 
-        if (empty($contract)) {
-            throw new ResourceNotFoundException(json_encode('No contract found', JSON_THROW_ON_ERROR), 404);
+        if (!$contract) {
+            throw new ResourceNotFoundException(json_encode('Contracts not found in database', JSON_THROW_ON_ERROR),
+                404);
         }
         return new JsonResponse($this->serializer->serialize($contract, 'json'), 200, [], true);
     }
