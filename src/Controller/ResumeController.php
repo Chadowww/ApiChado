@@ -26,6 +26,7 @@ class ResumeController extends AbstractController
     private EntityBuilder $entityBuilder;
     private ResumeRepository $resumeRepository;
     private SerializerInterface $serializer;
+    private string $cvDirectory = '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/';
 
     public function __construct(
         RequestValidatorService $requestValidatorService,
@@ -272,9 +273,7 @@ class ResumeController extends AbstractController
             );
         }
 
-        $directory = $this->getParameter('cv.directory');
-
-        $filePath = $directory . $resume->getFilename();
+        $filePath = $this->cvDirectory . $resume->getFilename();
         if (!file_exists($filePath)) {
             throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
         }
@@ -296,7 +295,6 @@ class ResumeController extends AbstractController
 
         return new JsonResponse('Resume deleted with success!', 200, [], true);
     }
-
 
     /**
      * @throws DatabaseException

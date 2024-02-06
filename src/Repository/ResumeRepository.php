@@ -25,7 +25,7 @@ class ResumeRepository
         $this->bindValueService = $bindValueService;
     }
 
-    public function create(Resume $resume): void
+    public function create(Resume $resume): bool
     {
         $resumeAttributes = [];
 
@@ -45,6 +45,8 @@ class ResumeRepository
 
             $statement->execute();
         });
+
+        return true;
     }
 
     public function read(int $resumeId): Resume | bool
