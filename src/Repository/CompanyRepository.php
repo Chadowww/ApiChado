@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Company;
+use App\Exceptions\DatabaseException;
 use App\Services\ConnectionDbService;
 use App\Services\DataBaseServices\BindValueService;
 use PDO;
@@ -145,6 +146,9 @@ class CompanyRepository
         return $companies;
     }
 
+    /**
+     * @throws DatabaseException
+     */
     private function executeTransaction(callable $transaction): Void
     {
         try {
@@ -155,7 +159,7 @@ class CompanyRepository
             $this->connection->commit();
         } catch (PDOException $e) {
             $this->connection->rollBack();
-            throw $e;
+            throw new DatabaseException('Error while trying to execute a transaction.', 500);
         }
     }
 }
