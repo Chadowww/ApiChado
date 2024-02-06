@@ -370,6 +370,7 @@ class CompanyController extends AbstractController
     /**
      * @throws InvalidRequestException
      * @throws DatabaseException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="List of companies",
@@ -397,11 +398,15 @@ class CompanyController extends AbstractController
      */
     public function topOffers(): JsonResponse
     {
-        try {
-            $companies = $this->companyRepository->topOffers();
-            return new JsonResponse($this->serializer->serialize($companies, 'json'), 200, [], true);
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), 500);
+        $companies = $this->companyRepository->topOffers();
+
+        if (!$companies) {
+            throw new ResourceNotFoundException(
+                json_encode('Candidates not found in database', JSON_THROW_ON_ERROR),
+                404
+            );
         }
+
+        return new JsonResponse($this->serializer->serialize($companies, 'json'), 200, [], true);
     }
 }
