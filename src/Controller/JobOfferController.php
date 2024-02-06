@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\JobOffer;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\JobOfferRepository;
 use JsonException;
@@ -95,11 +95,7 @@ class JobOfferController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $jobOffer = new JobOffer();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $jobOffer);
-
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $jobOffer);
 
         $jobOffer = $this->entityBuilder->buildEntity($jobOffer, $data);
 
@@ -248,10 +244,7 @@ class JobOfferController extends AbstractController
             );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $jobOffer);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $jobOffer);
 
         $jobOffer = $this->entityBuilder->buildEntity($jobOffer, $data);
 
