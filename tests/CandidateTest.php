@@ -9,7 +9,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +26,7 @@ class CandidateTest extends TestCase
         'country' => 'USA',
         'userId' => 1,
     ];
+    private EntityBuilder $entityBuilder;
     private RequestValidatorService $requestValidatorService;
     private CandidateRepository $mockRepository;
     private CandidateController $mockController;
@@ -79,8 +80,8 @@ class CandidateTest extends TestCase
 
         $this->expectException(InvalidRequestException::class);
         $this->requestValidatorService->expects($this->atLeastOnce())
-            ->method('getErrorsFromObject')
-            ->willReturn(['error' => 'error message']);
+            ->method('throwError400FromData')
+            ->willThrowException(new InvalidRequestException('error message', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
@@ -219,8 +220,8 @@ class CandidateTest extends TestCase
             ->willReturn($candidate);
 
         $this->requestValidatorService->expects($this->atLeastOnce())
-            ->method('getErrorsFromObject')
-            ->willReturn(['error' => 'error message']);
+            ->method('throwError400FromData')
+            ->willThrowException(new InvalidRequestException('error message', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
