@@ -6,7 +6,7 @@ use App\Entity\Apply;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use Exception;
 use JsonException;
 use PDOException;
@@ -110,11 +110,8 @@ class ApplyController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $apply = new Apply();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $apply);
+        $this->requestValidatorService->throwError400FromData($data, $apply);
 
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
 
         $this->entityBuilder->buildEntity($apply, $data);
 
@@ -311,10 +308,7 @@ class ApplyController extends AbstractController
             );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $apply);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $apply);
 
         $apply = $this->entityBuilder->buildEntity($apply, $data);
 
