@@ -9,7 +9,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ApplyRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -26,6 +26,7 @@ class ApplyTest extends TestCase
         'createdAt' => '2021-08-01T00:00:00+00:00',
         'updatedAt' => '2021-08-01T00:00:00+00:00'
     ];
+    private EntityBuilder $entityBuilder;
     private RequestValidatorService $requestValidatorService;
     private ApplyRepository $repository;
     private ApplyController $controller;
@@ -69,8 +70,8 @@ class ApplyTest extends TestCase
         $this->expectException(InvalidRequestException::class);
         $this->requestValidatorService
             ->expects($this->once())
-            ->method('getErrorsFromObject')
-            ->willReturn(['error']);
+            ->method('throwError400FromData')
+            ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
