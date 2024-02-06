@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Contract;
-use App\Services\RequestValidator\RequestEntityValidators\ContractRequestValidator;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ContractRepository;
 use OpenApi\Annotations as OA;
@@ -71,11 +70,8 @@ class ContractController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $contract = new Contract();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $contract);
 
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $contract);
 
         $contract->setType($request->get('type'));
 
@@ -204,10 +200,7 @@ class ContractController extends AbstractController
            );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $contract);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $contract);
 
         try {
             $contract->setType($request->get('type'));

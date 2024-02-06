@@ -2,20 +2,16 @@
 
 namespace App\Tests;
 
+use App\Entity\{Apply,Candidate, Company, Contract, JobOffer, Resume, User};
 use App\Exceptions\InvalidRequestException;
 use App\Kernel;
-use App\Services\RequestValidator\RequestEntityValidators\ApplyRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\CandidateRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\CompanyRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\ContractRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\JobOfferRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\ResumeRequestValidator;
-use App\Services\RequestValidator\RequestEntityValidators\UserRequestValidator;
+use App\Services\RequestValidator\RequestValidatorService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpFoundation\Request;
 
-class ErrorServiceTest extends KernelTestCase
+class RequestValidatorServiceTest extends KernelTestCase
 {
+    private mixed $requestValidatorService;
+    private mixed $container;
     /**
      * @return string
      */
@@ -25,59 +21,65 @@ class ErrorServiceTest extends KernelTestCase
     }
 
     /**
+     * @throws \Exception
+     */
+    public function setUp(): void
+    {
+        self::bootKernel();
+        $this->container = self::getContainer();
+        $this->requestValidatorService = $this->container->get(RequestValidatorService::class);
+    }
+
+    /**
      * @throws \JsonException
      * @throws \Exception
      */
     public function testGetErrorsJobOfferRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-        $JobOfferRequestValidator = $container->get(JobOfferRequestValidator::class);
-
+        $object = new JobOffer();
         $goodData = [
             'title' => 'test',
-            'description' => 'nouelle description de présentation d une offre d emploi',
+            'description' => 'nouvelle description de présentation d une offre d emploi',
             'city' => 'test',
             'salaryMin' => 45000,
             'salaryMax' => 50000,
         ];
-
         $badData = [
             'title' => [
-                [null, 'Request must contain title, description, city, salaryMin and salaryMax fields'],
+                [null, 'The request must contain the following fields:title, description, city, salaryMin, salaryMax, '],
                 ['', 'Title is required'],
                 [ true, 'Title must be a string'],
                 ['az', 'Title must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Title must be at least 50 characters long'],
             ],
             'description' => [
-                [null, 'Request must contain title, description, city, salaryMin and salaryMax fields'],
+                [null, 'The request must contain the following fields:title, description, city, salaryMin, salaryMax, '],
                 ['', 'Description is required'],
                 [ true, 'Description must be a string'],
                 ['az', 'Description must be at least 50 characters long'],
             ],
             'city' => [
-                [null, 'Request must contain title, description, city, salaryMin and salaryMax fields'],
+                [null, 'The request must contain the following fields:title, description, city, salaryMin, salaryMax, '],
                 ['', 'City is required'],
                 [ true, 'City must be a string'],
                 ['az', 'City must be at least 3 characters long'],
             ],
             'salaryMin' => [
-                [null, 'Request must contain title, description, city, salaryMin and salaryMax fields'],
+                [null, 'The request must contain the following fields:title, description, city, salaryMin, salaryMax, '],
                 ['', 'Salary min is required'],
                 [ true, 'Salary min must be a number'],
                 [-1, 'Salary min must be a positive number'],
                 ['1a', 'Salary min must be a number'],
             ],
             'salaryMax' => [
-                [null, 'Request must contain title, description, city, salaryMin and salaryMax fields'],
+                [null, 'The request must contain the following fields:title, description, city, salaryMin, salaryMax, '],
                 [ true, 'Salary max must be a number'],
                 [-1, 'Salary max must be a positive number'],
                 ['1a', 'Salary max must be a number'],
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $JobOfferRequestValidator, 'getErrorsJobOfferRequest');
+        $this->testInvalidDataTriggersExceptions($object, $goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -86,17 +88,13 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsContractRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-        $contractRequestValidator = $container->get(ContractRequestValidator::class);
-
+        $object = new Contract();
         $goodData = [
             'type' => 'CDI',
         ];
-
         $badData = [
             'type' => [
-                [null, 'Request must contain type field'],
+                [null, 'The request must contain the following fields:type, '],
                 ['', 'Type is required'],
                 [ true, 'Type must be a string'],
                 ['az', 'Type must be at least 3 characters long'],
@@ -104,7 +102,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $contractRequestValidator, 'getErrorsContractRequest');
+        $this->testInvalidDataTriggersExceptions($object,$goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -113,19 +111,15 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsUserRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-        $userRequestValidator = $container->get(UserRequestValidator::class);
-
+        $object = new User();
         $goodData = [
             'email' => 'fake@email.df',
             'password' => 'Du6oalfy4!',
             'roles' => 3, // choice [1, 3, 5, 9]
         ];
-
         $badData =[
             'email' => [
-                [null, 'Request must contain email, password and roles fields'],
+                [null, 'The request must contain the following fields:email, password, roles, '],
                 ['', 'Email is required'],
                 [ true, 'Email must be a valid email'],
                 ['az', 'Email must be a valid email'],
@@ -134,14 +128,14 @@ class ErrorServiceTest extends KernelTestCase
                 ['oiaehbaepobzzrgreabebeerzgrzzefheapob@oiehbeopibe.fr', 'Email must be at least 50 characters long']
             ],
             'password' => [
-                [null, 'Request must contain email, password and roles fields'],
+                [null, 'The request must contain the following fields:email, password, roles, '],
                 ['', 'Password is required'],
                 [ true, 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'],
                 ['az', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'],
             ],
             'roles' => [
-                [null, 'Request must contain email, password and roles fields'],
+                [null, 'The request must contain the following fields:email, password, roles, '],
                 ['', 'Role is required'],
                 [ true, 'Role must be one of the following: 1 (ROLE_USER), 3 (ROLE_CANDIDATE), 5 (ROLE_COMPANY), 9 (ROLE_ADMIN)'],
                 [0, 'Role must be one of the following: 1 (ROLE_USER), 3 (ROLE_CANDIDATE), 5 (ROLE_COMPANY), 9 (ROLE_ADMIN)'],
@@ -153,7 +147,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $userRequestValidator, 'getErrorsUserRequest');
+        $this->testInvalidDataTriggersExceptions($object, $goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -162,11 +156,7 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsCandidateRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-
-        $candidateRequestValidator = $container->get(CandidateRequestValidator::class);
-
+        $object = new Candidate();
         $goodData = [
             'firstname' => 'John',
             'lastname' => 'Doe',
@@ -176,17 +166,16 @@ class ErrorServiceTest extends KernelTestCase
             'country' => 'France',
             'userId' => 1
         ];
-
         $badData = [
             'firstname' => [
-                [null, 'Request must contain firstname, lastname, userId fields'],
+                [null, 'The request must contain the following fields:firstname, lastname, userId, '],
                 ['', 'Firstname is required'],
                 [ true, 'Firstname must be a string'],
                 ['az', 'Firstname must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Firstname must be at least 50 characters long'],
             ],
             'lastname' => [
-                [null, 'Request must contain firstname, lastname, userId fields'],
+                [null, 'The request must contain the following fields:firstname, lastname, userId, '],
                 ['', 'Lastname is required'],
                 [ true, 'Lastname must be a string'],
                 ['az', 'Lastname must be at least 3 characters long'],
@@ -216,7 +205,7 @@ class ErrorServiceTest extends KernelTestCase
                 ['Royaume-Uni de Grande-Bretagne et d\'Irlande du Nord', 'Country must be at least 50 characters long'],
             ],
             'userId' => [
-                [null, 'Request must contain firstname, lastname, userId fields'],
+                [null, 'The request must contain the following fields:firstname, lastname, userId, '],
                 ['', 'User id is required'],
                 [ true, 'User id must be an integer'],
                 [-1, 'User id must be a positive integer'],
@@ -224,7 +213,7 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $candidateRequestValidator, 'getErrorsCandidateRequest');
+        $this->testInvalidDataTriggersExceptions($object, $goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -233,11 +222,7 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsCompanyRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-
-        $CompanyRequestValidator = $container->get(CompanyRequestValidator::class);
-
+        $object = new Company();
         $goodData = [
             'name' => 'AS-Turing',
             'phone' =>  '0543627392',
@@ -247,10 +232,9 @@ class ErrorServiceTest extends KernelTestCase
             'siret' =>  '12345678901234',
             'userId' => 1,
         ];
-
         $badData = [
             'name' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'Name is required'],
                 [true, 'Name must be at least 3 characters long'],
                 ['az', 'Name must be at least 3 characters long'],
@@ -258,7 +242,7 @@ class ErrorServiceTest extends KernelTestCase
                     'Name must be at least 50 characters long'],
             ],
             'phone' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'Phone is required'],
                 [true, 'This value should have exactly 10 characters.'],
                 ['az', 'This value should have exactly 10 characters.'],
@@ -266,39 +250,39 @@ class ErrorServiceTest extends KernelTestCase
                 ['12345678901', 'This value should have exactly 10 characters.'],
             ],
             'address' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'Address is required'],
                 [true, 'Address must be at least 3 characters long'],
                 ['az', 'Address must be at least 3 characters long'],
             ],
             'city' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'City is required'],
                 [true, 'City must be at least 3 characters long'],
                 ['az', 'City must be at least 3 characters long'],
             ],
             'country' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'Country is required'],
                 [true, 'Country must be at least 3 characters long'],
                 ['az', 'Country must be at least 3 characters long'],
             ],
             'siret' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'This value should have exactly 14 characters.'],
                 [true, 'This value should have exactly 14 characters.'],
                 ['1234567891234', 'This value should have exactly 14 characters.'],
                 ['123456789012345', 'This value should have exactly 14 characters.'],
             ],
             'userId' => [
-                [null, 'Request must contain name, phone, address, city, country, siret and userId fields'],
+                [null, 'The request must contain the following fields:name, phone, address, city, country, siret, userId, '],
                 ['', 'User id is required'],
                 [true, 'User id must be a number'],
                 [-1, 'User id must be a positive number'],
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $CompanyRequestValidator, 'getErrorsCompanyRequest');
+        $this->testInvalidDataTriggersExceptions($object, $goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -307,34 +291,37 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsResumeRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
-
-        $ResumeRequestValidator = $container->get(ResumeRequestValidator::class);
-
+        $object = new Resume();
         $goodData = [
             'title' => 'test',
             'candidateId' => 1,
+            'filename' => 'test.pdf',
         ];
-
         $badData = [
             'title' => [
-                [null, 'Request must contain title and candidateId fields'],
+                [null, 'The request must contain the following fields:title, filename, candidateId, '],
                 ['', 'Title is required'],
                 [true, 'Title must be a string'],
                 ['az', 'Title must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Title must be at least 50 characters long'],
             ],
             'candidateId' => [
-                [null, 'Request must contain title and candidateId fields'],
+                [null, 'The request must contain the following fields:title, filename, candidateId, '],
                 ['', 'Candidate Id is required'],
                 [true, 'Candidate Id must be an integer'],
                 [-1, 'Candidate Id must be a positive integer'],
                 ['1a', 'Candidate Id must be an integer'],
             ],
+            'filename' => [
+                [null, 'The request must contain the following fields:title, filename, candidateId, '],
+                ['', 'Filename is required'],
+                [true, 'Filename must be a string'],
+                ['az', 'Filename must be at least 3 characters long'],
+                ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Filename must be at least 50 characters long'],
+            ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $ResumeRequestValidator, 'getErrorsResumeRequest');
+        $this->testInvalidDataTriggersExceptions($object, $goodData, $badData, $this->requestValidatorService);
     }
 
     /**
@@ -342,21 +329,17 @@ class ErrorServiceTest extends KernelTestCase
      */
     public function testGetErrorsApplyRequestThrowsExceptionForInvalidData(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
 
-        $ApplyRequestValidator = $container->get(ApplyRequestValidator::class);
-
+        $object = new Apply();
         $goodData = [
             'status' => 'pending',
             'candidateId' => 1,
             'resumeId' => 1,
             'jobofferId' => 1,
         ];
-
         $badData = [
             'status' => [
-                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                [null, 'The request must contain the following fields:status, candidateId, resumeId, jobofferId, '],
                 ['', 'Status is required'],
                 [true, 'Status must be a string'],
                 ['az', 'Status must be one of the following: \'accepted\', \'denied\', \'pending\''],
@@ -364,21 +347,21 @@ class ErrorServiceTest extends KernelTestCase
                     'Status must be one of the following: \'accepted\', \'denied\', \'pending\''],
             ],
             'candidateId' => [
-                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                [null, 'The request must contain the following fields:status, candidateId, resumeId, jobofferId, '],
                 ['', 'Candidate id is required'],
                 [true, 'Candidate id must be an integer'],
                 [-1, 'Candidate id must be a positive integer'],
                 ['1a', 'Candidate id must be an integer'],
             ],
             'resumeId' => [
-                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                [null, 'The request must contain the following fields:status, candidateId, resumeId, jobofferId, '],
                 ['', 'Resume id is required'],
                 [true, 'Resume id must be an integer'],
                 [-1, 'Resume id must be a positive integer'],
                 ['1a', 'Resume id must be an integer'],
             ],
             'jobofferId' => [
-                [null, 'Request must contain status, candidateId, resumeId and jobofferId fields'],
+                [null, 'The request must contain the following fields:status, candidateId, resumeId, jobofferId, '],
                 ['', 'Job offer id is required'],
                 [true, 'Job offer id must be an integer'],
                 [-1, 'Job offer id must be a positive integer'],
@@ -386,10 +369,12 @@ class ErrorServiceTest extends KernelTestCase
             ],
         ];
 
-        $this->testInvalidDataTriggersExceptions($goodData, $badData, $ApplyRequestValidator, 'getErrorsApplyRequest');
+        $this->testInvalidDataTriggersExceptions($object,$goodData, $badData, $this->requestValidatorService);
     }
 
     /**
+     * @param mixed $object
+     * Object to be used to test the method
      * @param array $goodData
      * Array of data valid for the service method being tested, to be modified with invalid parameters from the $badData.
      *
@@ -407,25 +392,29 @@ class ErrorServiceTest extends KernelTestCase
      * @throws \JsonException
      */
     private function testInvalidDataTriggersExceptions(
+        mixed $object,
         array $goodData,
         array $badData,
-        mixed $errorService,
-        string $method
+        mixed $RequestValidatorService,
     ): void
     {
         foreach ($goodData as $key => $value) {
             foreach ($badData[$key] as $invalidValue) {
                 $newData = $goodData;
-                $newData[$key] = $invalidValue[0];
-                $request = new Request([], [], [], [], [], [], json_encode($newData, JSON_THROW_ON_ERROR));
+                if ($invalidValue[0] !== null) {
+                    $newData[$key] = $invalidValue[0];
+                } else {
+                    unset($newData[$key]);
+                }
                 try {
-                    $errorService->$method($request);
+                    $RequestValidatorService->throwError400FromData($newData, $object);
                     $this->fail("Expected InvalidRequestException was not thrown for key: $key");
                 } catch (InvalidRequestException $exception) {
                     /* if an invalid value is null, we check that the error is the one expected for a missing field */
                     if ($invalidValue[0] === null) {
-                        $field = 'request';
-                        $this->assertEquals("[{\"field\":\"$field\",\"message\":\"{$invalidValue[1]}\"}]", $exception->getMessage());
+                        $field = 'request body';
+                        $this->assertEquals("[{\"field\":\"$field\",\"message\":\"{$invalidValue[1]}\",\"missingFields\":\"{$key}\"}]",
+                            $exception->getMessage());
                     /* else we check that the error is the one expected for the invalid value */
                     } else {
                         $passedValue = $invalidValue[0];

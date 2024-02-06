@@ -9,7 +9,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\JobOfferRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use \JsonException;
@@ -26,7 +26,6 @@ class JobOfferTest extends TestCase
         'salaryMin' => 40000,
         'salaryMax' => 45000,
     ];
-    private SerializerInterface $serializer;
     private RequestValidatorService $requestValidatorService;
     private JobOfferRepository $mockRepository;
     private JobOfferController $mockController;
@@ -34,14 +33,14 @@ class JobOfferTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createMock(SerializerInterface::class);
         $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
         $this->mockRepository = $this->createMock(JobOfferRepository::class);
         $this->entityBuilder = $this->createMock(EntityBuilder::class);
         $this->mockController = new JobOfferController(
             $this->requestValidatorService,
             $this->mockRepository,
-            $this->serializer,
+            $serializer,
             $this->entityBuilder
         );
     }
@@ -53,9 +52,9 @@ class JobOfferTest extends TestCase
      */
     public function testJobOfferCreate(): void
     {
-         $request = new Request([],[], [], [], [], [], json_encode(self::JOB_OFFER_DATA, JSON_THROW_ON_ERROR));
-         $request->setMethod('POST');
-         $request->headers->set('Content-Type', 'application/json');
+        $request = new Request([],[], [], [], [], [], json_encode(self::JOB_OFFER_DATA, JSON_THROW_ON_ERROR));
+        $request->setMethod('POST');
+        $request->headers->set('Content-Type', 'application/json');
 
         $this->entityBuilder->expects($this->once())
             ->method('buildEntity')
@@ -77,7 +76,7 @@ class JobOfferTest extends TestCase
 
         $this->expectException(InvalidRequestException::class);
         $this->requestValidatorService->expects($this->atLeastOnce())
-            ->method('getErrorsFromObject')
+            ->method('throwError400FromData')
             ->willThrowException(new InvalidRequestException('message d\'erreur', 400));
 
         $this->expectException(InvalidRequestException::class);
@@ -201,8 +200,8 @@ class JobOfferTest extends TestCase
             ->willReturn($jobOffer);
 
         $this->requestValidatorService->expects($this->atLeastOnce())
-            ->method('getErrorsFromObject')
-            ->willReturn(['error' => 'error message']);
+            ->method('throwError400FromData')
+            ->willThrowException(new InvalidRequestException('Invalid request', 400));
 
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);

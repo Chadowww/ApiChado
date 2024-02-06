@@ -6,7 +6,7 @@ use App\Entity\{Candidate, User};
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use OpenApi\Annotations as OA;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -122,11 +122,7 @@ class CandidateController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $candidate = new Candidate();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $candidate);
-
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $candidate);
 
         $candidate = $this->entityBuilder->buildEntity($candidate, $data);
 
@@ -297,10 +293,7 @@ class CandidateController extends AbstractController
             );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $candidate);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $candidate);
 
         $candidate = $this->entityBuilder->buildEntity($candidate, $data);
 

@@ -6,7 +6,7 @@ use App\Entity\Company;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\CompanyRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
@@ -102,11 +102,7 @@ class CompanyController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $company = new Company();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $company);
-
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $company);
 
         $company = $this->entityBuilder->buildEntity($company, $data);
 
@@ -251,10 +247,7 @@ class CompanyController extends AbstractController
             );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $company);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $company);
 
         $company = $this->entityBuilder->buildEntity($company, $data);
 

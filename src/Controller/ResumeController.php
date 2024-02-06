@@ -8,7 +8,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ResumeRepository;
 use App\Services\EntityServices\EntityBuilder;
-use App\Services\RequestValidator\RequestValidatorService\RequestValidatorService;
+use App\Services\RequestValidator\RequestValidatorService;
 use Exception;
 use OpenApi\Annotations as OA;
 use PDOException;
@@ -75,11 +75,7 @@ class ResumeController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $resume = new Resume();
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $resume);
-
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $resume);
 
         $imageController->create($request);
 
@@ -221,10 +217,7 @@ class ResumeController extends AbstractController
             );
         }
 
-        $errors = $this->requestValidatorService->getErrorsFromObject($data, $resume);
-        if (count($errors) > 0) {
-            throw new InvalidRequestException(json_encode($errors, JSON_THROW_ON_ERROR), 400);
-        }
+        $this->requestValidatorService->throwError400FromData($data, $resume);
 
         $fileName = json_decode($imageController->create($request)->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $data['filename'] = $fileName;
