@@ -86,6 +86,7 @@
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
         "symfony/maker-bundle": "^1.51",
-        "symfony/phpunit-bridge": "^6.3"
+        "symfony/phpunit-bridge": "^6.3",
+        "ext-gd": "*"
     }
 }
