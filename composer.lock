@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74544a93f229fdcd04e51b5d942b91c5",
+    "content-hash": "e4afce4ad1826750071a1ee0277a005c",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2982,16 +2982,16 @@
         },
         {
             "name": "symfony/monolog-bridge",
-            "version": "v6.3.8",
+            "version": "v6.3.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/monolog-bridge.git",
-                "reference": "2bbfc8bd9d6f966b69eda20c66762580a0410c78"
+                "reference": "b655801218307a85cc0ebb853ac289446db3084a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/monolog-bridge/zipball/2bbfc8bd9d6f966b69eda20c66762580a0410c78",
-                "reference": "2bbfc8bd9d6f966b69eda20c66762580a0410c78",
+                "url": "https://api.github.com/repos/symfony/monolog-bridge/zipball/b655801218307a85cc0ebb853ac289446db3084a",
+                "reference": "b655801218307a85cc0ebb853ac289446db3084a",
                 "shasum": ""
             },
             "require": {
@@ -3040,7 +3040,7 @@
             "description": "Provides integration for Monolog with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/monolog-bridge/tree/v6.3.8"
+                "source": "https://github.com/symfony/monolog-bridge/tree/v6.3.12"
             },
             "funding": [
                 {
@@ -3056,7 +3056,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-31T08:07:48+00:00"
+            "time": "2024-01-29T14:47:00+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -8634,7 +8634,8 @@
         "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-fileinfo": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
