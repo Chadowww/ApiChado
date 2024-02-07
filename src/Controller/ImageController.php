@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
+use App\Exceptions\ResourceNotFoundException;
+use App\Services\FileManagerService\FileManagerService;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
@@ -12,34 +15,37 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ImageController extends AbstractController
 {
+    CONST string IMAGES_DIRECTORY = 'IMAGES_DIRECTORY';
+    private FileManagerService $fileManagerService;
+
+    public function __construct(FileManagerService $FileManagerService)
+    {
+        $this->fileManagerService = $FileManagerService;
+    }
+
+    /**
+     * @throws DatabaseException
+     */
     public function create(Request $request): JsonResponse
     {
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
-            $newFilename = uniqid('', true) . '.' . $uploadedFile->guessExtension();
-
-            if (mime_content_type($uploadedFile->getRealPath()) === 'application/pdf') {
-                $uploadedFile->move($this->getParameter('cv.directory'), $newFilename);
-            } else {
-                $uploadedFile->move($this->getParameter('images.directory'), $newFilename);
-            }
-
-            return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $newFilename,]);
+            $filename = $this->fileManagerService->upload($uploadedFile, self::IMAGES_DIRECTORY);
+            return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $filename,]);
         }
+
         return new JsonResponse(['message' => 'file not uploaded! :s']);
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     */
     public function read(string $fileName): Response
     {
-        $directory = $this->getParameter('images.directory');
+        $this->fileManagerService->verifyExistFile($fileName, self::IMAGES_DIRECTORY);
 
-        $filePath = $directory . $fileName;
-        if (!file_exists($filePath)) {
-            throw $this->createNotFoundException('Image not found.');
-        }
-
-        $file = new File($filePath);
+        $file = new File($this->fileManagerService->getFilePath($fileName, self::IMAGES_DIRECTORY));
 
         return $this->file($file);
     }
@@ -83,10 +89,8 @@ class ImageController extends AbstractController
         $newFile = $request->files->get('file');
 
         if ($newFile) {
-            $newFilename = uniqid('', true) . '.' . $newFile->guessExtension();
-            $newFile->move($this->getParameter('images.directory'), $newFilename);
-            $this->delete($fileName);
-
+            $this->fileManagerService->upload($newFile, self::IMAGES_DIRECTORY);
+            $this->fileManagerService->delete($fileName, self::IMAGES_DIRECTORY);
             return new JsonResponse(['message' => 'File uploaded with success!']);
         }
         return new JsonResponse(['message' => 'file not uploaded! :s']);
@@ -122,15 +126,9 @@ class ImageController extends AbstractController
      */
     public function delete(string $fileName): Response
     {
-        $directory = $this->getParameter('images.directory');
-
-        $filePath = $directory . $fileName;
-
-        if (!file_exists($filePath)) {
-            throw $this->createNotFoundException('Image not found.');
+        if ($this->fileManagerService->verifyExistFile($fileName, self::IMAGES_DIRECTORY)) {
+            $this->fileManagerService->delete($fileName, self::IMAGES_DIRECTORY);
         }
-
-        unlink($filePath);
 
         return new JsonResponse(['message' => 'File deleted with success!']);
     }
@@ -153,9 +151,7 @@ class ImageController extends AbstractController
      */
     public function list(): Response
     {
-        $directory = $this->getParameter('images.directory');
-
-        $files = scandir($directory);
+        $files = scandir(FileManagerService::IMAGES_DIRECTORY);
 
         $images = [];
         foreach ($files as $file) {
