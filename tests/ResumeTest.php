@@ -10,9 +10,9 @@ use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\ResumeRepository;
 use App\Services\EntityServices\EntityBuilder;
+use App\Services\FileManagerService\FileManagerService;
 use App\Services\RequestValidator\RequestValidatorService;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -34,6 +34,7 @@ class ResumeTest extends TestCase
     private ResumeRepository $resumeRepository;
     private ResumeController $resumeController;
     private ImageController $imageController;
+    private FileManagerService $fileManagerService;
 
     public function setUp(): void
     {
@@ -42,11 +43,13 @@ class ResumeTest extends TestCase
         $this->resumeRepository = $this->createMock(ResumeRepository::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $this->imageController = $this->createMock(ImageController::class);
+        $this->fileManagerService = $this->createMock(FileManagerService::class);
         $this->resumeController = new ResumeController(
             $this->requestValidatorService,
             $this->entityBuilder,
             $this->resumeRepository,
             $serializer,
+            $this->fileManagerService
         );
     }
 
@@ -251,6 +254,11 @@ class ResumeTest extends TestCase
             ->method('read')
             ->willReturn($resume);
 
+        $this->fileManagerService
+            ->expects($this->once())
+            ->method('verifyExistFile')
+            ->willReturn(true);
+
         $this->resumeRepository
             ->expects($this->once())
             ->method('delete')
@@ -281,11 +289,16 @@ class ResumeTest extends TestCase
         $resume->setCandidateId(1);
         $resume->setCreatedAt('2021-01-01 00:00:00');
         $resume->setUpdatedAt('2021-01-01 00:00:00');
-        
+
         $this->resumeRepository
             ->expects($this->once())
             ->method('read')
             ->willReturn($resume);
+
+        $this->fileManagerService
+            ->expects($this->once())
+            ->method('verifyExistFile')
+            ->willReturn(true);
 
         $this->expectException(DatabaseException::class);
         $this->resumeRepository
