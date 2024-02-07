@@ -9,7 +9,9 @@ use App\Services\EntityServices\EntityBuilder;
 use App\Services\FileManagerService\FileManagerService;
 use App\Services\RequestValidator\RequestValidatorService;
 use Exception;
+use JsonException;
 use OpenApi\Annotations as OA;
+use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
@@ -42,7 +44,7 @@ class ResumeController extends AbstractController
 
     /**
      * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws DatabaseException
      * @OA\Response(
      *     response=201,
@@ -72,7 +74,7 @@ class ResumeController extends AbstractController
      *     )
      * )
      */
-    public function create(Request $request, ImageController $imageController): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $resume = new Resume();
@@ -97,8 +99,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
@@ -148,7 +149,7 @@ class ResumeController extends AbstractController
 
     /**
      * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws DatabaseException
      * @throws ResourceNotFoundException
      * @OA\Response(
@@ -232,7 +233,7 @@ class ResumeController extends AbstractController
 
         try {
             $this->resumeRepository->update($resume);
-        } catch (\Exception $e) {
+        } catch (PDOException $e) {
             throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
 
@@ -241,7 +242,7 @@ class ResumeController extends AbstractController
 
     /**
      * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
@@ -288,14 +289,13 @@ class ResumeController extends AbstractController
         try {
             $resumeDeleted = $this->resumeRepository->delete($id);
 
-
             if ($resumeDeleted === false) {
                 throw new resourceNotFoundException(
                     json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
                     404
                 );
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
         }
 
@@ -303,8 +303,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
@@ -356,7 +355,7 @@ class ResumeController extends AbstractController
 
     /**
      * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function getResumesByCandidate($id): JsonResponse
     {
