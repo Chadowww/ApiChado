@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ResumeController extends AbstractController
 {
+    CONST string CV_DIRECTORY = 'CV_DIRECTORY';
     private RequestValidatorService $requestValidatorService;
     private EntityBuilder $entityBuilder;
     private ResumeRepository $resumeRepository;
@@ -80,7 +81,7 @@ class ResumeController extends AbstractController
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
-            $filename = $this->fileManagerService->upload($uploadedFile, FileManagerService::CV_DIRECTORY);
+            $filename = $this->fileManagerService->upload($uploadedFile, self::CV_DIRECTORY);
             return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $filename,]);
         }
 
