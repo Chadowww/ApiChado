@@ -6,6 +6,7 @@ use App\Entity\Contract;
 use App\Services\RequestValidator\RequestValidatorService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ContractRepository;
+use JsonException;
 use OpenApi\Annotations as OA;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,9 +34,7 @@ class ContractController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws DatabaseException|InvalidRequestException|JsonException
      * @OA\Response(
      *     response=201,
      *     description="Contract created",
@@ -85,9 +84,7 @@ class ContractController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
-     * @throws ResourceNotFoundException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Contract read",
@@ -136,10 +133,7 @@ class ContractController extends AbstractController
      * @param int $id
      * @param Request $request
      * @return JsonResponse
-     * @throws DatabaseException
-     * @throws InvalidRequestException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws DatabaseException|InvalidRequestException|ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=204,
      *     description="Contract updated",
@@ -215,9 +209,7 @@ class ContractController extends AbstractController
     /**
      * @param int $id
      * @return JsonResponse
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws ResourceNotFoundException|DatabaseException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Contract deleted",
@@ -264,8 +256,7 @@ class ContractController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException|\JsonException
+     * @throws ResourceNotFoundException|JsonException|DatabaseException
      * @OA\Response(
      *     response=200,
      *     description="Contract list",

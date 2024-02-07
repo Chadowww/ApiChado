@@ -53,9 +53,7 @@ class ApplyController extends AbstractController
     }
 
     /**
-     * @throws \JsonException
-     * @throws DatabaseException
-     * @throws InvalidRequestException
+     * @throws JsonException|DatabaseException|InvalidRequestException|
      * @OA\RequestBody(
      *      request="JobOffer",
      *      description="Job offer to create",
@@ -125,9 +123,7 @@ class ApplyController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
-     * @throws Exception
+     * @throws JsonException|Exception
      * @OA\Response(
      *     response=200,
      *     description="Apply found",
@@ -217,9 +213,7 @@ class ApplyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws JsonException
-     * @throws Exception
+     * @throws InvalidRequestException|JsonException|DatabaseException|ResourceNotFoundException
      * @OA\RequestBody(
      *     request="JobOffer",
      *     description="Job offer to update",
@@ -322,9 +316,7 @@ class ApplyController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws JsonException
-     * @throws Exception
+     * @throws DatabaseException|ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Apply deleted",
@@ -380,9 +372,7 @@ class ApplyController extends AbstractController
 
     /**
      * @return JsonResponse
-     * @throws DatabaseException
-     * @throws JsonException
-     * @throws ResourceNotFoundException
+     * @throws DatabaseException|JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Apply list",

@@ -7,6 +7,7 @@ use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFound
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService;
+use JsonException;
 use OpenApi\Annotations as OA;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,9 +38,7 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws \JsonException
-     * @throws DatabaseException
+     * @throws InvalidRequestException|JsonException|DatabaseException
      * @OA\Response(
      *     response=201,
      *     description="Candidate created",
@@ -136,35 +135,10 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
-     * @OA\Response(
-     *     response=200,
-     *     description="Candidate found",
-     *     @OA\JsonContent(
-     *     type="string",
-     *     example="Candidate found"
-     * )
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Candidate not found",
-     *     @OA\JsonContent(
-     *     type="string",
-     *     example="Candidate not found"
-     * )
-     * )
-     * @OA\Parameter(
-     *     name="id",
-     *     in="path",
-     *     description="Id of the candidate to read",
-     *     required=true,
-     *     @OA\Schema(
-     *     type="integer",
-     *     example="1"
-     *   )
-     * )
+     * @throws ResourceNotFoundException|JsonException
+     * @param int $id
+     * @return JsonResponse
+     *
      */
     public function read(int $id): JsonResponse
     {
@@ -181,10 +155,7 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws \JsonException
-     * @throws ResourceNotFoundException
-     * @throws DatabaseException
+     * @throws InvalidRequestException|JsonException|DatabaseException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Candidate updated",
@@ -307,9 +278,7 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws JsonException|DatabaseException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Candidate deleted",
@@ -356,9 +325,7 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
-     * @throws ResourceNotFoundException
+     * @throws DatabaseException|JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="List of candidates",
@@ -411,10 +378,8 @@ class CandidateController extends AbstractController
      *
      * @return JsonResponse Returns a JSON response indicating the success or failure of the avatar upload.
      *
-     * @throws ResourceNotFoundException If the candidate for the authenticated user does not exist.
-     * @throws DatabaseException If there is an error updating the candidate's avatar in the database.
-     * @throws \JsonException
-     *
+     * @throws ResourceNotFoundException|DatabaseException|JsonException If the candidate for the authenticated user
+     * does not exist.
      * @OA\Response(
      *     response=200,
      *     description="File uploaded with success!",

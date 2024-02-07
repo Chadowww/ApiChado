@@ -43,9 +43,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws JsonException
-     * @throws DatabaseException
+     * @throws DatabaseException|JsonException|InvalidRequestException
      * @OA\Response(
      *     response=201,
      *     description="Resume created",
@@ -99,8 +97,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws JsonException
-     * @throws ResourceNotFoundException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Resume read",
@@ -148,10 +145,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws JsonException
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
+     * @throws InvalidRequestException|JsonException|DatabaseException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Resume updated",
@@ -241,9 +235,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws JsonException
-     * @throws ResourceNotFoundException
+     * @throws DatabaseException|JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Resume deleted",
@@ -303,8 +295,7 @@ class ResumeController extends AbstractController
     }
 
     /**
-     * @throws JsonException
-     * @throws ResourceNotFoundException
+     * @throws JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Resume list",
@@ -353,9 +344,11 @@ class ResumeController extends AbstractController
         return new JsonResponse($this->serializer->serialize($resumes, 'json'), 200, [], true);
     }
 
+
     /**
-     * @throws ResourceNotFoundException
-     * @throws JsonException
+     * @param $id
+     * @return JsonResponse
+     * @throws JsonException|ResourceNotFoundException
      */
     public function getResumesByCandidate($id): JsonResponse
     {

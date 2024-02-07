@@ -38,9 +38,7 @@ class JobOfferController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws InvalidRequestException
-     * @throws JsonException
+     * @throws DatabaseException|InvalidRequestException|JsonException
      * @OA\Response(
      *     response=201,
      *     description="Job offer created",
@@ -108,9 +106,7 @@ class JobOfferController extends AbstractController
     }
 
     /**
-     * @throws ResourceNotFoundException
-     * @throws DatabaseException
-     * @throws JsonException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Job offer found",
@@ -258,9 +254,7 @@ class JobOfferController extends AbstractController
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws JsonException
+     * @throws DatabaseException|ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Job offer deleted",
@@ -307,9 +301,7 @@ class JobOfferController extends AbstractController
     }
 
     /**
-     * @throws ResourceNotFoundException
-     * @throws DatabaseException
-     * @throws JsonException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Job offers found",

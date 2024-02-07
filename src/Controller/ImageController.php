@@ -12,12 +12,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class ImageController extends AbstractController
 {
     CONST string IMAGES_DIRECTORY = 'IMAGES_DIRECTORY';
+    /**
+     * @var FileManagerService
+     */
     private FileManagerService $fileManagerService;
 
+    /**
+     * @param FileManagerService $FileManagerService
+     */
     public function __construct(FileManagerService $FileManagerService)
     {
         $this->fileManagerService = $FileManagerService;
@@ -57,8 +62,9 @@ class ImageController extends AbstractController
      * @param Request $request The Request object containing the new file.
      *
      * @return Response The response indicating the success or failure of the update.
-     * @throws \Exception
-     *@OA\Response(
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @OA\Response(
      *     response=200,
      *     description="Returns the success message",
      *     @OA\JsonContent(
@@ -151,6 +157,7 @@ class ImageController extends AbstractController
      */
     public function list(): Response
     {
+//        TODO - Implement the list method
         $files = scandir(FileManagerService::IMAGES_DIRECTORY);
 
         $images = [];
