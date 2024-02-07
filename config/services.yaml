@@ -15,10 +15,6 @@ services:
     App\Command\RunTestCommand:
       arguments:
         $projectDir: '%kernel.project_dir%'
-#
-#    App\Controller\ResumeController:
-#      arguments:
-#        $cvDirectory: '%cv.directory%'
 
     Symfony\Component\Serializer\SerializerInterface: '@serializer'
     Symfony\Component\Serializer\Encoder\JsonEncoder: ~

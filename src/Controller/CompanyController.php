@@ -7,6 +7,7 @@ use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFound
 use App\Repository\CompanyRepository;
 use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService;
+use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
@@ -37,9 +38,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws \JsonException
-     * @throws InvalidRequestException
-     * @throws DatabaseException
+     * @throws InvalidRequestException|DatabaseException|JsonException
      * @OA\Response(
      *     response=201,
      *     description="Company created",
@@ -116,9 +115,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Company found",
@@ -165,10 +162,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws \JsonException
-     * @throws ResourceNotFoundException
-     * @throws DatabaseException
+     * @throws ResourceNotFoundException|InvalidRequestException|DatabaseException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Company updated",
@@ -261,10 +255,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
-     * @throws DatabaseException
+     * @throws ResourceNotFoundException|DatabaseException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="Company deleted",
@@ -319,10 +310,7 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws ResourceNotFoundException|DatabaseException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="List of companies",
@@ -368,9 +356,6 @@ class CompanyController extends AbstractController
 
 
     /**
-     * @throws InvalidRequestException
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="List of companies",
@@ -395,6 +380,7 @@ class CompanyController extends AbstractController
      *     example="Company not found"
      * )
      * )
+     * @throws ResourceNotFoundException|JsonException
      */
     public function topOffers(): JsonResponse
     {

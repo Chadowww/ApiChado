@@ -4,6 +4,7 @@ namespace App\Services\RequestValidator;
 
 use App\Entity\{Apply,Candidate, Company, Contract, JobOffer, Resume, User};
 use App\Exceptions\InvalidRequestException;
+use JsonException;
 use ReflectionClass;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -18,11 +19,11 @@ class RequestValidatorService
     }
 
     /**
+     * Method to validate the request data
      * @param array $data
      * @param JobOffer|Contract|User|Candidate|Company|Resume|Apply $object
-     * @return array
-     * @throws InvalidRequestException
-     * @throws \JsonException
+     * @return void
+     * @throws InvalidRequestException|JsonException
      */
     public function throwError400FromData(
         array $data,
@@ -71,6 +72,7 @@ class RequestValidatorService
     }
 
     /**
+     * Method to get the required fields of an object
      * @param JobOffer|Contract|Candidate|Resume|Apply|Company|User $object
      * @return array
      */

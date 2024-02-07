@@ -74,7 +74,7 @@ class ApplyRepository
     }
 
     /**
-     * @throws \Exception
+     * @throws DatabaseException
      */
     public function read(int $applyId): Apply | bool
     {

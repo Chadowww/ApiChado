@@ -6,6 +6,12 @@ use App\Entity\{Apply , Candidate, Company, Contract, JobOffer, Resume, SocialMe
 
 class EntityBuilder
 {
+    /**
+     * Method to build an entity with the given data
+     * @param Apply|Candidate|Company|Contract|JobOffer|Resume|SocialMedia|User $object
+     * @param array $data
+     * @return Apply|Candidate|Company|Contract|JobOffer|Resume|SocialMedia|User
+     */
     public function buildEntity(
         Apply | Candidate | Company | Contract | JobOffer | Resume | SocialMedia | User  $object,
         array $data
