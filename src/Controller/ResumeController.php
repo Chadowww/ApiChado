@@ -3,18 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Resume;
-use App\Exceptions\DatabaseException;
-use App\Exceptions\InvalidRequestException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ResumeRepository;
 use App\Services\EntityServices\EntityBuilder;
+use App\Services\FileManagerService\FileManagerService;
 use App\Services\RequestValidator\RequestValidatorService;
 use Exception;
 use OpenApi\Annotations as OA;
-use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -26,18 +23,20 @@ class ResumeController extends AbstractController
     private EntityBuilder $entityBuilder;
     private ResumeRepository $resumeRepository;
     private SerializerInterface $serializer;
-    private string $cvDirectory = '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/';
+    private FileManagerService $fileManagerService;
 
     public function __construct(
         RequestValidatorService $requestValidatorService,
         EntityBuilder $entityBuilder,
         ResumeRepository $resumeRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        FileManagerService $fileManagerService
     ) {
         $this->requestValidatorService = $requestValidatorService;
         $this->entityBuilder = $entityBuilder;
         $this->resumeRepository = $resumeRepository;
         $this->serializer = $serializer;
+        $this->fileManagerService = $fileManagerService;
     }
 
     /**
@@ -78,7 +77,12 @@ class ResumeController extends AbstractController
         $resume = new Resume();
         $this->requestValidatorService->throwError400FromData($data, $resume);
 
-        $imageController->create($request);
+        $uploadedFile = $request->files->get('file');
+
+        if ($uploadedFile) {
+            $filename = $this->fileManagerService->upload($uploadedFile, FileManagerService::CV_DIRECTORY);
+            return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $filename,]);
+        }
 
         $resume = $this->entityBuilder->buildEntity($resume, $data);
 
@@ -272,13 +276,14 @@ class ResumeController extends AbstractController
                 404
             );
         }
+        $fileName = $resume->getFilename();
 
-        $filePath = $this->cvDirectory . $resume->getFilename();
-        if (!file_exists($filePath)) {
+        if ($this->fileManagerService->verifyExistFile($fileName, 'CV_DIRECTORY') === false) {
             throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
         }
 
-        unlink($filePath);
+        $this->fileManagerService->delete($fileName, 'CV_DIRECTORY');
+
         try {
             $resumeDeleted = $this->resumeRepository->delete($id);
 
