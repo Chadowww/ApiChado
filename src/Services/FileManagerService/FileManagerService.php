@@ -44,8 +44,10 @@ class FileManagerService
     }
 
     /**
+     * Determine the directory to upload the file
      * @param string $flag
      * @return string
+     * @throws InvalidArgumentException
      */
     private function determineDirectory(string $flag): string
     {
@@ -57,10 +59,13 @@ class FileManagerService
     }
 
     /**
-     * @param UploadedFile $file
-     * @param string $flag
-     * @return string
-     * @throws DatabaseException
+     * Upload a file to a specific directory.
+     * @param UploadedFile $file The file to upload.
+     * @param string $flag The flag indicating the directory to upload to.
+     * - FileManagerService::IMAGES_DIRECTORY for the images directory
+     * - FileManagerService::CV_DIRECTORY for the CV directory
+     * @return string The name of the uploaded file.
+     * @throws DatabaseException If an error occurs during the upload.
      */
     public function upload(UploadedFile $file, string $flag): string
     {
@@ -75,9 +80,13 @@ class FileManagerService
     }
 
     /**
-     * @param string $filePath
-     * @param string $flag
-     * @return bool
+     * Delete a file from a specific directory.
+     *
+     * @param string $filName
+     * @param string $flag The flag indicating the directory to delete from.
+     * - FileManagerService::IMAGES_DIRECTORY for the images directory
+     * - FileManagerService::CV_DIRECTORY for the CV directory
+     * @return bool True if the file was successfully deleted, false otherwise.
      */
     public function delete(string $filName, string $flag): bool
     {
@@ -86,14 +95,17 @@ class FileManagerService
     }
 
     /**
-     * @param string $fileName
-     * @param string $flag
-     * @return bool
-     * @throws ResourceNotFoundException
+     * Verify if a file exists in a specific directory.
+     *
+     * @param string $fileName The name of the file to verify.
+     * @param string $flag The flag indicating the directory to verify in.
+     *  - FileManagerService::IMAGES_DIRECTORY for the images directory
+     *  - FileManagerService::CV_DIRECTORY for the CV directory
+     * @return bool True if the file exists, false otherwise.
+     * @throws ResourceNotFoundException If the file does not exist.
      */
     public function verifyExistFile(string $fileName, string $flag): bool
     {
-        dd($fileName);
         $filePath = $this->determineDirectory($flag) . $fileName;
         if (!file_exists($filePath)) {
             throw new ResourceNotFoundException('File not found.', 404);
@@ -101,6 +113,15 @@ class FileManagerService
         return true;
     }
 
+    /**
+     * Get the path of a file in a specific directory.
+     *
+     * @param string $fileName The name of the file to get the path of.
+     * @param string $flag The flag indicating the directory to get the path from.
+     * - FileManagerService::IMAGES_DIRECTORY for the images directory
+     * - FileManagerService::CV_DIRECTORY for the CV directory
+     * @return string The path of the file.
+     */
     public function getFilePath(string $fileName, string $flag): string
     {
         return $this->determineDirectory($flag) . $fileName;
