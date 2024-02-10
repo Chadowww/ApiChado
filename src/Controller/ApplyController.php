@@ -108,6 +108,7 @@ class ApplyController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $apply = new Apply();
+
         $this->requestValidatorService->throwError400FromData($data, $apply);
 
 
