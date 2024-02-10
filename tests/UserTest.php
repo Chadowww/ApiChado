@@ -27,6 +27,9 @@ class UserTest extends TestCase
     private UserRepository $userRepository;
     private UserController $userController;
 
+    /**
+     * @return void
+     */
     public function setUp(): void
     {
         $this->requestValidatorService = $this->createMock(RequestValidatorService::class);
@@ -41,6 +44,12 @@ class UserTest extends TestCase
         );
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testUserCreate(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
@@ -52,6 +61,12 @@ class UserTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testUserCreateError400(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
@@ -70,6 +85,12 @@ class UserTest extends TestCase
         $response = $this->userController->create($request);
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testUserCreateError500(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
@@ -88,9 +109,14 @@ class UserTest extends TestCase
         $response = $this->userController->create($request);
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserRead(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->userRepository
             ->expects($this->once())
@@ -101,6 +127,11 @@ class UserTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserReadError404(): void
     {
         $this->userRepository
@@ -115,6 +146,11 @@ class UserTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserReadError500(): void
     {
         $this->userRepository
@@ -129,9 +165,16 @@ class UserTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserUpdate(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
 
         $this->userRepository
@@ -153,9 +196,16 @@ class UserTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserUpdateError400(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
 
         $this->expectException(InvalidRequestException::class);
@@ -175,6 +225,13 @@ class UserTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserUpdateError404(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
@@ -191,9 +248,16 @@ class UserTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserUpdateError500(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
         $request = new Request([], [], [], [], [], [], json_encode(self::USER_DATA, JSON_THROW_ON_ERROR));
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -217,9 +281,15 @@ class UserTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserDelete(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->userRepository
             ->expects($this->once())
@@ -235,6 +305,12 @@ class UserTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserDeleteError404(): void
     {
         $this->expectException(ResourceNotFoundException::class);
@@ -247,9 +323,15 @@ class UserTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserDeleteError500(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->userRepository
             ->expects($this->once())
@@ -266,9 +348,14 @@ class UserTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserList(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->userRepository
             ->expects($this->once())
@@ -279,9 +366,14 @@ class UserTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserListError404(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->userRepository
             ->expects($this->once())
@@ -293,9 +385,14 @@ class UserTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @return void
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testUserList500(): void
     {
-        $user = new User(self::USER_DATA);
+        $user = new User();
 
         $this->expectException(DatabaseException::class);
         $this->userRepository
