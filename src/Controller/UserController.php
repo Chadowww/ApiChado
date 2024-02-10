@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\InvalidRequestException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Repository\UserRepository;
+use App\Services\EntityServices\EntityBuilder;
+use App\Services\RequestValidator\RequestValidatorService;
+use JsonException;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,22 +23,26 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class UserController extends AbstractController
 {
+    private RequestValidatorService $requestValidatorService;
+    private EntityBuilder $entityBuilder;
     private UserRepository $userRepository;
     private SerializerInterface $serializer;
 
     public function __construct(
+        RequestValidatorService $requestValidatorService,
+        EntityBuilder $entityBuilder,
         UserRepository $userRepository,
         SerializerInterface $serializer,
     )
     {
+        $this->requestValidatorService = $requestValidatorService;
+        $this->entityBuilder = $entityBuilder;
         $this->userRepository = $userRepository;
         $this->serializer = $serializer;
     }
 
     /**
-     * @throws DatabaseException
-     * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws DatabaseException|InvalidRequestException|JsonException
      * @OA\Response(
      *     response=201,
      *     description="User created",
@@ -85,16 +93,12 @@ class UserController extends AbstractController
      */
     public function create(Request $request): JsonResponse
     {
-        if ($this->userRepository->findByEmail($request)) {
-            throw new InvalidRequestException(
-                json_encode(['error' => 'This email is already used'], JSON_THROW_ON_ERROR),
-                400
-            );
-        }
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $user = new User();
 
-        $this->userRequestValidator->getErrorsUserRequest($request);
+        $this->requestValidatorService->throwError400FromData($data, $user);
 
-        $user = $this->UserService->buildUser($request);
+        $user = $this->entityBuilder->buildEntity($user, $data);
 
         try {
             $this->userRepository->create($user);
@@ -104,18 +108,11 @@ class UserController extends AbstractController
 
         $lastId = $this->userRepository->getLastId();
 
-        return new JsonResponse([
-            '201' => 'new user created',
-            'userId' => $lastId,
-            ],
-        201
-        );
+        return new JsonResponse(['message' => 'User created successfully', 'userId' => $lastId,],201);
     }
 
     /**
-     * @throws DatabaseException
-     * @throws ResourceNotFoundException
-     * @throws \JsonException
+     * @throws ResourceNotFoundException|JsonException
      * @OA\Response(
      *     response=200,
      *     description="User found",
@@ -145,26 +142,24 @@ class UserController extends AbstractController
      */
     public function read(int $id): JsonResponse
     {
-        try {
-            $user = $this->userRepository->read($id);
-            if (!$user) {
-                throw new resourceNotFoundException(
-                    json_encode([
-                        'error' => 'The user with id ' . $id . ' does not exist.'
-                    ],
+        $user = $this->userRepository->read($id);
+
+        if (!$user) {
+            throw new resourceNotFoundException(
+                json_encode([
+                    'error' => 'The user with id ' . $id . ' does not exist.'
+                ],
                     JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
-        } catch (PDOException $e) {
-            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+                404
+            );
         }
+
         return new JsonResponse($this->serializer->serialize($user, 'json'), 200, [], true);
     }
 
     /**
      * @throws InvalidRequestException
-     * @throws \JsonException
+     * @throws JsonException
      * @throws ResourceNotFoundException
      * @throws DatabaseException
      * @OA\Response(
@@ -235,33 +230,32 @@ class UserController extends AbstractController
      */
     public function update(int $id, Request $request): JsonResponse
     {
-        $this->userRequestValidator->getErrorsUserRequest($request);
+       $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+       $user = $this->userRepository->read($id);
 
-        $user = $this->userRepository->read($id);
-        if (!$user) {
-            throw new resourceNotFoundException(
-                json_encode([
-                    'error' => 'The user with id ' . $id . ' does not exist.'
-                ],
-                    JSON_THROW_ON_ERROR),
-                404
-            );
-        }
+       if (!$user) {
+           throw new resourceNotFoundException(
+               json_encode(['error' => 'The user with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR), 404
+           );
+       }
+
+       $this->requestValidatorService->throwError400FromData($data, $user);
+
+       $user = $this->entityBuilder->buildEntity($user, $data);
 
         try {
-            $user = $this->UserService->UpdateUser($request, $user);
             $this->userRepository->update($user);
         } catch (PDOException $e) {
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
 
-        return new JsonResponse(['200' => 'user updated'], 200);
+        return new JsonResponse(['message' => 'User updated successfully'], 200);
     }
 
     /**
      * @throws ResourceNotFoundException
      * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
      * @OA\Response(
      *     response=204,
      *     description="User deleted",
@@ -291,29 +285,26 @@ class UserController extends AbstractController
      */
     public function delete(int $id): JsonResponse
     {
+        $user = $this->userRepository->read($id);
+
+        if (!$user) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The user with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
+        }
+
         try {
-            $user = $this->userRepository->read($id);
-            if (!$user) {
-                throw new resourceNotFoundException(
-                    json_encode([
-                        'error' => 'The user with id ' . $id . ' does not exist.'
-                    ],
-                        JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
             $this->userRepository->delete($id);
-
-            return new JsonResponse('User has been deleted', 204, [], false);
-
         } catch (PDOException $e) {
             throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
         }
+
+        return new JsonResponse(['message' => 'User deleted successfully'], 200);
     }
 
     /**
-     * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="List of users",
@@ -333,10 +324,12 @@ class UserController extends AbstractController
      */
     public function list(): JsonResponse
     {
-        try {
-            $users = $this->userRepository->list();
-        } catch (PDOException $e) {
-            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
+        $users = $this->userRepository->list();
+
+        if (!$users) {
+            throw new ResourceNotFoundException(
+                json_encode(['error' => 'No users found'], JSON_THROW_ON_ERROR),
+                404);
         }
 
         return new JsonResponse($this->serializer->serialize($users, 'json'), 200, [], true);
@@ -344,7 +337,8 @@ class UserController extends AbstractController
 
     /**
      * @throws DatabaseException
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * /**
      * @OA\Response(
      *      response=200,
@@ -400,19 +394,21 @@ class UserController extends AbstractController
     {
         $user = $token->getUser();
         $dataUser = [];
-        if ($user) {
-            $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getUserId());
 
-            return new JsonResponse(
-                $this->serializer->serialize($dataUser['user'], 'json'),
-                200,
-                [],
-                true
+        if (!$user) {
+            throw new ResourceNotFoundException(
+                json_encode(['error' => 'User not found'], JSON_THROW_ON_ERROR),
+                404
             );
         }
+
+        $dataUser['user'] = $this->userRepository->getUserWithCandidate($user->getUserId());
+
         return new JsonResponse(
-            json_encode(['error' => 'User not found'], JSON_THROW_ON_ERROR),
-            404
+            $this->serializer->serialize($dataUser['user'], 'json'),
+            200,
+            [],
+            true
         );
     }
 }
