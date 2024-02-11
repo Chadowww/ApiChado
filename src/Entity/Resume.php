@@ -18,7 +18,6 @@ class Resume
     )]
     protected string $title;
 
-    #[Assert\NotBlank(message: "Filename is required")]
     #[Assert\Type(type: 'string', message: "Filename must be a string")]
     #[Assert\Length(
         min: 3,
