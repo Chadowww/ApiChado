@@ -27,7 +27,7 @@ class ApplyRepository
      * @var array
      * list of values to be used in queries
      */
-    CONST array VALUES = [
+    const array VALUES = [
         'applyId' => ':applyId',
         'status' => ':status',
         'message' => ':message',

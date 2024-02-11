@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Apply
 {
-    CONST STATUS_DENIED = 'denied';
-    CONST STATUS_PENDING = 'pending';
-    CONST STATUS_ACCEPTED = 'accepted';
+    const string STATUS_DENIED = 'denied';
+    const string STATUS_PENDING = 'pending';
+    const string STATUS_ACCEPTED = 'accepted';
 
     public function __construct()
     {

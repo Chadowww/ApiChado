@@ -13,7 +13,7 @@ class CandidateRepository
     private PDO $connection;
     private BindValueService $bindValueService;
 
-    CONST array VALUES = [
+    const array VALUES = [
         'firstname' => ':firstname',
         'lastname' => ':lastname',
         'phone' => ':phone',
