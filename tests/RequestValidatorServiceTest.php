@@ -299,22 +299,20 @@ class RequestValidatorServiceTest extends KernelTestCase
         ];
         $badData = [
             'title' => [
-                [null, 'The request must contain the following fields:title, filename, candidateId, '],
+                [null, 'The request must contain the following fields:title, candidateId, '],
                 ['', 'Title is required'],
                 [true, 'Title must be a string'],
                 ['az', 'Title must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Title must be at least 50 characters long'],
             ],
             'candidateId' => [
-                [null, 'The request must contain the following fields:title, filename, candidateId, '],
+                [null, 'The request must contain the following fields:title, candidateId, '],
                 ['', 'Candidate Id is required'],
                 [true, 'Candidate Id must be an integer'],
                 [-1, 'Candidate Id must be a positive integer'],
                 ['1a', 'Candidate Id must be an integer'],
             ],
             'filename' => [
-                [null, 'The request must contain the following fields:title, filename, candidateId, '],
-                ['', 'Filename is required'],
                 [true, 'Filename must be a string'],
                 ['az', 'Filename must be at least 3 characters long'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Filename must be at least 50 characters long'],
