@@ -8,10 +8,8 @@ use App\Repository\ResumeRepository;
 use App\Services\EntityServices\EntityBuilder;
 use App\Services\FileManagerService\FileManagerService;
 use App\Services\RequestValidator\RequestValidatorService;
-use Exception;
 use JsonException;
 use OpenApi\Annotations as OA;
-use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
@@ -76,28 +74,25 @@ class ResumeController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $resume = new Resume();
+
         $this->requestValidatorService->throwError400FromData($data, $resume);
 
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
             $filename = $this->fileManagerService->upload($uploadedFile, self::CV_DIRECTORY);
-            return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $filename,]);
+            $data['filename'] = $filename;
         }
 
         $resume = $this->entityBuilder->buildEntity($resume, $data);
 
-        try {
-            $this->resumeRepository->create($resume);
-        } catch (Exception $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
-        }
+        $this->resumeRepository->create($resume);
 
         return new JsonResponse('Resume created with success!', 201, [], true);
     }
 
     /**
-     * @throws ResourceNotFoundException|JsonException
+     * @throws ResourceNotFoundException|JsonException|DatabaseException
      * @OA\Response(
      *     response=200,
      *     description="Resume read",
@@ -206,7 +201,7 @@ class ResumeController extends AbstractController
      * )
      *
      */
-    public function update(int $id, Request $request, ImageController $imageController): JsonResponse
+    public function update(int $id, Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $resume  = $this->resumeRepository->read($id);
@@ -220,16 +215,20 @@ class ResumeController extends AbstractController
 
         $this->requestValidatorService->throwError400FromData($data, $resume);
 
-        $fileName = json_decode($imageController->create($request)->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $data['filename'] = $fileName;
+        $uploadedFile = $request->files->get('file');
+
+        if ($uploadedFile) {
+            $filename = $this->fileManagerService->upload($uploadedFile, self::CV_DIRECTORY);
+            $data['filename'] = $filename;
+
+            if ($filename !== '') {
+                $this->fileManagerService->delete($resume->getFilename(), self::CV_DIRECTORY);
+            }
+        }
 
         $resume = $this->entityBuilder->buildEntity($resume, $data);
 
-        try {
-            $this->resumeRepository->update($resume);
-        } catch (PDOException $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
-        }
+        $this->resumeRepository->update($resume);
 
         return new JsonResponse('Resume updated with success!', 200, [], true);
     }
@@ -270,6 +269,7 @@ class ResumeController extends AbstractController
                 404
             );
         }
+
         $fileName = $resume->getFilename();
 
         if ($this->fileManagerService->verifyExistFile($fileName, 'CV_DIRECTORY') === false) {
@@ -278,17 +278,13 @@ class ResumeController extends AbstractController
 
         $this->fileManagerService->delete($fileName, 'CV_DIRECTORY');
 
-        try {
-            $resumeDeleted = $this->resumeRepository->delete($id);
+        $resumeDeleted = $this->resumeRepository->delete($id);
 
-            if ($resumeDeleted === false) {
-                throw new resourceNotFoundException(
-                    json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
-                    404
-                );
-            }
-        } catch (PDOException $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
+        if ($resumeDeleted === false) {
+            throw new resourceNotFoundException(
+                json_encode(['error' => 'The apply with id ' . $id . ' does not exist.'], JSON_THROW_ON_ERROR),
+                404
+            );
         }
 
         return new JsonResponse('Resume deleted with success!', 200, [], true);
@@ -296,6 +292,7 @@ class ResumeController extends AbstractController
 
     /**
      * @throws JsonException|ResourceNotFoundException
+     * @throws DatabaseException
      * @OA\Response(
      *     response=200,
      *     description="Resume list",
@@ -349,6 +346,7 @@ class ResumeController extends AbstractController
      * @param $id
      * @return JsonResponse
      * @throws JsonException|ResourceNotFoundException
+     * @throws DatabaseException
      */
     public function getResumesByCandidate($id): JsonResponse
     {
