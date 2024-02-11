@@ -53,17 +53,26 @@ class ResumeTest extends TestCase
         );
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testResumeCreate(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
         $this->entityBuilder->method('buildEntity')->willReturn($this->createMock(Resume::class));
         $this->resumeRepository->method('create')->willReturn(true);
 
-        $response = $this->resumeController->create($request, $this->imageController);
+        $response = $this->resumeController->create($request);
 
         $this->assertEquals(201, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testResumeCreateError400(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
@@ -79,16 +88,20 @@ class ResumeTest extends TestCase
         $this->expectException(InvalidRequestException::class);
         $this->expectExceptionCode(400);
 
-        $response = $this->resumeController->create($request, $this->imageController);
+        $response = $this->resumeController->create($request);
     }
 
+    /**
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testResumeCreateError500(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
         $request->setMethod('POST');
         $request->headers->set('Content-Type', 'application/json');
 
-        $this->entityBuilder->method('buildEntity')->willReturn(new Resume(self::RESUME_DATA));
+        $this->entityBuilder->method('buildEntity')->willReturn(new Resume());
         $this->resumeRepository
             ->expects($this->once())
             ->method('create')
@@ -97,12 +110,12 @@ class ResumeTest extends TestCase
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
 
-        $response = $this->resumeController->create($request, $this->imageController);
+        $response = $this->resumeController->create($request);
     }
 
     public function testResumeRead(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
 
         $this->resumeRepository
             ->expects($this->once())
@@ -118,7 +131,7 @@ class ResumeTest extends TestCase
         $this->resumeRepository
             ->expects($this->once())
             ->method('read')
-            ->willReturn(false);
+            ->willReturn(null);
 
         $this->expectException(ResourceNotFoundException::class);
         $this->expectExceptionCode(404);
@@ -141,20 +154,21 @@ class ResumeTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testResumeUpdate(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
 
         $this->resumeRepository
             ->expects($this->once())
             ->method('read')
             ->willReturn($resume);
-
-        $this->imageController
-            ->expects($this->once())
-            ->method('create')
-            ->willReturn(new JsonResponse(['filename' => 'filename'], 201));
 
         $this->entityBuilder
             ->expects($this->once())
@@ -166,13 +180,18 @@ class ResumeTest extends TestCase
             ->method('update')
             ->willReturn(true);
 
-        $response = $this->resumeController->update(1, $request, $this->imageController);
+        $response = $this->resumeController->update(1, $request);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testResumeUpdateError400(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
 
         $this->expectException(InvalidRequestException::class);
@@ -188,10 +207,15 @@ class ResumeTest extends TestCase
             ->method('throwError400FromData')
             ->willThrowException(new InvalidRequestException('Bad request', 400));
 
-        $response = $this->resumeController->update(1, $request, $this->imageController);
+        $response = $this->resumeController->update(1, $request);
         $this->assertEquals(400, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testResumeUpdateError404(): void
     {
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
@@ -202,15 +226,20 @@ class ResumeTest extends TestCase
         $this->resumeRepository
             ->expects($this->once())
             ->method('read')
-            ->willReturn(false);
+            ->willReturn(null);
 
-        $response = $this->resumeController->update(1, $request, $this->imageController);
+        $response = $this->resumeController->update(1, $request);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws InvalidRequestException
+     * @throws \JsonException
+     */
     public function testResumeUpdateError500(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
         $request = new Request([], [], [], [], [], [], json_encode(self::RESUME_DATA, JSON_THROW_ON_ERROR));
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -219,11 +248,6 @@ class ResumeTest extends TestCase
             ->expects($this->once())
             ->method('read')
             ->willReturn($resume);
-
-        $this->imageController
-            ->expects($this->once())
-            ->method('create')
-            ->willReturn(new JsonResponse(['filename' => 'filename'], 201));
 
         $this->entityBuilder
             ->expects($this->once())
@@ -235,14 +259,14 @@ class ResumeTest extends TestCase
             ->method('update')
             ->willThrowException(new DatabaseException('An error was throw', 500));
 
-        $response = $this->resumeController->update(1, $request, $this->imageController);
+        $response = $this->resumeController->update(1, $request);
         $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testResumeDelete(): void
     {
         imagejpeg(imagecreatetruecolor(100, 100), '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/filename.jpg');
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
         $resume->setResumeId(1);
         $resume->setFilename('filename.jpg');
         $resume->setCandidateId(1);
@@ -268,22 +292,30 @@ class ResumeTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testResumeDeleteError404(): void
     {
         $this->expectException(ResourceNotFoundException::class);
         $this->resumeRepository
             ->expects($this->once())
             ->method('read')
-            ->willReturn(false);
+            ->willReturn(null);
 
         $response = $this->resumeController->delete(1);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testResumeDeleteError500(): void
     {
         imagejpeg(imagecreatetruecolor(100, 100), '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/filename.jpg');
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
         $resume->setResumeId(1);
         $resume->setFilename('filename.jpg');
         $resume->setCandidateId(1);
@@ -310,9 +342,14 @@ class ResumeTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testResumeList(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
 
         $this->resumeRepository
             ->expects($this->once())
@@ -323,9 +360,13 @@ class ResumeTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws DatabaseException
+     * @throws \JsonException
+     */
     public function testResumeListError404(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
 
         $this->resumeRepository
             ->expects($this->once())
@@ -337,9 +378,13 @@ class ResumeTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     * @throws \JsonException
+     */
     public function testResumeList500(): void
     {
-        $resume = new Resume(self::RESUME_DATA);
+        $resume = new Resume();
 
         $this->expectException(DatabaseException::class);
         $this->resumeRepository
