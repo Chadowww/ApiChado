@@ -11,7 +11,6 @@ use PDO;
 /**
  * Repository for Resume entity
  */
-
 class ResumeRepository
 {
     /**
