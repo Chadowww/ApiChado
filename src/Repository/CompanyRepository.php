@@ -5,16 +5,17 @@ namespace App\Repository;
 use App\Entity\Company;
 use App\Exceptions\DatabaseException;
 use App\Services\ConnectionDbService;
-use App\Services\DataBaseServices\BindValueService;
+use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
-use PDOException;
 
 class CompanyRepository
 {
-    private PDO $connection;
-    private BindValueService $bindValueService;
-
+    /**
+     * @var array
+     * list of values to be used in queries
+     */
     const array VALUES = [
+        'companyId' => ':companyId',
         'name' => ':name',
         'phone' => ':phone',
         'address' => ':address',
@@ -24,20 +25,35 @@ class CompanyRepository
         'slug' => ':slug',
         'userId' => ':userId',
     ];
+    /**
+     * @var PDO
+     */
+    private PDO $connection;
+    /**
+     * @var TransactionDbService
+     */
+    private TransactionDbService $transactionDbService;
 
-    public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
+    /**
+     * @param ConnectionDbService $connection
+     * @param TransactionDbService $transactionDbService
+     */
+    public function __construct(ConnectionDbService $connection, TransactionDbService $transactionDbService)
     {
         $this->connection = $connection->connection();
-        $this->bindValueService = $bindValueService;
+        $this->transactionDbService = $transactionDbService;
     }
 
+    /**
+     * @param Company $company
+     * @return bool
+     * @throws DatabaseException
+     */
     public function create(Company $company): bool
     {
-        $companyAttributes = [];
-
-        $this->executeTransaction(function () use ($company, &$companyAttributes){
+        $this->transactionDbService->executeTransaction(function () use ($company){
             $query = '
-            INSERT INTO APICHADO.company
+            INSERT INTO company
             (name, phone, address, city, country, siret, slug, userId) 
             VALUES 
             (:name, :phone, :address, :city, :country, :siret, :slug, :userId)';
@@ -45,39 +61,47 @@ class CompanyRepository
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                $companyAttributes[$value] = $company->{"get" . ucfirst($key)}();
+                if ($key === 'companyId' || $key === 'updatedAt') {
+                    continue;
+                }
+                $method = "get" . ucfirst($key);
+                $statement->bindValue($value, $company->$method());
             }
-            $this->bindValueService->bindValuesToStatement($statement, $companyAttributes);
+            
             $statement->execute();
         });
 
         return true;
     }
 
+    /**
+     * @param int $companyId
+     * @return Company|bool
+     * @throws DatabaseException
+     */
     public function read(int $companyId): Company | bool
     {
-        $this->connection->beginTransaction();
-        $query = '
-                SELECT c.*, u.* 
-                FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.userId = u.userId
-                WHERE c.companyId = :companyId;
-                ';
-        $statement = $this->connection->prepare($query);
-        $statement->bindValue(':companyId', $companyId);
-        $statement->execute();
-        $company = $statement->fetchObject(Company::class);
-        $this->connection->commit();
+        $this->transactionDbService->executeTransaction(function () use ($companyId, &$company) {
+            $query = 'SELECT * FROM company WHERE companyId = :companyId';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':companyId', $companyId);
+            $statement->execute();
+            $company = $statement->fetchObject(Company::class);
+        });
 
         return $company;
     }
 
+    /**
+     * @param Company $company
+     * @return bool
+     * @throws DatabaseException
+     */
     public function update(Company $company): bool
     {
-        $companyAttributes = [];
-
-        $this->executeTransaction(function () use ($company, &$companyAttributes){
+        $this->transactionDbService->executeTransaction(function () use ($company){
             $query = '
-            UPDATE APICHADO.company
+            UPDATE company
             SET 
                 name = :name,
                 phone = :phone,
@@ -92,74 +116,66 @@ class CompanyRepository
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                $companyAttributes[$value] = $company->{"get" . ucfirst($key)}();
+                $method = "get" . ucfirst($key);
+                $statement->bindValue($value, $company->$method());
             }
-            $companyAttributes[':companyId'] = $company->getCompanyId();
-            $this->bindValueService->bindValuesToStatement($statement, $companyAttributes);
+
             $statement->execute();
         });
 
         return true;
     }
 
+    /**
+     * @param int $companyId
+     * @return bool
+     * @throws DatabaseException
+     */
     public function delete(int $companyId): bool
     {
-        try {
-            $this->connection->beginTransaction();
-            $query = 'DELETE FROM APICHADO.company WHERE companyId = :companyId';
+        $this->transactionDbService->executeTransaction(function () use ($companyId, &$statement){
+            $query = 'DELETE FROM company WHERE companyId = :companyId';
             $statement = $this->connection->prepare($query);
             $statement->bindValue(':companyId', $companyId);
             $statement->execute();
-            $this->connection->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->connection->rollBack();
-            throw $e;
-        }
+        });
+
+        return $statement->rowCount() > 0;
     }
 
+    /**
+     * @return array
+     * @throws DatabaseException
+     */
     public function list(): array
     {
-        $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.company as c LEFT JOIN APICHADO.user as u ON c.userId = u.userId';
-        $statement = $this->connection->query($query);
-        $companies = $statement->fetchAll(PDO::FETCH_CLASS, Company::class);
-        $this->connection->commit();
-
-        return $companies;
-    }
-
-    public function topOffers(): array
-    {
-        $this->connection->beginTransaction();
-        $query = '
-           SELECT c.companyId, c.name, c.slug, c.logo, c.cover, COUNT(jo.companyId) as offers_count
-            FROM APICHADO.company c
-            JOIN APICHADO.joboffer jo ON jo.companyId = c.companyId
-            GROUP BY c.companyId, c.name
-            ORDER BY offers_count DESC
-            LIMIT 6';
-        $statement = $this->connection->query($query);
-        $companies = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $this->connection->commit();
+        $this->transactionDbService->executeTransaction(function () use (&$companies){
+            $query = 'SELECT * FROM company';
+            $statement = $this->connection->query($query);
+            $companies = $statement->fetchAll(PDO::FETCH_ASSOC);
+        });
 
         return $companies;
     }
 
     /**
+     * @return array
      * @throws DatabaseException
      */
-    private function executeTransaction(callable $transaction): Void
+    public function topOffers(): array
     {
-        try {
-            $this->connection->beginTransaction();
+        $this->transactionDbService->executeTransaction(function () use (&$companies) {
+            $query = '
+            SELECT c.companyId, c.name, c.slug, c.logo, c.cover, COUNT(jo.companyId) as offers_count
+            FROM company c
+            JOIN joboffer jo ON jo.companyId = c.companyId
+            GROUP BY c.companyId, c.name
+            ORDER BY offers_count DESC
+            LIMIT 6';
+            $statement = $this->connection->query($query);
+            $companies = $statement->fetchAll(PDO::FETCH_ASSOC);
+        });
 
-            $transaction();
-
-            $this->connection->commit();
-        } catch (PDOException $e) {
-            $this->connection->rollBack();
-            throw new DatabaseException('Error while trying to execute a transaction.', 500);
-        }
+        return $companies;
     }
 }
