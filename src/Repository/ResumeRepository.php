@@ -5,29 +5,47 @@ namespace App\Repository;
 use App\Entity\Resume;
 use App\Exceptions\DatabaseException;
 use App\Services\ConnectionDbService;
-use App\Services\DataBaseServices\BindValueService;
 use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
-use PDOException;
+
+/**
+ * Repository for Resume entity
+ */
 
 class ResumeRepository
 {
-    private PDO $connection;
-
+    /**
+     * @var array
+     * list of values to be used in queries
+     */
     const array VALUES = [
+        'resumeId' => ':resumeId',
         'title' => ':title',
         'filename' => ':filename',
         'candidateId' => ':candidateId',
     ];
+    /**
+     * @var PDO
+     */
+    private PDO $connection;
+    /**
+     * @var TransactionDbService
+     */
     private TransactionDbService $transactionDbService;
 
-    public function __construct(ConnectionDbService $connection, TransactionDbService$transactionDbService)
+    /**
+     * @param ConnectionDbService $connection
+     * @param TransactionDbService $transactionDbService
+     */
+    public function __construct(ConnectionDbService $connection, TransactionDbService $transactionDbService)
     {
         $this->connection = $connection->connection();
         $this->transactionDbService = $transactionDbService;
     }
 
     /**
+     * @param Resume $resume
+     * @return bool
      * @throws DatabaseException
      */
     public function create(Resume $resume): bool
@@ -38,6 +56,9 @@ class ResumeRepository
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
+               if ($key === 'resumeId' || $key === 'updatedAt') {
+                   continue;
+               }
                 $method = "get" . ucfirst($key);
                 $statement->bindValue($value, $resume->$method());
             }
@@ -49,6 +70,8 @@ class ResumeRepository
     }
 
     /**
+     * @param int $resumeId
+     * @return Resume|null
      * @throws DatabaseException
      */
     public function read(int $resumeId): ?Resume
@@ -64,6 +87,8 @@ class ResumeRepository
     }
 
     /**
+     * @param Resume $resume
+     * @return bool
      * @throws DatabaseException
      */
     public function update(Resume $resume): bool
@@ -80,8 +105,6 @@ class ResumeRepository
                 $method = "get" . ucfirst($key);
                 $statement->bindValue($value, $resume->$method());
             }
-            $statement->bindValue(':resumeId', $resume->getResumeId(), PDO::PARAM_INT);
-
             $statement->execute();
         });
 
@@ -89,14 +112,16 @@ class ResumeRepository
     }
 
     /**
+     * @param int $resumeId
+     * @return bool
      * @throws DatabaseException
      */
-    public function delete(int $id): bool
+    public function delete(int $resumeId): bool
     {
-        $this->transactionDbService->executeTransaction(function () use ($id, &$statement) {
-            $query = 'DELETE FROM resume WHERE resumeId = :id';
+        $this->transactionDbService->executeTransaction(function () use ($resumeId, &$statement) {
+            $query = 'DELETE FROM resume WHERE resumeId = :resumeId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':id', $id, PDO::PARAM_INT);
+            $statement->bindValue(':resumeId', $resumeId, PDO::PARAM_INT);
             $statement->execute();
         });
 
@@ -104,6 +129,7 @@ class ResumeRepository
     }
 
     /**
+     * @return array
      * @throws DatabaseException
      */
     public function list(): array
@@ -118,6 +144,8 @@ class ResumeRepository
     }
 
     /**
+     * @param $candidateId
+     * @return false|array
      * @throws DatabaseException
      */
     public function findByCandidate($candidateId): false|array
