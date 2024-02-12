@@ -3,17 +3,24 @@
 namespace App\Repository;
 
 use App\Entity\Candidate;
+use App\Exceptions\DatabaseException;
 use App\Services\ConnectionDbService;
 use App\Services\DataBaseServices\BindValueService;
+use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
 use PDOException;
 
+/**
+ * Repository for Candidate entity
+ */
 class CandidateRepository
 {
-    private PDO $connection;
-    private BindValueService $bindValueService;
-
+    /**
+     * @var array
+     * list of values to be used in queries
+     */
     const array VALUES = [
+        'candidateId' => ':candidateId',
         'firstname' => ':firstname',
         'lastname' => ':lastname',
         'phone' => ':phone',
@@ -25,20 +32,35 @@ class CandidateRepository
         'coverLetter' => ':coverLetter',
         'userId' => ':userId',
     ];
+    /**
+     * @var PDO
+     */
+    private PDO $connection;
+    /**
+     * @var TransactionDbService
+     */
+    private TransactionDbService $transactionDbService;
 
-    public function __construct(ConnectionDbService $connection, BindValueService $bindValueService)
+    /**
+     * @param ConnectionDbService $connection
+     * @param TransactionDbService $transactionDbService
+     */
+    public function __construct(ConnectionDbService $connection, TransactionDbService $transactionDbService)
     {
         $this->connection = $connection->connection();
-        $this->bindValueService = $bindValueService;
+        $this->transactionDbService = $transactionDbService;
     }
 
+    /**
+     * @param Candidate $candidate
+     * @return bool
+     * @throws DatabaseException
+     */
     public function create(Candidate $candidate): bool
     {
-        $candidateAttributes = [];
-
-        $this->executeTransaction(function () use ($candidate, &$candidateAttributes) {
+        $this->transactionDbService->executeTransaction(function () use ($candidate) {
             $query = '
-            INSERT INTO APICHADO.candidate
+            INSERT INTO candidate
             (firstname, lastname, phone, address, city, country, avatar, slug, coverLetter, userId) 
             VALUES 
             (:firstname, :lastname, :phone, :address, :city, :country, :avatar, :slug, :coverLetter, :userId)';
@@ -46,95 +68,108 @@ class CandidateRepository
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
+                if ($key === 'resumeId' || $key === 'updatedAt') {
+                    continue;
+                }
+                $method = "get" . ucfirst($key);
+                $statement->bindValue($value, $candidate->$method());
             }
 
-            $this->bindValueService->bindValuesToStatement($statement, $candidateAttributes);
             $statement->execute();
         });
 
         return true;
     }
 
+    /**
+     * @param int $candidateId
+     * @return Candidate|bool
+     * @throws DatabaseException
+     */
     public function read(int $candidateId) : Candidate | bool
     {
-        $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId WHERE c.candidateId = :candidateId';
-        $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidateId', $candidateId);
-        $statement->execute();
-        $candidate = $statement->fetchObject(Candidate::class);
-        $this->connection->commit();
+        $this->transactionDbService->executeTransaction(function () use ($candidateId, &$candidate) {
+            $query = 'SELECT c.*, u.* FROM candidate c LEFT JOIN user u ON c.userId = u.userId WHERE c.candidateId = :candidateId';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':candidateId', $candidateId);
+            $statement->execute();
+            $candidate = $statement->fetchObject(Candidate::class);
+        });
 
         return $candidate;
     }
 
+    /**
+     * @param Candidate $candidate
+     * @return bool
+     * @throws DatabaseException
+     */
     public function update(Candidate $candidate): bool
     {
-        $candidateAttributes = [];
-        $this->executeTransaction(function () use ($candidate, &$candidateAttributes){
+        $this->transactionDbService->executeTransaction(function () use ($candidate){
             $query = '
-            UPDATE APICHADO.candidate
+            UPDATE candidate
             SET firstname = :firstname, lastname = :lastname, phone = :phone, address = :address, city = :city, country = :country, avatar = :avatar, slug = :slug, userId = :userId
             WHERE userId = :userId';
 
             $statement = $this->connection->prepare($query);
 
             foreach (self::VALUES as $key => $value) {
-                $candidateAttributes[$value] = $candidate->{"get" . ucfirst($key)}();
+                $method = "get" . ucfirst($key);
+                $statement->bindValue($value, $candidate->$method());
             }
-            $this->bindValueService->bindValuesToStatement($statement, $candidateAttributes);
             $statement->execute();
         });
 
         return true;
     }
 
+    /**
+     * @param int $candidateId
+     * @return bool
+     * @throws DatabaseException
+     */
     public function delete(int $candidateId): bool
     {
-        $this->executeTransaction(function () use ($candidateId) {
-            $query = 'DELETE FROM APICHADO.candidate WHERE candidateId = :candidateId';
+        $this->transactionDbService->executeTransaction(function () use ($candidateId, &$statement) {
+            $query = 'DELETE FROM candidate WHERE candidateId = :candidateId';
             $statement = $this->connection->prepare($query);
-            $statement->bindValue(':candidateId', $candidateId);
+            $statement->bindValue(':candidateId', $candidateId, PDO::PARAM_INT);
             $statement->execute();
         });
-        return true;
+
+        return $statement->rowCount() > 0;
     }
 
+    /**
+     * @return array
+     * @throws DatabaseException
+     */
     public function list(): array
     {
-        $this->executeTransaction(function () use (&$candidates) {
-            $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId';
+        $this->transactionDbService->executeTransaction(function () use (&$candidates) {
+            $query = 'SELECT * FROM candidate';
             $statement = $this->connection->query($query);
             $candidates = $statement->fetchAll(PDO::FETCH_CLASS, Candidate::class);
         });
         return $candidates;
     }
 
+    /**
+     * @param $candidateId
+     * @return Candidate|bool
+     * @throws DatabaseException
+     */
     public function getByUserId($candidateId):Candidate | bool
     {
-        $this->connection->beginTransaction();
-        $query = 'SELECT c.*, u.* FROM APICHADO.candidate c LEFT JOIN APICHADO.user u ON c.userId = u.userId WHERE c.userId = :candidateId';
-        $statement = $this->connection->prepare($query);
-        $statement->bindValue(':candidateId', $candidateId);
-        $statement->execute();
-        $candidate = $statement->fetchObject(Candidate::class);
-        $this->connection->commit();
+        $this->transactionDbService->executeTransaction(function () use ($candidateId, &$candidate) {
+            $query = 'SELECT c.*, u.* FROM candidate c LEFT JOIN user u ON c.userId = u.userId WHERE c.userId = :candidateId';
+            $statement = $this->connection->prepare($query);
+            $statement->bindValue(':candidateId', $candidateId);
+            $statement->execute();
+            $candidate = $statement->fetchObject(Candidate::class);
+        });
 
         return $candidate;
-    }
-
-    private function executeTransaction(callable $transaction): Void
-    {
-        try {
-            $this->connection->beginTransaction();
-
-            $transaction();
-
-            $this->connection->commit();
-        } catch (PDOException $e) {
-            $this->connection->rollBack();
-            throw $e;
-        }
     }
 }
