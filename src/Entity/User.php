@@ -18,7 +18,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     protected ?int $userId = null;
 
-    #[Assert\NotBlank(message: "Email is required")]
+    #[Assert\NotBlank(message: "Email is required !")]
     #[Assert\Email(message: "Email must be a valid email")]
     #[Assert\Length(
         min: 3,
