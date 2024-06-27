@@ -120,7 +120,7 @@ class RequestValidatorServiceTest extends KernelTestCase
         $badData =[
             'email' => [
                 [null, 'The request must contain the following fields:email, password, roles, '],
-                ['', 'Email is required'],
+                ['', 'Email is required !'],
                 [ true, 'Email must be a valid email'],
                 ['az', 'Email must be a valid email'],
                 ['azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn', 'Email must be a valid email'],

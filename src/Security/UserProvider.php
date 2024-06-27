@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
 {
-    private $userRepository;
+    private UserRepository $userRepository;
 
     public function __construct(UserRepository $userRepository)
     {
@@ -48,7 +48,7 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
      * If your firewall is "stateless: true" (for a pure API), this
      * method is not called.
      */
-    public function refreshUser(UserInterface $user): User|bool
+    public function refreshUser(UserInterface $user): UserInterface
     {
         if (!$user instanceof User) {
             throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
@@ -56,7 +56,7 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
 
         $loadedUser = $this->userRepository->read($user->getUserId());
 
-        if (null === $loadedUser) {
+        if (false === $loadedUser) {
             throw new UserNotFoundException(sprintf('User with id "%s" not found.', $user->getUserId()));
         }
 
