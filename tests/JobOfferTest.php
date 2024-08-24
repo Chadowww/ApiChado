@@ -39,9 +39,9 @@ class JobOfferTest extends TestCase
         $this->entityBuilder = $this->createMock(EntityBuilder::class);
         $this->mockController = new JobOfferController(
             $this->requestValidatorService,
+            $this->entityBuilder,
             $this->mockRepository,
             $serializer,
-            $this->entityBuilder
         );
     }
 
@@ -232,7 +232,7 @@ class JobOfferTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('update')
-            ->willThrowException(new PDOException());
+            ->willThrowException(new DatabaseException("", 500));
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);

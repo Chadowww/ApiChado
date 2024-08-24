@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use App\Services\ConnectionDbService;
+use App\Services\DataBaseServices\ConnectionDbService;
 use PDO;
 use PDOException;
 use Symfony\Component\HttpFoundation\Request;

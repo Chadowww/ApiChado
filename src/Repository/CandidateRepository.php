@@ -4,11 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Candidate;
 use App\Exceptions\DatabaseException;
-use App\Services\ConnectionDbService;
-use App\Services\DataBaseServices\BindValueService;
+use App\Services\DataBaseServices\ConnectionDbService;
 use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
-use PDOException;
 
 /**
  * Repository for Candidate entity

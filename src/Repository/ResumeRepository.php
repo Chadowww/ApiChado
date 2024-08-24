@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Resume;
 use App\Exceptions\DatabaseException;
-use App\Services\ConnectionDbService;
+use App\Services\DataBaseServices\ConnectionDbService;
 use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
 

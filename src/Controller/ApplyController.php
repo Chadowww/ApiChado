@@ -20,40 +20,25 @@ use OpenApi\Annotations as OA;
  */
 class ApplyController extends AbstractController
 {
-    private RequestValidatorService $requestValidatorService;
-    /**
-     * @var EntityBuilder
-     */
-    private EntityBuilder $entityBuilder;
-    /**
-     * @var ApplyRepository
-     */
-    private ApplyRepository $applyRepository;
-    /**
-     * @var SerializerInterface
-     */
-    private SerializerInterface $serializer;
-
     /**
      * @param RequestValidatorService $requestValidatorService
-     * @param EntityBuilder $entityBuilder,
+     * @param EntityBuilder $entityBuilder
      * @param ApplyRepository $applyRepository
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        EntityBuilder $entityBuilder,
-        ApplyRepository $applyRepository,
-        SerializerInterface $serializer
-    ) {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->entityBuilder = $entityBuilder;
-        $this->applyRepository = $applyRepository;
-        $this->serializer = $serializer;
-    }
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly EntityBuilder           $entityBuilder,
+        private readonly ApplyRepository         $applyRepository,
+        private readonly SerializerInterface     $serializer
+    ) {}
 
     /**
-     * @throws JsonException|DatabaseException|InvalidRequestException|
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
      * @OA\RequestBody(
      *      request="JobOffer",
      *      description="Job offer to create",
@@ -103,7 +88,7 @@ class ApplyController extends AbstractController
      *          example="Created"
      *      )
      * )
-     **/
+     */
     public function create(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -111,20 +96,19 @@ class ApplyController extends AbstractController
 
         $this->requestValidatorService->throwError400FromData($data, $apply);
 
+        $apply = $this->entityBuilder->buildEntity($apply, $data);
 
-        $this->entityBuilder->buildEntity($apply, $data);
-
-        try {
-            $this->applyRepository->create($apply);
-        } catch (Exception $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
-        }
+        $this->applyRepository->create($apply);
 
         return new JsonResponse(['message' => 'Apply created successfully'], 201);
     }
 
     /**
-     * @throws JsonException|Exception
+     * @param int $id
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Apply found",
@@ -214,7 +198,13 @@ class ApplyController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException|JsonException|DatabaseException|ResourceNotFoundException
+     * @param int $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\RequestBody(
      *     request="JobOffer",
      *     description="Job offer to update",
@@ -307,17 +297,17 @@ class ApplyController extends AbstractController
 
         $apply = $this->entityBuilder->buildEntity($apply, $data);
 
-        try {
-            $this->applyRepository->update($apply);
-        } catch (Exception $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
-        }
+        $this->applyRepository->update($apply);
 
         return new JsonResponse(['message' => 'Apply updated successfully'], 200);
     }
 
     /**
-     * @throws DatabaseException|ResourceNotFoundException|JsonException
+     * @param int $id
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Apply deleted",
@@ -362,18 +352,13 @@ class ApplyController extends AbstractController
             );
         }
 
-        try {
-            $this->applyRepository->delete($id);
-        } catch (PDOException $e) {
-            throw new DatabaseException(json_encode($e->getMessage(), JSON_THROW_ON_ERROR), 500);
-        }
+        $this->applyRepository->delete($id);
 
         return new JsonResponse(['message' => 'Apply deleted successfully'], 200);
     }
 
     /**
      * @return JsonResponse
-     * @throws DatabaseException|JsonException|ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Apply list",
@@ -440,6 +425,7 @@ class ApplyController extends AbstractController
      *     example="Apply list not found"
      * )
      * )
+     *@throws JsonException|ResourceNotFoundException|DatabaseException
      */
     public function list(): JsonResponse
     {

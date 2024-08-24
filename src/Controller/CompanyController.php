@@ -9,6 +9,7 @@ use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService;
 use JsonException;
 use PDOException;
+use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Serializer\SerializerInterface;
@@ -19,26 +20,25 @@ use OpenApi\Annotations as OA;
  */
 class CompanyController extends AbstractController
 {
-    private RequestValidatorService $requestValidatorService;
-    private EntityBuilder $entityBuilder;
-    private CompanyRepository $companyRepository;
-    private SerializerInterface $serializer;
-
+    /**
+     * @param RequestValidatorService $requestValidatorService
+     * @param EntityBuilder $entityBuilder
+     * @param CompanyRepository $companyRepository
+     * @param SerializerInterface $serializer
+     */
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        EntityBuilder $entityBuilder,
-        CompanyRepository $companyRepository,
-        SerializerInterface $serializer
-    )
-    {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->entityBuilder = $entityBuilder;
-        $this->companyRepository = $companyRepository;
-        $this->serializer = $serializer;
-    }
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly EntityBuilder           $entityBuilder,
+        private readonly CompanyRepository       $companyRepository,
+        private readonly SerializerInterface     $serializer
+    ) {}
 
     /**
-     * @throws InvalidRequestException|DatabaseException|JsonException
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
      * @OA\Response(
      *     response=201,
      *     description="Company created",
@@ -101,21 +101,22 @@ class CompanyController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $company = new Company();
+
         $this->requestValidatorService->throwError400FromData($data, $company);
 
         $company = $this->entityBuilder->buildEntity($company, $data);
 
-        try {
-            $this->companyRepository->create($company);
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), 500);
-        }
+        $this->companyRepository->create($company);
 
         return new JsonResponse(['message' => 'Company created successfully'], 201);
     }
 
     /**
-     * @throws ResourceNotFoundException|JsonException
+     * @param int $id
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Company found",
@@ -162,7 +163,13 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws ResourceNotFoundException|InvalidRequestException|DatabaseException|JsonException
+     * @param int $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Company updated",
@@ -255,7 +262,11 @@ class CompanyController extends AbstractController
     }
 
     /**
-     * @throws ResourceNotFoundException|DatabaseException|JsonException
+     * @param int $id
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Company deleted",
@@ -300,17 +311,14 @@ class CompanyController extends AbstractController
             );
         }
 
-        try {
-            $this->companyRepository->delete($id);
-        } catch ( PDOException $e) {
-            throw new DatabaseException($e->getMessage(), 500);
-        }
+        $this->companyRepository->delete($id);
 
         return new JsonResponse(['response' => 'company deleted'], 200);
     }
 
     /**
      * @throws ResourceNotFoundException|DatabaseException|JsonException
+     * @return JsonResponse
      * @OA\Response(
      *     response=200,
      *     description="List of companies",
@@ -338,11 +346,7 @@ class CompanyController extends AbstractController
      */
     public function list(): JsonResponse
     {
-        try {
-            $companies = $this->companyRepository->list();
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), 500);
-        }
+        $companies = $this->companyRepository->list();
 
         if (!$companies) {
             throw new ResourceNotFoundException(
@@ -356,6 +360,9 @@ class CompanyController extends AbstractController
 
 
     /**
+     * @throws ResourceNotFoundException|JsonException
+     * @throws DatabaseException
+     * @return JsonResponse
      * @OA\Response(
      *     response=200,
      *     description="List of companies",
@@ -380,7 +387,6 @@ class CompanyController extends AbstractController
      *     example="Company not found"
      * )
      * )
-     * @throws ResourceNotFoundException|JsonException
      */
     public function topOffers(): JsonResponse
     {
