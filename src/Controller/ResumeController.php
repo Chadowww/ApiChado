@@ -19,26 +19,13 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ResumeController extends AbstractController
 {
-    CONST string CV_DIRECTORY = 'CV_DIRECTORY';
-    private RequestValidatorService $requestValidatorService;
-    private EntityBuilder $entityBuilder;
-    private ResumeRepository $resumeRepository;
-    private SerializerInterface $serializer;
-    private FileManagerService $fileManagerService;
-
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        EntityBuilder $entityBuilder,
-        ResumeRepository $resumeRepository,
-        SerializerInterface $serializer,
-        FileManagerService $fileManagerService
-    ) {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->entityBuilder = $entityBuilder;
-        $this->resumeRepository = $resumeRepository;
-        $this->serializer = $serializer;
-        $this->fileManagerService = $fileManagerService;
-    }
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly EntityBuilder           $entityBuilder,
+        private readonly ResumeRepository        $resumeRepository,
+        private readonly SerializerInterface     $serializer,
+        private readonly FileManagerService      $fileManagerService
+    ) {}
 
     /**
      * @throws DatabaseException|JsonException|InvalidRequestException
@@ -80,7 +67,7 @@ class ResumeController extends AbstractController
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
-            $filename = $this->fileManagerService->upload($uploadedFile, self::CV_DIRECTORY);
+            $filename = $this->fileManagerService->upload($uploadedFile, $this->fileManagerService::CV_DIRECTORY);
             $data['filename'] = $filename;
         }
 
@@ -218,11 +205,11 @@ class ResumeController extends AbstractController
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
-            $filename = $this->fileManagerService->upload($uploadedFile, self::CV_DIRECTORY);
+            $filename = $this->fileManagerService->upload($uploadedFile, $this->fileManagerService::CV_DIRECTORY);
             $data['filename'] = $filename;
 
             if ($filename !== '') {
-                $this->fileManagerService->delete($resume->getFilename(), self::CV_DIRECTORY);
+                $this->fileManagerService->delete($resume->getFilename(), $this->fileManagerService::CV_DIRECTORY);
             }
         }
 
@@ -272,11 +259,11 @@ class ResumeController extends AbstractController
 
         $fileName = $resume->getFilename();
 
-        if ($this->fileManagerService->verifyExistFile($fileName, 'CV_DIRECTORY') === false) {
+        if ($this->fileManagerService->verifyExistFile($fileName, $this->fileManagerService::CV_DIRECTORY) === false) {
             throw new ResourceNotFoundException(json_encode(['Resume not found!'], JSON_THROW_ON_ERROR), 404);
         }
 
-        $this->fileManagerService->delete($fileName, 'CV_DIRECTORY');
+        $this->fileManagerService->delete($fileName, $this->fileManagerService::CV_DIRECTORY);
 
         $resumeDeleted = $this->resumeRepository->delete($id);
 

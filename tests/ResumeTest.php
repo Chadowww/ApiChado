@@ -265,7 +265,10 @@ class ResumeTest extends TestCase
 
     public function testResumeDelete(): void
     {
-        imagejpeg(imagecreatetruecolor(100, 100), '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/filename.jpg');
+        imagejpeg(
+            imagecreatetruecolor(100, 100),
+            '/Users/chado/Développement/JobItBetter/ApiChado/public/cv/filename.jpg'
+        );
         $resume = new Resume();
         $resume->setResumeId(1);
         $resume->setFilename('filename.jpg');
@@ -314,7 +317,10 @@ class ResumeTest extends TestCase
      */
     public function testResumeDeleteError500(): void
     {
-        imagejpeg(imagecreatetruecolor(100, 100), '/Users/chado/Desktop/JobItBetter/ApiChado/public/cv/filename.jpg');
+        imagejpeg(
+            imagecreatetruecolor(100, 100),
+            '/Users/chado/Développement/JobItBetter/ApiChado/public/cv/filename.jpg'
+        );
         $resume = new Resume();
         $resume->setResumeId(1);
         $resume->setFilename('filename.jpg');

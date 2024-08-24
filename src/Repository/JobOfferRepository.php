@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\JobOffer;
-use App\Services\ConnectionDbService;
+use App\Services\DataBaseServices\ConnectionDbService;
 use PDO;
 
 class JobOfferRepository

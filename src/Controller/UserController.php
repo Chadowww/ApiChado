@@ -23,23 +23,12 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class UserController extends AbstractController
 {
-    private RequestValidatorService $requestValidatorService;
-    private EntityBuilder $entityBuilder;
-    private UserRepository $userRepository;
-    private SerializerInterface $serializer;
-
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        EntityBuilder $entityBuilder,
-        UserRepository $userRepository,
-        SerializerInterface $serializer,
-    )
-    {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->entityBuilder = $entityBuilder;
-        $this->userRepository = $userRepository;
-        $this->serializer = $serializer;
-    }
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly EntityBuilder $entityBuilder,
+        private readonly UserRepository $userRepository,
+        private readonly SerializerInterface $serializer,
+    ){}
 
     /**
      * @throws DatabaseException|InvalidRequestException|JsonException
@@ -100,11 +89,7 @@ class UserController extends AbstractController
 
         $user = $this->entityBuilder->buildEntity($user, $data);
 
-        try {
-            $this->userRepository->create($user);
-        } catch (PDOException $e) {
-            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
-        }
+        $this->userRepository->create($user);
 
         $lastId = $this->userRepository->getLastId();
 
@@ -243,11 +228,7 @@ class UserController extends AbstractController
 
        $user = $this->entityBuilder->buildEntity($user, $data);
 
-        try {
-            $this->userRepository->update($user);
-        } catch (PDOException $e) {
-            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
-        }
+        $this->userRepository->update($user);
 
         return new JsonResponse(['message' => 'User updated successfully'], 200);
     }
@@ -294,11 +275,7 @@ class UserController extends AbstractController
             );
         }
 
-        try {
-            $this->userRepository->delete($id);
-        } catch (PDOException $e) {
-            throw new DatabaseException($this->json(['error' => $e->getMessage()]), 500);
-        }
+        $this->userRepository->delete($id);
 
         return new JsonResponse(['message' => 'User deleted successfully'], 200);
     }

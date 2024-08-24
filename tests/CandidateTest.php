@@ -10,7 +10,6 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Repository\CandidateRepository;
 use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService;
-use PDOException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -105,7 +104,7 @@ class CandidateTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('create')
-            ->willThrowException(new PDOException());
+            ->willThrowException(new DatabaseException("", 500));
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -272,7 +271,7 @@ class CandidateTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('update')
-            ->willThrowException(new PDOException());
+            ->willThrowException(new DatabaseException("", 500));
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -342,7 +341,7 @@ class CandidateTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('delete')
-            ->willThrowException(new \PDOException());
+            ->willThrowException(new DatabaseException("", 500));
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);
@@ -381,7 +380,7 @@ class CandidateTest extends TestCase
 
         $this->mockRepository->expects($this->atLeastOnce())
             ->method('list')
-            ->willThrowException(new PDOException());
+            ->willThrowException(new DatabaseException("", 500));
 
         $this->expectException(DatabaseException::class);
         $this->expectExceptionCode(500);

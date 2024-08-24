@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Services\FileManagerService\FileManagerService;
+use Exception;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
@@ -15,20 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 class ImageController extends AbstractController
 {
     CONST string IMAGES_DIRECTORY = 'IMAGES_DIRECTORY';
-    /**
-     * @var FileManagerService
-     */
-    private FileManagerService $fileManagerService;
 
     /**
      * @param FileManagerService $FileManagerService
      */
-    public function __construct(FileManagerService $FileManagerService)
-    {
-        $this->fileManagerService = $FileManagerService;
-    }
+    public function __construct(private readonly FileManagerService $fileManagerService)
+    {}
 
     /**
+     * @param Request $request
+     * @return JsonResponse
      * @throws DatabaseException
      */
     public function create(Request $request): JsonResponse
@@ -44,6 +41,8 @@ class ImageController extends AbstractController
     }
 
     /**
+     * @param string $fileName
+     * @return Response
      * @throws ResourceNotFoundException
      */
     public function read(string $fileName): Response
@@ -105,7 +104,7 @@ class ImageController extends AbstractController
     /**
      * @param string $fileName
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      * @OA\Response(
      *     response=200,
      *     description="Returns the success message",
@@ -157,7 +156,6 @@ class ImageController extends AbstractController
      */
     public function list(): Response
     {
-//        TODO - Implement the list method
         $files = scandir(FileManagerService::IMAGES_DIRECTORY);
 
         $images = [];

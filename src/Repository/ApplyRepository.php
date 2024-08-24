@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Apply;
 use App\Exceptions\DatabaseException;
-use App\Services\ConnectionDbService;
+use App\Services\DataBaseServices\ConnectionDbService;
 use App\Services\DataBaseServices\TransactionDbService;
 use PDO;
 
@@ -43,7 +43,6 @@ class ApplyRepository
     {
         $this->connection = $connection->connection();
         $this->transactionDbService = $transactionDbService;
-
     }
 
     /**

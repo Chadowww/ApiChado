@@ -19,26 +19,25 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class CandidateController extends AbstractController
 {
-    private RequestValidatorService $requestValidatorService;
-    private EntityBuilder $entityBuilder;
-    private CandidateRepository $candidateRepository;
-    private SerializerInterface $serializer;
-
+    /**
+     * @param RequestValidatorService $requestValidatorService
+     * @param EntityBuilder $entityBuilder
+     * @param CandidateRepository $candidateRepository
+     * @param SerializerInterface $serializer
+     */
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        EntityBuilder $entityBuilder,
-        CandidateRepository $candidateRepository,
-        SerializerInterface $serializer,
-    )
-    {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->entityBuilder = $entityBuilder;
-        $this->candidateRepository = $candidateRepository;
-        $this->serializer = $serializer;
-    }
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly EntityBuilder           $entityBuilder,
+        private readonly CandidateRepository     $candidateRepository,
+        private readonly SerializerInterface     $serializer
+    ) {}
 
     /**
-     * @throws InvalidRequestException|JsonException|DatabaseException
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
      * @OA\Response(
      *     response=201,
      *     description="Candidate created",
@@ -121,24 +120,47 @@ class CandidateController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $candidate = new Candidate();
+
         $this->requestValidatorService->throwError400FromData($data, $candidate);
 
         $candidate = $this->entityBuilder->buildEntity($candidate, $data);
 
-        try {
-            $this->candidateRepository->create($candidate);
-        } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage(), 500);
-        }
+        $this->candidateRepository->create($candidate);
 
         return new JsonResponse(['message' => 'Candidate created successfully'], 201);
     }
 
     /**
-     * @throws ResourceNotFoundException|JsonException
      * @param int $id
      * @return JsonResponse
      *
+     * @throws ResourceNotFoundException|JsonException|DatabaseException
+     * @OA\Response(
+     *     response=200,
+     *     description="Candidate found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate found"
+     * )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Candidate not found",
+     *     @OA\JsonContent(
+     *     type="string",
+     *     example="Candidate not found"
+     * )
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id of the candidate to read",
+     *     required=true,
+     *     @OA\Schema(
+     *     type="integer",
+     *     example="1"
+     * )
+     * )
      */
     public function read(int $id): JsonResponse
     {
@@ -155,7 +177,13 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException|JsonException|DatabaseException|ResourceNotFoundException
+     * @param int $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Candidate updated",
@@ -278,7 +306,11 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @throws JsonException|DatabaseException|ResourceNotFoundException
+     * @param int $id
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Candidate deleted",
@@ -315,17 +347,14 @@ class CandidateController extends AbstractController
             );
         }
 
-        try {
-            $this->candidateRepository->delete($id);
-        } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage(), 500);
-        }
+        $this->candidateRepository->delete($id);
 
         return new JsonResponse(['message' => 'Candidate deleted successfully'], 200);
     }
 
     /**
      * @throws DatabaseException|JsonException|ResourceNotFoundException
+     * @return JsonResponse
      * @OA\Response(
      *     response=200,
      *     description="List of candidates",
@@ -355,11 +384,8 @@ class CandidateController extends AbstractController
      */
     public function list(): JsonResponse
     {
-        try {
-            $candidates = $this->candidateRepository->list();
-        } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage(), 500);
-        }
+        $candidates = $this->candidateRepository->list();
+
         if (!$candidates) {
             throw new ResourceNotFoundException(
                 json_encode('Candidates not found in database', JSON_THROW_ON_ERROR),

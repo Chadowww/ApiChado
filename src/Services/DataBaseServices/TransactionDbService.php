@@ -3,7 +3,6 @@
 namespace App\Services\DataBaseServices;
 
 use App\Exceptions\DatabaseException;
-use App\Services\ConnectionDbService;
 use PDO;
 use PDOException;
 

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Contract;
+use App\Repository\ApplyRepository;
+use App\Services\EntityServices\EntityBuilder;
 use App\Services\RequestValidator\RequestValidatorService;
 use App\Exceptions\{DatabaseException, InvalidRequestException, ResourceNotFoundException};
 use App\Repository\ContractRepository;
@@ -18,23 +20,20 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ContractController extends AbstractController
 {
-    private RequestValidatorService $requestValidatorService;
-    private ContractRepository $contractRepository;
-    private SerializerInterface $serializer;
-
     public function __construct(
-        RequestValidatorService $requestValidatorService,
-        ContractRepository $contractRepository,
-        SerializerInterface $serializer,
-    )
-    {
-        $this->requestValidatorService = $requestValidatorService;
-        $this->contractRepository = $contractRepository;
-        $this->serializer = $serializer;
+        private readonly RequestValidatorService $requestValidatorService,
+        private readonly ContractRepository      $contractRepository,
+        private readonly SerializerInterface     $serializer
+    ) {
+
     }
 
     /**
-     * @throws DatabaseException|InvalidRequestException|JsonException
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DatabaseException
+     * @throws InvalidRequestException
+     * @throws JsonException
      * @OA\Response(
      *     response=201,
      *     description="Contract created",
@@ -84,7 +83,10 @@ class ContractController extends AbstractController
     }
 
     /**
-     * @throws ResourceNotFoundException|JsonException
+     * @param int $id
+     * @return JsonResponse
+     * @throws JsonException
+     * @throws ResourceNotFoundException
      * @OA\Response(
      *     response=200,
      *     description="Contract read",
@@ -196,12 +198,9 @@ class ContractController extends AbstractController
 
         $this->requestValidatorService->throwError400FromData($data, $contract);
 
-        try {
-            $contract->setType($request->get('type'));
-            $this->contractRepository->update($contract);
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
-        }
+        $contract->setType($request->get('type'));
+
+        $this->contractRepository->update($contract);
 
         return new JsonResponse(['response' => 'contract updated'], 200);
     }
@@ -246,17 +245,14 @@ class ContractController extends AbstractController
             );
         }
 
-        try {
-            $this->contractRepository->delete($id);
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
-        }
+        $this->contractRepository->delete($id);
 
         return new JsonResponse('Deleted', 200);
     }
 
     /**
      * @throws ResourceNotFoundException|JsonException|DatabaseException
+     * @return JsonResponse
      * @OA\Response(
      *     response=200,
      *     description="Contract list",
@@ -286,11 +282,7 @@ class ContractController extends AbstractController
      */
     public function list(): JsonResponse
     {
-        try {
-            $contract = $this->contractRepository->list();
-        } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode());
-        }
+        $contract = $this->contractRepository->list();
 
         if (!$contract) {
             throw new ResourceNotFoundException(json_encode('Contracts not found in database', JSON_THROW_ON_ERROR),
