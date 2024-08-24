@@ -1,0 +1,9 @@
+name: Block PRs from develop to main on:
+  pull_request:
+    branches:
+      - main jobs:
+  check-branch:
+    runs-on: ubuntu-latest steps:
+      - name: Check if PR is from develop
+        if: github.base_ref == 'main' && github.head_ref == 'develop' run: |
+          echo "Pull requests from develop to main are not allowed." exit 1
