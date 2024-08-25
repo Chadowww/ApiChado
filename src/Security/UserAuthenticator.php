@@ -17,20 +17,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
 class UserAuthenticator extends AbstractAuthenticator
 {
-    private UserRepository $userRepository;
-    private JWTTokenManagerInterface $jwtTokenManager;
-    protected SerializerInterface $serializer;
 
     public function __construct(
-        UserRepository $userRepository,
-        JWTTokenManagerInterface $jwtTokenManager,
-        SerializerInterface $serializer
+        private readonly UserRepository $userRepository,
+        private readonly JWTTokenManagerInterface $jwtTokenManager,
+        protected  readonly SerializerInterface $serializer
     )
-    {
-        $this->userRepository = $userRepository;
-        $this->jwtTokenManager = $jwtTokenManager;
-        $this->serializer = $serializer;
-    }
+    {}
 
     public function supports(Request $request): ?bool
     {
