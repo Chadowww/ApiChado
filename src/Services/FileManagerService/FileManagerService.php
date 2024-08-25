@@ -18,16 +18,6 @@ class FileManagerService
      * @var string
      */
     const string CV_DIRECTORY = 'CV_DIRECTORY';
-    /**
-     * @var string
-     * @Autowire("%images.directory%")
-     */
-    private string $imagesDirectory;
-    /**
-     * @var string
-     * @Autowire("%cv.directory%")
-     */
-    private string $cvDirectory;
 
     /**
      * @param string $imagesDirectory
@@ -36,12 +26,9 @@ class FileManagerService
      * @Autowire("%cv.directory%")
      */
     public function __construct(
-        #[Autowire('%images.directory%')] string $imagesDirectory,
-        #[Autowire('%cv.directory%')] string $cvDirectory
-    ) {
-        $this->imagesDirectory = $imagesDirectory;
-        $this->cvDirectory = $cvDirectory;
-    }
+        #[Autowire('%images.directory%')] private readonly string $imagesDirectory,
+        #[Autowire('%cv.directory%')] private readonly string $cvDirectory
+    ) {}
 
     /**
      * Determine the directory to upload the file
