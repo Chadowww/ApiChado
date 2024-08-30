@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ImageController extends AbstractController
 {
-    CONST string IMAGES_DIRECTORY = 'IMAGES_DIRECTORY';
-
     /**
      * @param FileManagerService $FileManagerService
      */
@@ -33,7 +31,7 @@ class ImageController extends AbstractController
         $uploadedFile = $request->files->get('file');
 
         if ($uploadedFile) {
-            $filename = $this->fileManagerService->upload($uploadedFile, self::IMAGES_DIRECTORY);
+            $filename = $this->fileManagerService->upload($uploadedFile, FileManagerService::IMAGES_DIRECTORY);
             return new JsonResponse(['code' => '201', 'message' => 'File uploaded with success!', 'name' => $filename,]);
         }
 
@@ -47,9 +45,9 @@ class ImageController extends AbstractController
      */
     public function read(string $fileName): Response
     {
-        $this->fileManagerService->verifyExistFile($fileName, self::IMAGES_DIRECTORY);
+        $this->fileManagerService->verifyExistFile($fileName, FileManagerService::IMAGES_DIRECTORY);
 
-        $file = new File($this->fileManagerService->getFilePath($fileName, self::IMAGES_DIRECTORY));
+        $file = new File($this->fileManagerService->getFilePath($fileName, FileManagerService::IMAGES_DIRECTORY));
 
         return $this->file($file);
     }
@@ -94,8 +92,8 @@ class ImageController extends AbstractController
         $newFile = $request->files->get('file');
 
         if ($newFile) {
-            $this->fileManagerService->upload($newFile, self::IMAGES_DIRECTORY);
-            $this->fileManagerService->delete($fileName, self::IMAGES_DIRECTORY);
+            $this->fileManagerService->upload($newFile, FileManagerService::IMAGES_DIRECTORY);
+            $this->fileManagerService->delete($fileName, FileManagerService::IMAGES_DIRECTORY);
             return new JsonResponse(['message' => 'File uploaded with success!']);
         }
         return new JsonResponse(['message' => 'file not uploaded! :s']);
@@ -131,8 +129,8 @@ class ImageController extends AbstractController
      */
     public function delete(string $fileName): Response
     {
-        if ($this->fileManagerService->verifyExistFile($fileName, self::IMAGES_DIRECTORY)) {
-            $this->fileManagerService->delete($fileName, self::IMAGES_DIRECTORY);
+        if ($this->fileManagerService->verifyExistFile($fileName, FileManagerService::IMAGES_DIRECTORY)) {
+            $this->fileManagerService->delete($fileName, FileManagerService::IMAGES_DIRECTORY);
         }
 
         return new JsonResponse(['message' => 'File deleted with success!']);
